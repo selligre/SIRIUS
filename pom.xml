@@ -4,17 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.ezip.ing1.pds</groupId>
-    <artifactId>smart-city-by-ezip</artifactId>
+    <groupId>edu.cgl.sirius</groupId>
+    <artifactId>fimafeng</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
-        <module>xmart-city-backend</module>
-        <module>xmart-city-commons</module>
-        <module>xmart-city-business-dto</module>
-        <module>xmart-insert-client</module>
-        <module>xmart-city-client-commons</module>
-        <module>xmart-select-client</module>
+        <module>fimafeng-backend</module>
+        <module>fimafeng-commons</module>
+        <module>fimafeng-business-dto</module>
+        <module>fimafeng-insert-client</module>
+        <module>fimafeng-client-commons</module>
+        <module>fimafeng-select-client</module>
         <module>rdbms-connection-pool</module>
         <module>logging-utils</module>
     </modules>
