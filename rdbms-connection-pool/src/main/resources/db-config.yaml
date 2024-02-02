@@ -1,6 +1,6 @@
 databaseName: "ezip-ing1"
-host: "172.168.1.206"
+host: "172.31.249.180"
 port: 5432
-username : "pgil"
+username: "pgil"
 password: "ezipspirit"
 poolSize: 1

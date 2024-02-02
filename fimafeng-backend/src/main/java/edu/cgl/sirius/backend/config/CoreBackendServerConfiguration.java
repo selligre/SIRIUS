@@ -9,6 +9,7 @@ import java.io.InputStream;
 
 public class CoreBackendServerConfiguration {
     private int listenPort;
+
     public CoreBackendServerConfiguration() {
     }
 

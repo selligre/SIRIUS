@@ -24,6 +24,7 @@ public class XMartCityService {
     private enum Queries {
         SELECT_ALL_STUDENTS("SELECT t.name, t.firstname, t.group FROM \"ezip-ing1\".students t"),
         INSERT_STUDENT("INSERT into \"ezip-ing1\".students (\"name\", \"firstname\", \"group\") values (?, ?, ?)");
+
         private final String query;
 
         private Queries(final String query) {
@@ -32,8 +33,9 @@ public class XMartCityService {
     }
 
     public static XMartCityService inst = null;
-    public static final XMartCityService getInstance()  {
-        if(inst == null) {
+
+    public static final XMartCityService getInstance() {
+        if (inst == null) {
             inst = new XMartCityService();
         }
         return inst;
@@ -47,8 +49,28 @@ public class XMartCityService {
             throws InvocationTargetException, IllegalAccessException {
         Response response = null;
 
-
         return response;
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException {
+        Response response = null;
+        Connection c = null;
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager.getConnection("jdbc:postgresql://172.31.249.180:5432/\"ezip-ing1\"", "pgil",
+                    "ezipspirit");
+
+            PreparedStatement ps = c
+                    .prepareStatement("SELECT t.name, t.firstname, t.group FROM \\\"ezip-ing1\\\".students t");
+            ResultSet rs = ps.executeQuery();
+            System.out.println("ResultSet: " + rs);
+        } catch (Exception e) {
+            System.out.println("AHHHHH");
+            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        System.out.println("Opened database successfully");
     }
 
 }
