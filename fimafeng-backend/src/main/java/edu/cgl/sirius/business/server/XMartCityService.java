@@ -57,7 +57,9 @@ public class XMartCityService {
         Connection c = null;
         try {
             Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection("jdbc:postgresql://172.31.249.180:5432/\"ezip-ing1\"", "pgil",
+            c = DriverManager.getConnection(
+                    "jdbc:postgresql://172.31.249.180:5432/\"ezip-ing1\"?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory",
+                    "pgil",
                     "ezipspirit");
 
             PreparedStatement ps = c
