@@ -1,19 +1,10 @@
 # Compiled class file
 *.class
 
-# folders
-target/
-.idea/
-fimafeng-backend/target/
-fimafeng-business-dto/target/
-fimafeng-client-commons/target/
-fimafeng-commons/target/
-fimafeng-insert-client/target/
-fimafeng-select-client/target/
-
 # IDEA files
 *.iml
 *.lst
+*.idea/
 
 # Log file
 *.log
