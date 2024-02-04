@@ -45,11 +45,11 @@ public class MainSelectClient {
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-        final byte []  requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
+        final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
         final SelectAllStudentsClientRequest clientRequest = new SelectAllStudentsClientRequest(
-                                                                    networkConfig,
-                                                                    birthdate++, request, null, requestBytes);
+                networkConfig,
+                birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {

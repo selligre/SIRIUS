@@ -55,6 +55,7 @@ public class CoreBackendServer implements Runnable {
     }
 
     public CoreBackendServer() throws IOException, SQLException {
+        System.out.println("3");
         coreServerSocket = new ServerSocket(config.getListenPort());
         coreServerSocket.setSoTimeout(5000);
         logger.debug("Configuration loaded : {}", coreServerSocket.toString());
@@ -71,6 +72,7 @@ public class CoreBackendServer implements Runnable {
     public void run() {
         while (!topToStop) {
             try {
+                System.out.println("4");
                 logger.trace("{} {}", topToStop, connectionPool.available());
                 // WOW CAUTION : Be sure I AM the ONLY instance of this class in that JAVA
                 // process ...
@@ -82,11 +84,8 @@ public class CoreBackendServer implements Runnable {
                     // so no matter to construct a Request Handler
                     // which will deliver a special reply to the client : No more connection
                     // available.
-                    final RequestHandler requestHandler = new RequestHandler(
-                            accept,
-                            connectionPool.get(), // Might be null
-                            requestHandlerCreatedSoFar++,
-                            this);
+                    final RequestHandler requestHandler = new RequestHandler(accept, connectionPool.get(),
+                            requestHandlerCreatedSoFar++, this);
 
                     requestHandlers.add(requestHandler);
                 }

@@ -42,39 +42,39 @@ public class RequestHandler implements Runnable {
     private final BlockingDeque<Integer> waitArtifact = new LinkedBlockingDeque<Integer>(1);
 
     protected RequestHandler(final Socket socket,
-                             final Connection connection,
-                             final int myBirthDate,
-                             final CoreBackendServer father) throws IOException {
+            final Connection connection,
+            final int myBirthDate,
+            final CoreBackendServer father) throws IOException {
+        System.out.println("5");
         this.socket = socket;
         this.connection = connection;
         this.father = father;
         final StringBuffer threadName = new StringBuffer();
-        threadName.append(threadNamePrfx).append("★").append(String.format("%04d",myBirthDate));
+        threadName.append(threadNamePrfx).append("★").append(String.format("%04d", myBirthDate));
         self = new Thread(this, threadName.toString());
         instream = socket.getInputStream();
         outstream = socket.getOutputStream();
         self.start();
     }
 
-
-
     @Override
     public void run() {
         try {
-
+            System.out.println("6");
             int timeout = maxTimeLapToGetAClientPayloadInMs;
             while (0 == instream.available() && 0 < timeout) {
                 waitArtifact.pollFirst(timeStepMs, TimeUnit.MILLISECONDS);
-                timeout-=timeStepMs;
+                timeout -= timeStepMs;
             }
-            if (0>timeout) return;
+            if (0 > timeout)
+                return;
 
-            final byte [] inputData = new byte[instream.available()];
+            final byte[] inputData = new byte[instream.available()];
             instream.read(inputData);
             final Request request = getRequest(inputData);
             final Response response = xmartCityService.dispatch(request, connection);
 
-            final byte [] outoutData = getResponse(response);
+            final byte[] outoutData = getResponse(response);
             LoggingUtils.logDataMultiLine(logger, Level.DEBUG, outoutData);
             outstream.write(outoutData);
 
@@ -91,7 +91,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private final Request getRequest(byte [] data) throws IOException {
+    private final Request getRequest(byte[] data) throws IOException {
         logger.debug("data received {} bytes", data.length);
         LoggingUtils.logDataMultiLine(logger, Level.DEBUG, data);
         final ObjectMapper mapper = new ObjectMapper();
@@ -101,9 +101,9 @@ public class RequestHandler implements Runnable {
         return request;
     }
 
-    private final byte [] getResponse(final Response response) throws JsonProcessingException {
+    private final byte[] getResponse(final Response response) throws JsonProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
-        //mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+        // mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(response);
     }
 
@@ -114,6 +114,5 @@ public class RequestHandler implements Runnable {
     public final Socket getSocket() {
         return socket;
     }
-
 
 }

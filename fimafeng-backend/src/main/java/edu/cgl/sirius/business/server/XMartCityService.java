@@ -47,8 +47,8 @@ public class XMartCityService {
 
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
+        System.out.println("8");
         Response response = null;
-        System.out.println("TEST PAR PITIE, FONCTIONNES");
         return response;
     }
 
