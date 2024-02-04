@@ -12,6 +12,7 @@ public class Response {
     public Response() {
 
     }
+
     public Response(String requestId, String responseBody) {
         this.requestId = requestId;
         this.responseBody = responseBody;
