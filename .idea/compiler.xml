@@ -7,9 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="logging-utils" />
+        <module name="fimafeng-business-dto" />
         <module name="fimafeng-insert-client" />
         <module name="xmart-select-client" />
+        <module name="fimafeng-client-commons" />
+        <module name="fimafeng-select-client" />
+        <module name="fimafeng-backend" />
         <module name="rdbms-connection-pool" />
+        <module name="fimafeng-commons" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.5">

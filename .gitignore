@@ -2,11 +2,18 @@
 *.class
 
 # folders
-*/target/
-*/.idea/
+target/
+.idea/
+fimafeng-backend/target/
+fimafeng-business-dto/target/
+fimafeng-client-commons/target/
+fimafeng-commons/target/
+fimafeng-insert-client/target/
+fimafeng-select-client/target/
 
 # IDEA files
 *.iml
+*.lst
 
 # Log file
 *.log
