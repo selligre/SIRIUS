@@ -48,31 +48,8 @@ public class XMartCityService {
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
         Response response = null;
-
+        System.out.println("TEST PAR PITIE, FONCTIONNES");
         return response;
-    }
-
-    public static void main(String[] args) throws ClassNotFoundException {
-        Response response = null;
-        Connection c = null;
-        try {
-            Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection(
-                    "jdbc:postgresql://172.31.249.180:5432/\"ezip-ing1\"?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory",
-                    "pgil",
-                    "ezipspirit");
-
-            PreparedStatement ps = c
-                    .prepareStatement("SELECT t.name, t.firstname, t.group FROM \\\"ezip-ing1\\\".students t");
-            ResultSet rs = ps.executeQuery();
-            System.out.println("ResultSet: " + rs);
-        } catch (Exception e) {
-            System.out.println("AHHHHH");
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        System.out.println("Opened database successfully");
     }
 
 }
