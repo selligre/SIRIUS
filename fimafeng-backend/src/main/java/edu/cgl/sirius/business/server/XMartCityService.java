@@ -47,7 +47,49 @@ public class XMartCityService {
 
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
-        System.out.println("8");
+
+        if (request.getRequestOrder().equals("INSERT_STUDENT")) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                Student student = mapper.readValue(request.getRequestBody(), Student.class);
+                PreparedStatement preparedStatement = connection.prepareStatement(Queries.INSERT_STUDENT.query);
+                preparedStatement.setString(1, student.getName());
+                preparedStatement.setString(2, student.getFirstname());
+                preparedStatement.setString(3, student.getGroup());
+                int rows = preparedStatement.executeUpdate();
+                // System.out.println("*************************************************************************************************************************************");
+                return new Response(request.getRequestId(), "{\"student_id\": " + rows + " }");
+            } catch (Exception E) {
+                // System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                System.out.println(E.getMessage());
+            }
+        } else {
+            try {
+                PreparedStatement statement_select = connection.prepareStatement(Queries.SELECT_ALL_STUDENTS.query);
+                ResultSet resultSet = statement_select.executeQuery();
+                Students student_List = new Students();
+                while (resultSet.next()) {
+                    Student student = new Student().build(resultSet);
+                    /*
+                     * Le build permet de faire Ã§a :
+                     * student.setName(resultSet.getString("name"));
+                     * student.setFirstname(resultSet.getString("firstname"));
+                     * student.setGroup(resultSet.getString("group"));
+                     */
+                    student_List.add(student);
+                }
+                // System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+                ObjectMapper mapper = new ObjectMapper();
+                return new Response(request.getRequestId(), mapper.writeValueAsString(student_List));
+
+            } catch (Exception EX) {
+                // System.out.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+                System.out.println(EX.getMessage());
+
+            }
+        }
+
+        // System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
         Response response = null;
         return response;
     }

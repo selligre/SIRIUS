@@ -55,7 +55,6 @@ public class CoreBackendServer implements Runnable {
     }
 
     public CoreBackendServer() throws IOException, SQLException {
-        System.out.println("3");
         coreServerSocket = new ServerSocket(config.getListenPort());
         coreServerSocket.setSoTimeout(5000);
         logger.debug("Configuration loaded : {}", coreServerSocket.toString());
@@ -72,14 +71,10 @@ public class CoreBackendServer implements Runnable {
     public void run() {
         while (!topToStop) {
             try {
-                System.out.println("4");
                 logger.trace("{} {}", topToStop, connectionPool.available());
-                System.out.println(
-                        "topToStop: " + topToStop + ",  connectionPool.available(): " + connectionPool.available());
                 // WOW CAUTION : Be sure I AM the ONLY instance of this class in that JAVA
                 // process ...
                 if (0 < connectionPool.available()) {
-                    System.out.println("5");
                     final Socket accept = coreServerSocket.accept();
                     // Just to be sure ... Specially if you didn't care about the warning above
                     // Oh (wo-)man, Note you might have a client socket in your hand with a null
