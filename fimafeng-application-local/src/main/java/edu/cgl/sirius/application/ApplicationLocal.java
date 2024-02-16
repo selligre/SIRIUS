@@ -15,13 +15,18 @@ public class ApplicationLocal extends JFrame {
 
     public static void main(String[] args) {
         try {
-            new ApplicationLocal();
+            ApplicationLocal app = new ApplicationLocal();
+            app.tagFilterView();
         } catch (Exception e) {
             // TODO: handle exception
         }
     }
 
     public ApplicationLocal() {
+
+    }
+
+    public void defaultView() {
         setTitle("Ville partagée");
         setSize(300, 200);
         setLocationRelativeTo(null);
@@ -46,6 +51,16 @@ public class ApplicationLocal extends JFrame {
         panel.add(insertButton);
 
         add(panel);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    public void tagFilterView() {
+        setTitle("Tag-Filtered View");
+        setSize(1280, 720);
+        setLocationRelativeTo(null);
+        
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
