@@ -1,5 +1,5 @@
 databaseName: "ezip-ing1"
-host: "172.31.249.180"
+host: "172.31.253.60"
 port: 5432
 username: "pgil"
 password: "ezipspirit"

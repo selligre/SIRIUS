@@ -56,6 +56,7 @@ public class CoreBackendServer implements Runnable {
 
     public CoreBackendServer() throws IOException, SQLException {
         coreServerSocket = new ServerSocket(config.getListenPort());
+        System.out.println(coreServerSocket);
         coreServerSocket.setSoTimeout(5000);
         logger.debug("Configuration loaded : {}", coreServerSocket.toString());
         coreThread = new Thread(this, threadName);

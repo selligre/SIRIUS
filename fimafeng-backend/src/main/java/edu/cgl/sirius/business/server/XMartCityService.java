@@ -48,6 +48,8 @@ public class XMartCityService {
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
 
+        Response response = null;
+
         if (request.getRequestOrder().equals("INSERT_STUDENT")) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
@@ -57,13 +59,11 @@ public class XMartCityService {
                 preparedStatement.setString(2, student.getFirstname());
                 preparedStatement.setString(3, student.getGroup());
                 int rows = preparedStatement.executeUpdate();
-                // System.out.println("*************************************************************************************************************************************");
                 return new Response(request.getRequestId(), "{\"student_id\": " + rows + " }");
             } catch (Exception E) {
-                // System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 System.out.println(E.getMessage());
             }
-        } else {
+        } else if (request.getRequestOrder().equals("SELECT_ALL_STUDENTS")) {
             try {
                 PreparedStatement statement_select = connection.prepareStatement(Queries.SELECT_ALL_STUDENTS.query);
                 ResultSet resultSet = statement_select.executeQuery();
@@ -78,19 +78,13 @@ public class XMartCityService {
                      */
                     student_List.add(student);
                 }
-                // System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
                 ObjectMapper mapper = new ObjectMapper();
                 return new Response(request.getRequestId(), mapper.writeValueAsString(student_List));
 
             } catch (Exception EX) {
-                // System.out.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
                 System.out.println(EX.getMessage());
-
             }
         }
-
-        // System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
-        Response response = null;
         return response;
     }
 
