@@ -2,9 +2,9 @@
 *.class
 
 # IDEA files
-*.iml
-*.lst
-*.idea/
+.idea/
+
+target/
 
 # Log file
 *.log
