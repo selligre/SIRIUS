@@ -18,4 +18,10 @@ public class User {
         this.password = pswd;
     }
 
+    @Override
+    public String toString() {
+        return "{fN: " + this.firstName + ", lN: " + this.lastName + ", dN: " + this.displayName + ", t: "
+                + this.userType + ", e: " + this.email + ", p: " + this.password + "}";
+    }
+
 }
