@@ -4,7 +4,7 @@ CREATE SCHEMA announce AUTHORIZATION "cgl-data";
 
 
 CREATE TABLE users.users (
-    userID INT,
+    userID SERIAL PRIMARY KEY,
     firstName VARCHAR(50),
     lastName VARCHAR(50),
     displayName VARCHAR(50),
@@ -15,7 +15,7 @@ CREATE TABLE users.users (
 );
 
 CREATE TABLE announce.announce(
-    announceID INT,
+    announceID SERIAL PRIMARY KEY,
     refAuthorID INT,
     publicationDate TIMESTAMP,
     status CHAR(50),
@@ -56,7 +56,7 @@ CREATE TABLE announce.service(
 );
 
 CREATE TABLE reccurencePattern(
-    reccurenceID INT,
+    reccurenceID SERIAL PRIMARY KEY,
     refAnnounceID INT,
     numberOfOccurencies SMALLINT NOT NULL,
     dateTimeStart TIMESTAMP NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE announce.occurencies(
 );
 
 CREATE TABLE tags(
-    tagID INT,
+    tagID SERIAL PRIMARY KEY,
     name VARCHAR(50),
     category VARCHAR(50),
     PRIMARY KEY(tagID)
@@ -99,7 +99,7 @@ CREATE TABLE announce.tags(
 );
 
 CREATE TABLE locations (
-    locationID INT,
+    locationID SERIAL PRIMARY KEY,
     name VARCHAR(50),
     PRIMARY KEY(locationID)
 );
