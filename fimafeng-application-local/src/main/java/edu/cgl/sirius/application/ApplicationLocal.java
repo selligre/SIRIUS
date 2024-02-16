@@ -5,11 +5,9 @@ import edu.cgl.sirius.commons.Request;
 import edu.cgl.sirius.commons.Response;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.*;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.awt.*;
+import java.io.*;
+import java.sql.*;
 
 public class ApplicationLocal extends JFrame {
 
@@ -61,6 +59,12 @@ public class ApplicationLocal extends JFrame {
         setSize(1280, 720);
         setLocationRelativeTo(null);
         
+        JLabel label = new JLabel("This is some text");
+        label.setFont(new Font("Arial", Font.BOLD, 16));
+        this.getContentPane().add(label, BorderLayout.NORTH);
+
+        // call select function
+        // put content in a display
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
