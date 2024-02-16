@@ -45,7 +45,6 @@ public class RequestHandler implements Runnable {
             final Connection connection,
             final int myBirthDate,
             final CoreBackendServer father) throws IOException {
-        System.out.println("5");
         this.socket = socket;
         this.connection = connection;
         this.father = father;
@@ -60,7 +59,6 @@ public class RequestHandler implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("6");
             int timeout = maxTimeLapToGetAClientPayloadInMs;
             while (0 == instream.available() && 0 < timeout) {
                 waitArtifact.pollFirst(timeStepMs, TimeUnit.MILLISECONDS);
