@@ -1,11 +1,14 @@
 package edu.cgl.sirius.application;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -58,13 +61,14 @@ public class ApplicationLocal extends JFrame {
         setTitle("Tag-Filtered View");
         setSize(1280, 720);
         setLocationRelativeTo(null);
-        
-        JLabel label = new JLabel("This is some text");
-        label.setFont(new Font("Arial", Font.BOLD, 16));
-        this.getContentPane().add(label, BorderLayout.NORTH);
 
         // call select function
         // put content in a display
+
+        JLabel label = new JLabel("This is some text");
+        label.setFont(new Font("Arial", Font.BOLD, 16));
+        this.getContentPane().setLayout(new BorderLayout());
+        this.getContentPane().add(label, BorderLayout.NORTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
