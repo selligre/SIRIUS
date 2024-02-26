@@ -1,3 +1,3 @@
-edu\cgl\sirius\client\commons\NetworkConfig.class
-edu\cgl\sirius\client\commons\ClientRequest.class
-edu\cgl\sirius\client\commons\ConfigLoader.class
+edu/cgl/sirius/client/commons/ConfigLoader.class
+edu/cgl/sirius/client/commons/ClientRequest.class
+edu/cgl/sirius/client/commons/NetworkConfig.class
