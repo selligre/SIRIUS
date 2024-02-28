@@ -1,10 +1,13 @@
 package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,12 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class ApplicationLocal extends JFrame {
+import edu.cgl.sirius.business.dto.Students;
+import edu.cgl.sirius.client.MainSelectClient;
+
+public class ApplicationLocal {
 
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.tagFilterView();
+            // app.tagFilterView();
+            app.defaultView();
         } catch (Exception e) {
             // TODO: handle exception
         }
@@ -28,14 +35,27 @@ public class ApplicationLocal extends JFrame {
     }
 
     public void defaultView() {
-        setTitle("Ville partagée");
-        setSize(300, 200);
-        setLocationRelativeTo(null);
+        JFrame frame = new JFrame();
+        frame.setTitle("Ville partagée");
+        frame.setSize(300, 200);
+        frame.setLocationRelativeTo(null);
 
         JButton selectButton = new JButton("Select");
         selectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Popup de sélection");
+                // JOptionPane.showMessageDialog(null, "Popup de sélection");
+                try {
+                    tagFilterView();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -47,30 +67,34 @@ public class ApplicationLocal extends JFrame {
         });
 
         JPanel panel = new JPanel();
-        setLayout(new FlowLayout());
+        frame.setLayout(new FlowLayout());
         panel.add(selectButton);
         panel.add(insertButton);
 
-        add(panel);
+        frame.add(panel);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
-    public void tagFilterView() {
-        setTitle("Tag-Filtered View");
-        setSize(1280, 720);
-        setLocationRelativeTo(null);
+    public void tagFilterView() throws IOException, InterruptedException, SQLException {
+        JFrame frame = new JFrame();
+        frame.setSize(1280, 720);
+        frame.setTitle("Tag-Filtered View");
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // call select function
-        // put content in a display
+        MainSelectClient client = new MainSelectClient();
+        String selectResult = client.getStudents().toString();
+        selectResult = selectResult.replaceAll(",", ",<br>");
+        System.out.println(selectResult);
 
-        JLabel label = new JLabel("This is some text");
-        label.setFont(new Font("Arial", Font.BOLD, 16));
-        this.getContentPane().setLayout(new BorderLayout());
-        this.getContentPane().add(label, BorderLayout.NORTH);
+        JLabel label = new JLabel("<html>" + selectResult + "</html>");
+        label.setFont(new Font("Calibri", Font.BOLD, 16));
+        frame.add(label, BorderLayout.NORTH);
+        // frame.pack();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        frame.setVisible(true);
     }
 }
