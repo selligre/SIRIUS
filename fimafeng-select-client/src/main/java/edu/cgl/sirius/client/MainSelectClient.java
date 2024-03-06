@@ -66,7 +66,7 @@ public class MainSelectClient {
     //     }
     // }
 
-    public MainSelectClient() throws IOException, InterruptedException {
+    public MainSelectClient(String requestOrder) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 

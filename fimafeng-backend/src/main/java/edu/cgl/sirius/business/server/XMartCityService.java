@@ -1,6 +1,5 @@
 package edu.cgl.sirius.business.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cgl.sirius.business.dto.Student;
 import edu.cgl.sirius.business.dto.Students;
@@ -9,12 +8,8 @@ import edu.cgl.sirius.commons.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class XMartCityService {
 
@@ -23,6 +18,7 @@ public class XMartCityService {
 
     private enum Queries {
         SELECT_ALL_STUDENTS("SELECT t.name, t.firstname, t.group FROM \"ezip-ing1\".students t"),
+        SELECT_ALL_ACTIVITIES("SELECT * FROM announce.announce AS a LEFT JOIN announce.activity AS a1 ON a.announceId = a1.refAnnounceId;"),
         INSERT_STUDENT("INSERT into \"ezip-ing1\".students (\"name\", \"firstname\", \"group\") values (?, ?, ?)");
 
         private final String query;

@@ -21,8 +21,8 @@ public class ApplicationLocal {
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            // app.tagFilterView();
-            app.defaultView();
+            app.tagFilterView();
+            // app.defaultView();
         } catch (Exception e) {
             // TODO: handle exception
         }
@@ -83,7 +83,7 @@ public class ApplicationLocal {
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        MainSelectClient client = new MainSelectClient();
+        MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
         String selectResult = client.getStudents().toString();
         selectResult = selectResult.replaceAll(",", ",<br>");
         System.out.println(selectResult);
