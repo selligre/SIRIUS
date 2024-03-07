@@ -1,2 +1,3 @@
 edu\cgl\sirius\business\dto\Students.class
 edu\cgl\sirius\business\dto\Student.class
+edu\cgl\sirius\business\dto\User.class
