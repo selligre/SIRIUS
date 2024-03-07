@@ -28,8 +28,7 @@ public class MainInsertClient {
     private static final String requestOrder = "INSERT_STUDENT";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
 
-    public static void main(String[] args) throws IOException, InterruptedException, SQLException {
-
+    public MainInsertClient(String requestOrder) throws IOException, InterruptedException {
         final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
         final NetworkConfig networkConfig =  ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.trace("Students loaded : {}", guys.toString());
@@ -64,4 +63,41 @@ public class MainInsertClient {
                                     clientRequest.getResult());
         }
     }
+    
+    // public static void main(String[] args) throws IOException, InterruptedException, SQLException {
+
+    //     final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
+    //     final NetworkConfig networkConfig =  ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
+    //     logger.trace("Students loaded : {}", guys.toString());
+    //     logger.debug("Load Network config file : {}", networkConfig.toString());
+
+    //     int birthdate = 0;
+    //     for(final Student guy : guys.getStudents()) {
+    //         final ObjectMapper objectMapper = new ObjectMapper();
+    //         final String jsonifiedGuy = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(guy);
+    //         logger.trace("Student with its JSON face : {}", jsonifiedGuy);
+    //         final String requestId = UUID.randomUUID().toString();
+    //         final Request request = new Request();
+    //         request.setRequestId(requestId);
+    //         request.setRequestOrder(requestOrder);
+    //         request.setRequestContent(jsonifiedGuy);
+    //         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+    //         final byte []  requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
+
+    //         final InsertStudentsClientRequest clientRequest = new InsertStudentsClientRequest (
+    //                                                                     networkConfig,
+    //                                                                     birthdate++, request, guy, requestBytes);
+    //         clientRequests.push(clientRequest);
+    //     }
+
+    //     while (!clientRequests.isEmpty()) {
+    //         final ClientRequest clientRequest = clientRequests.pop();
+    //         clientRequest.join();
+    //         final Student guy = (Student)clientRequest.getInfo();
+    //         logger.debug("Thread {} complete : {} {} {} --> {}",
+    //                                 clientRequest.getThreadName(),
+    //                                 guy.getFirstname(), guy.getName(), guy.getGroup(),
+    //                                 clientRequest.getResult());
+    //     }
+    // }
 }
