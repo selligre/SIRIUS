@@ -22,7 +22,7 @@ CREATE TABLE
         date_time_start TIMESTAMP NOT NULL,
         duration FLOAT,
         date_time_end TIMESTAMP,
-        is_reccurent BOOL NOT NULL,
+        is_recurrent BOOL NOT NULL,
         PRIMARY KEY (announce_id),
         FOREIGN KEY (ref_author_id) REFERENCES "user" (user_id)
     );
