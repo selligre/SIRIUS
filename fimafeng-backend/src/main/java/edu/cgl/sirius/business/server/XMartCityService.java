@@ -18,7 +18,7 @@ public class XMartCityService {
 
     private enum Queries {
         SELECT_ALL_STUDENTS("SELECT t.name, t.firstname, t.group FROM \"ezip-ing1\".students t"),
-        SELECT_ALL_ACTIVITIES("SELECT * FROM announce.announce AS a LEFT JOIN announce.activity AS a1 ON a.announceId = a1.refAnnounceId;"),
+        SELECT_ALL_ACTIVITIES("SELECT * FROM announce AS a LEFT JOIN activity AS a1 ON a.announce_id = a1.ref_announce_id;"),
         INSERT_STUDENT("INSERT into \"ezip-ing1\".students (\"name\", \"firstname\", \"group\") values (?, ?, ?)");
 
         private final String query;
