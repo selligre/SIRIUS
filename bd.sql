@@ -1,18 +1,18 @@
 CREATE TABLE
-    user (
-        user_id SERIAL PRIMARY KEY,
+    "user" (
+        user_id SERIAL,
         first_name VARCHAR(50) NOT NULL,
         last_name VARCHAR(50) NOT NULL,
         display_name VARCHAR(50) NOT NULL,
         user_type VARCHAR(50) NOT NULL,
         email VARCHAR(50) NOT NULL,
-        password VARCHAR(300) NOT NULL
+        password VARCHAR(300) NOT NULL,
         PRIMARY KEY (user_id)
     );
 
 CREATE TABLE
     announce (
-        announce_id SERIAL PRIMARY KEY,
+        announce_id SERIAL,
         ref_author_id INT NOT NULL,
         publication_date TIMESTAMP NOT NULL,
         status CHAR(50) NOT NULL,
@@ -24,14 +24,14 @@ CREATE TABLE
         date_time_end TIMESTAMP,
         is_reccurent BOOL NOT NULL,
         PRIMARY KEY (announce_id),
-        FOREIGN KEY (ref_author_id) REFERENCES Users (user_id)
+        FOREIGN KEY (ref_author_id) REFERENCES "user" (user_id)
     );
 
 CREATE TABLE
     user_history (
         ref_user_id INT NOT NULL,
         ref_announce_id INT NOT NULL,
-        FOREIGN KEY (ref_user_id) REFERENCES user (user_id),
+        FOREIGN KEY (ref_user_id) REFERENCES "user" (user_id),
         FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
@@ -58,7 +58,7 @@ CREATE TABLE
 
 CREATE TABLE
     recurrence_pattern (
-        recurrence_id SERIAL PRIMARY KEY,
+        recurrence_id SERIAL,
         ref_announce_id INT NOT NULL,
         number_of_occurencies SMALLINT,
         date_time_start TIMESTAMP,
@@ -82,7 +82,7 @@ CREATE TABLE
 
 CREATE TABLE
     tag (
-        tag_id SERIAL PRIMARY KEY,
+        tag_id SERIAL,
         name VARCHAR(50) NOT NULL,
         category VARCHAR(50) NOT NULL,
         PRIMARY KEY (tag_id)
@@ -91,22 +91,22 @@ CREATE TABLE
 CREATE TABLE
     user_tag (
         ref_user_id INT NOT NULL,
-        refTagID INT NOT NULL,
-        FOREIGN KEY (ref_user_id) REFERENCES user (user_id),
-        FOREIGN KEY (refTagID) REFERENCES tag (tag_id)
+        ref_tag_id INT NOT NULL,
+        FOREIGN KEY (ref_user_id) REFERENCES "user" (user_id),
+        FOREIGN KEY (ref_tag_id) REFERENCES tag (tag_id)
     );
 
 CREATE TABLE
-    Announcetag (
+    announce_tag (
         ref_announce_id INT NOT NULL,
         ref_tag_id INT NOT NULL,
         FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id),
-        FOREIGN KEY (refTagID) REFERENCES tag (tag_id)
+        FOREIGN KEY (ref_tag_id) REFERENCES tag (tag_id)
     );
 
 CREATE TABLE
     location (
-        location_id SERIAL PRIMARY KEY,
+        location_id SERIAL,
         name VARCHAR(50) NOT NULL,
         PRIMARY KEY (location_id)
     );
@@ -115,7 +115,7 @@ CREATE TABLE
     user_location (
         ref_user_id INT NOT NULL,
         ref_location_id INT NOT NULL,
-        FOREIGN KEY (ref_user_id) REFERENCES user (user_id),
+        FOREIGN KEY (ref_user_id) REFERENCES "user" (user_id),
         FOREIGN KEY (ref_location_id) REFERENCES location (location_id)
     );
 
