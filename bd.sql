@@ -1,128 +1,128 @@
 CREATE TABLE
     user (
         user_id SERIAL PRIMARY KEY,
-        first_name VARCHAR(50),
-        last_name VARCHAR(50),
-        display_name VARCHAR(50),
-        user_type VARCHAR(50),
-        email VARCHAR(50),
-        password VARCHAR(300)
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
+        display_name VARCHAR(50) NOT NULL,
+        user_type VARCHAR(50) NOT NULL,
+        email VARCHAR(50) NOT NULL,
+        password VARCHAR(300) NOT NULL
         PRIMARY KEY (user_id)
     );
 
 CREATE TABLE
-    Announces (
-        announceID SERIAL PRIMARY KEY,
-        refAuthorID INT,
-        publicationDate TIMESTAMP,
-        status CHAR(50),
-        type CHAR(50),
-        title VARCHAR(100),
-        description VARCHAR(1000) NOT NULL,
-        dateTimeStart TIMESTAMP,
-        duration FLOAT NOT NULL,
-        dateTimeEnd TIMESTAMP NOT NULL,
-        isReccurent BOOL,
-        PRIMARY KEY (announceID),
-        FOREIGN KEY (refAuthorID) REFERENCES Users (userID)
+    announce (
+        announce_id SERIAL PRIMARY KEY,
+        ref_author_id INT NOT NULL,
+        publication_date TIMESTAMP NOT NULL,
+        status CHAR(50) NOT NULL,
+        type CHAR(50) NOT NULL,
+        title VARCHAR(100) NOT NULL,
+        description VARCHAR(1000),
+        date_time_start TIMESTAMP NOT NULL,
+        duration FLOAT,
+        date_time_end TIMESTAMP,
+        is_reccurent BOOL NOT NULL,
+        PRIMARY KEY (announce_id),
+        FOREIGN KEY (ref_author_id) REFERENCES Users (user_id)
     );
 
 CREATE TABLE
-    UserHistory (
-        refUserID INT,
-        refAnnounceID INT,
-        FOREIGN KEY (refUserID) REFERENCES Users (userID),
-        FOREIGN KEY (refAnnounceID) REFERENCES Announces (announceID)
+    user_history (
+        ref_user_id INT NOT NULL,
+        ref_announce_id INT NOT NULL,
+        FOREIGN KEY (ref_user_id) REFERENCES user (user_id),
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
 CREATE TABLE
-    Activities (
-        refAnnounceID INT,
-        slotsNumber SMALLINT NOT NULL,
-        slotsAvailable SMALLINT NOT NULL,
-        price FLOAT NOT NULL,
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID)
+    activity (
+        ref_announce_id INT NOT NULL,
+        number_of_slots SMALLINT,
+        slots_available SMALLINT,
+        price FLOAT,
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
 CREATE TABLE
-    Loans (
-        refAnnounceID INT,
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID)
+    loan (
+        ref_announce_id INT NOT NULL,
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
 CREATE TABLE
-    Services (
-        refAnnounceID INT,
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID)
+    service (
+        ref_announce_id INT NOT NULL,
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
 CREATE TABLE
-    AnnounceReccurencePattern (
-        reccurenceID SERIAL PRIMARY KEY,
-        refAnnounceID INT,
-        numberOfOccurencies SMALLINT NOT NULL,
-        dateTimeStart TIMESTAMP NOT NULL,
-        dateTimeEnd TIMESTAMP NOT NULL,
-        deyOfWeek VARCHAR(1000) NOT NULL,
-        weekOfMonth VARCHAR(1000) NOT NULL,
-        dayOfMonth VARCHAR(1000) NOT NULL,
-        PRIMARY KEY (reccurenceID),
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID)
+    recurrence_pattern (
+        recurrence_id SERIAL PRIMARY KEY,
+        ref_announce_id INT NOT NULL,
+        number_of_occurencies SMALLINT,
+        date_time_start TIMESTAMP,
+        date_time_end TIMESTAMP,
+        day_of_week VARCHAR(1000),
+        week_of_month VARCHAR(1000),
+        day_of_month VARCHAR(1000),
+        PRIMARY KEY (recurrence_id),
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
 CREATE TABLE
-    AnnounceOccurencies (
-        refReccurenciesID INT,
-        refAnnounceID INT,
-        dateTimeStart TIMESTAMP,
-        dateTimeEnd TIMESTAMP,
-        FOREIGN KEY (refReccurenciesID) REFERENCES reccurencePattern (reccurenceID),
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID)
+    announce_occurencies (
+        ref_recurrence_id INT NOT NULL,
+        ref_announce_id INT NOT NULL,
+        date_time_start TIMESTAMP NOT NULL,
+        date_time_end TIMESTAMP NOT NULL,
+        FOREIGN KEY (ref_recurrence_id) REFERENCES recurrence_pattern (recurrence_id),
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
 CREATE TABLE
-    Tags (
-        tagID SERIAL PRIMARY KEY,
-        name VARCHAR(50),
-        category VARCHAR(50),
-        PRIMARY KEY (tagID)
+    tag (
+        tag_id SERIAL PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        category VARCHAR(50) NOT NULL,
+        PRIMARY KEY (tag_id)
     );
 
 CREATE TABLE
-    UsersTags (
-        refUserID INT,
-        refTagID INT,
-        FOREIGN KEY (refUserID) REFERENCES users.users (userID),
-        FOREIGN KEY (refTagID) REFERENCES tags (tagID)
+    user_tag (
+        ref_user_id INT NOT NULL,
+        refTagID INT NOT NULL,
+        FOREIGN KEY (ref_user_id) REFERENCES user (user_id),
+        FOREIGN KEY (refTagID) REFERENCES tag (tag_id)
     );
 
 CREATE TABLE
-    AnnounceTags (
-        refAnnounceID INT,
-        reftagID INT,
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID),
-        FOREIGN KEY (refTagID) REFERENCES tags (tagID)
+    Announcetag (
+        ref_announce_id INT NOT NULL,
+        ref_tag_id INT NOT NULL,
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id),
+        FOREIGN KEY (refTagID) REFERENCES tag (tag_id)
     );
 
 CREATE TABLE
-    Locations (
-        locationID SERIAL PRIMARY KEY,
-        name VARCHAR(50),
-        PRIMARY KEY (locationID)
+    location (
+        location_id SERIAL PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        PRIMARY KEY (location_id)
     );
 
 CREATE TABLE
-    UserLocation (
-        refUserID INT,
-        refLocationID INT,
-        FOREIGN KEY (refUserID) REFERENCES users.users (userID),
-        FOREIGN KEY (refLocationID) REFERENCES locations (locationID)
+    user_location (
+        ref_user_id INT NOT NULL,
+        ref_location_id INT NOT NULL,
+        FOREIGN KEY (ref_user_id) REFERENCES user (user_id),
+        FOREIGN KEY (ref_location_id) REFERENCES location (location_id)
     );
 
 CREATE TABLE
-    AnnounceLocation (
-        refAnnounceID INT,
-        refLocationID INT,
-        FOREIGN KEY (refAnnounceID) REFERENCES announce.announce (announceID),
-        FOREIGN KEY (refLocationID) REFERENCES locations (locationID)
+    announce_location (
+        ref_announce_id INT NOT NULL,
+        ref_location_id INT NOT NULL,
+        FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id),
+        FOREIGN KEY (ref_location_id) REFERENCES location (location_id)
     );
