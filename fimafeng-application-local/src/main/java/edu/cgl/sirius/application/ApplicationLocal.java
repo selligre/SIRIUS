@@ -21,8 +21,8 @@ public class ApplicationLocal {
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.tagFilterView();
-            // app.defaultView();
+            // app.tagFilterView();
+            app.defaultView();
         } catch (Exception e) {
             // TODO: handle exception
         }
@@ -43,7 +43,7 @@ public class ApplicationLocal {
             public void actionPerformed(ActionEvent e) {
                 // JOptionPane.showMessageDialog(null, "Popup de sélection");
                 try {
-                    tagFilterView();
+                    selectView();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -60,7 +60,19 @@ public class ApplicationLocal {
         JButton insertButton = new JButton("Insert");
         insertButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Popup d'insertion");
+                // JOptionPane.showMessageDialog(null, "Popup d'insertion");
+                try {
+                    insertView();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -75,7 +87,7 @@ public class ApplicationLocal {
         frame.setVisible(true);
     }
 
-    public void tagFilterView() throws IOException, InterruptedException, SQLException {
+    public void selectView() throws IOException, InterruptedException, SQLException {
         JFrame frame = new JFrame();
         frame.setSize(1280, 720);
         frame.setTitle("Tag-Filtered View");
@@ -83,16 +95,23 @@ public class ApplicationLocal {
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
+        // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
+        MainSelectClient client = new MainSelectClient("SELECT_ALL_USERS");
         String selectResult = client.getStudents().toString();
         selectResult = selectResult.replaceAll(",", ",<br>");
         System.out.println(selectResult);
 
         JLabel label = new JLabel("<html>" + selectResult + "</html>");
-        label.setFont(new Font("Calibri", Font.BOLD, 16));
+        label.setFont(new Font("Arial", Font.BOLD, 16));
         frame.add(label, BorderLayout.NORTH);
         // frame.pack();
 
         frame.setVisible(true);
+    }
+
+    public void insertView() throws IOException, InterruptedException, SQLException {
+
+        // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
+        MainSelectClient client = new MainSelectClient("INSERT_USER");
     }
 }
