@@ -6,17 +6,17 @@ import java.util.Date;
 
 public class Announce {
 
-    private Date publicationDate;
-    private String status;
-    private String type;
-    private String title;
-    private String description;
-    private Date dateTimeStart;
-    private float duration;
-    private Date dateTimeEnd;
-    private Boolean isRecurrent;
+    protected Date publicationDate;
+    protected String status;
+    protected String type;
+    protected String title;
+    protected String description;
+    protected Date dateTimeStart;
+    protected float duration;
+    protected Date dateTimeEnd;
+    protected Boolean isRecurrent;
 
-    private static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Announce(String status, String type, String title, String desc, Date start, float duration, Date end,
             Boolean recc) {
@@ -40,4 +40,15 @@ public class Announce {
                 + dateFormat.format(dateTimeEnd) + ", r:" + this.isRecurrent;
     }
 
+    protected String getPublicationDateString() {
+        return dateFormat.format(this.publicationDate);
+    }
+
+    protected String getDateTimeStartString() {
+        return dateFormat.format(dateTimeStart);
+    }
+
+    protected String getDateTimeEndString() {
+        return dateFormat.format(dateTimeEnd);
+    }
 }

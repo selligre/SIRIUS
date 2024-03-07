@@ -64,7 +64,7 @@ public class GenerateData {
 
     public static Announce generateAnnounce() {
         return new Announce("online", announceTypes.get(faker.random().nextInt(0, 2)),
-                faker.lorem().sentence(4, 4), faker.lorem().paragraph(),
+                faker.lorem().sentence(4, 4), faker.lorem().sentence(8, 4),
                 faker.date().future(200, TimeUnit.DAYS), (float) faker.random().nextInt(1, 4),
                 faker.date().future(200, TimeUnit.DAYS, faker.date().future(400, TimeUnit.DAYS)), false);
     }
@@ -96,8 +96,8 @@ public class GenerateData {
 
     public static void main(String[] args) {
         ArrayList<Activity> array = generateActivities(10);
-        for (Object o : array) {
-            System.out.println(o);
+        for (Activity a : array) {
+            System.out.println(a.getInsertRequest());
             System.out.println();
         }
     }
