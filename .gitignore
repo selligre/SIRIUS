@@ -4,6 +4,7 @@
 # IDEA files
 .idea/
 
+target/*
 target/
 
 # Log file
