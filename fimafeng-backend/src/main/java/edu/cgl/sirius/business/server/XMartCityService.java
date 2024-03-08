@@ -69,12 +69,11 @@ public class XMartCityService {
                 Students student_List = new Students();
                 while (resultSet.next()) {
                     Student student = new Student().build(resultSet);
-                    /*
-                     * Le build permet de faire Ã§a :
-                     * student.setName(resultSet.getString("name"));
-                     * student.setFirstname(resultSet.getString("firstname"));
-                     * student.setGroup(resultSet.getString("group"));
-                     */
+                    
+                    student.setName(resultSet.getString("name"));
+                    student.setFirstname(resultSet.getString("firstname"));
+                    student.setGroup(resultSet.getString("group"));
+                    
                     student_List.add(student);
                 }
                 ObjectMapper mapper = new ObjectMapper();

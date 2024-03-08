@@ -1,8 +1,8 @@
 package edu.cgl.sirius.application;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -11,10 +11,11 @@ import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import edu.cgl.sirius.client.MainSelectClient;
+import edu.cgl.sirius.client.MainInsertClient;
 
 public class ApplicationLocal {
 
@@ -92,26 +93,58 @@ public class ApplicationLocal {
         frame.setSize(1280, 720);
         frame.setTitle("Tag-Filtered View");
         frame.setLocationRelativeTo(null);
-        frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        JScrollPane scrollPane = new JScrollPane();
+        frame.add(scrollPane);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0,3));
+        scrollPane.add(panel);
+        
+
         // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
-        MainSelectClient client = new MainSelectClient("SELECT_ALL_USERS");
+        MainSelectClient client = new MainSelectClient("SELECT_ALL_STUDENTS");
         String selectResult = client.getStudents().toString();
-        selectResult = selectResult.replaceAll(",", ",<br>");
+
         System.out.println(selectResult);
 
-        JLabel label = new JLabel("<html>" + selectResult + "</html>");
-        label.setFont(new Font("Arial", Font.BOLD, 16));
-        frame.add(label, BorderLayout.NORTH);
-        // frame.pack();
+        String[] studentData = selectResult.split("Student\\{");
 
+        panel.add(new JLabel("Prénom"));
+        panel.add(new JLabel("Nom"));
+        panel.add(new JLabel("Groupe"));
+        
+        for (String data : studentData) {
+            if (data.contains("name=")) {
+                String name = data.split("name='")[1].split("'")[0];
+                String firstname = data.split("firstname='")[1].split("'")[0];
+                String group = data.split("group='")[1].split("'")[0];
+
+                JLabel labelName = new JLabel(name);
+                labelName.setFont(new Font("Arial", Font.BOLD, 16));
+                panel.add(labelName);
+
+                JLabel labelFirstname = new JLabel(firstname);
+                labelFirstname.setFont(new Font("Arial", Font.BOLD, 16));
+                panel.add(labelFirstname);
+                
+                JLabel labelGroup = new JLabel(group);
+                labelGroup.setFont(new Font("Arial", Font.BOLD, 16));
+                panel.add(labelGroup);
+                
+            }
+        }
+
+        // frame.pack();
+        frame.add(panel);
+        frame.repaint();
         frame.setVisible(true);
     }
 
     public void insertView() throws IOException, InterruptedException, SQLException {
 
-        // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
-        MainSelectClient client = new MainSelectClient("INSERT_USER");
+        MainInsertClient client = new MainInsertClient("INSERT_USER");
+
     }
 }
