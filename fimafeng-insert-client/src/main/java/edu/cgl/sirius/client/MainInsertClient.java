@@ -28,7 +28,7 @@ public class MainInsertClient {
     private static final String requestOrder = "INSERT_STUDENT";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
 
-    public MainInsertClient(String requestOrder) throws IOException, InterruptedException {
+    public MainInsertClient() throws IOException, InterruptedException {
         final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
         final NetworkConfig networkConfig =  ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.trace("Students loaded : {}", guys.toString());

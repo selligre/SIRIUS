@@ -93,7 +93,7 @@ public class ApplicationLocal {
         frame.setSize(1280, 720);
         frame.setTitle("Tag-Filtered View");
         frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
 
         JScrollPane scrollPane = new JScrollPane();
         frame.add(scrollPane);
@@ -144,7 +144,8 @@ public class ApplicationLocal {
 
     public void insertView() throws IOException, InterruptedException, SQLException {
 
-        MainInsertClient client = new MainInsertClient("INSERT_USER");
+        MainInsertClient client = new MainInsertClient();
+        
 
     }
 }
