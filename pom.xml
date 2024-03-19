@@ -15,6 +15,7 @@
     </properties>
 
     <modules>
+        <module>fimafeng-application-local</module>
         <module>fimafeng-backend</module>
         <module>fimafeng-commons</module>
         <module>fimafeng-business-dto</module>

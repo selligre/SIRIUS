@@ -1,15 +1,13 @@
 package edu.cgl.sirius.application;
 
-import edu.cgl.sirius.backend.CoreBackendServer;
-import edu.cgl.sirius.commons.Request;
-import edu.cgl.sirius.commons.Response;
-
-import javax.swing.*;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.*;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class ApplicationLocal extends JFrame {
 
