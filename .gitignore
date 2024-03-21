@@ -7,8 +7,7 @@
 # IDEA files
 .idea/
 
-# Don't need the whole folder since we're compiling everytime
-target/
+target/*
 
 # Log file
 *.log

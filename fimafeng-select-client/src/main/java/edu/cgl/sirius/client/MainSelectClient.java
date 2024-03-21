@@ -91,11 +91,9 @@ public class MainSelectClient {
             students = (Students) joinedClientRequest.getResult();
             final AsciiTable asciiTable = new AsciiTable();
             for (final Student student : students.getStudents()) {
-                asciiTable.addRule();
-                asciiTable.addRow(student.getFirstname(), student.getName(), student.getGroup());
+                sBuilder.append(student.getFirstname() + "; " + student.getName() + "; " + student.getGroup() + "\n");
             }
-            asciiTable.addRule();
-            logger.debug("\n{}\n", asciiTable.render());
+            logger.debug("\n{}\n", sBuilder.toString());
         }
     }
 
