@@ -1,9 +1,13 @@
-# Compiled class file
+# Compiled class files
 *.class
+
+# OS dependent files
+*.lst
 
 # IDEA files
 .idea/
 
+# Don't need the whole folder since we're compiling everytime
 target/
 
 # Log file
@@ -27,4 +31,3 @@ target/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
-*.lst

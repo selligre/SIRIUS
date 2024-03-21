@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.cgl.sirius.client</groupId>
     <artifactId>fimafeng-select-client</artifactId>
 
     <build>

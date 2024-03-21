@@ -1,6 +1,5 @@
 package edu.cgl.sirius.business.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cgl.sirius.business.dto.Student;
 import edu.cgl.sirius.business.dto.Students;
@@ -9,12 +8,8 @@ import edu.cgl.sirius.commons.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class XMartCityService {
 
@@ -23,7 +18,11 @@ public class XMartCityService {
 
     private enum Queries {
         SELECT_ALL_STUDENTS("SELECT t.name, t.firstname, t.group FROM \"ezip-ing1\".students t"),
-        INSERT_STUDENT("INSERT into \"ezip-ing1\".students (\"name\", \"firstname\", \"group\") values (?, ?, ?)");
+        INSERT_STUDENT("INSERT into \"ezip-ing1\".students (\"name\", \"firstname\", \"group\") values (?, ?, ?)"),
+
+        SELECT_ALL_USERS("SELECT * FROM \"user\";"),
+        SELECT_ALL_ACTIVITIES("SELECT * FROM announce AS a LEFT JOIN activity AS a1 ON a.announce_id = a1.ref_announce_id;"),
+        INSERT_USER("INSERT INTO \"user\" (first_name, last_name, display_name, user_type, email, password) VALUES ('Gilles', 'MEUNIER', 'selligre', 'admin', 'selligre@gmail.com', 'password1234');");
 
         private final String query;
 
@@ -47,43 +46,51 @@ public class XMartCityService {
 
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
+            Response response = null;
+        
+        PreparedStatement pstmt;
+        Statement stmt;
+        ResultSet res;
+        ObjectMapper mapper;
+        int rows;
+        try {
+            switch (request.getRequestOrder()) {
+                // Premier essai avec la bdd de test, inutile maintenant mais on garde temporairement pour l'exemple
+                case "SELECT_ALL_STUDENTS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_STUDENTS.query);
+                    Students students = new Students();
+                    while (res.next()) {
+                        Student student = new Student().build(res);
+                        students.add(student);
+                    }
+                    mapper = new ObjectMapper();
 
-        Response response = null;
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(students));
+                    break;
 
-        if (request.getRequestOrder().equals("INSERT_STUDENT")) {
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                Student student = mapper.readValue(request.getRequestBody(), Student.class);
-                PreparedStatement preparedStatement = connection.prepareStatement(Queries.INSERT_STUDENT.query);
-                preparedStatement.setString(1, student.getName());
-                preparedStatement.setString(2, student.getFirstname());
-                preparedStatement.setString(3, student.getGroup());
-                int rows = preparedStatement.executeUpdate();
-                return new Response(request.getRequestId(), "{\"student_id\": " + rows + " }");
-            } catch (Exception E) {
-                System.out.println(E.getMessage());
+                case "INSERT_STUDENT" :
+                    mapper = new ObjectMapper();
+                    Student student = mapper.readValue(request.getRequestBody(), Student.class);
+                    pstmt = connection.prepareStatement(Queries.INSERT_STUDENT.query);
+                    pstmt.setString(1, student.getName());
+                    pstmt.setString(2, student.getFirstname());
+                    pstmt.setString(3, student.getGroup());
+                    rows = pstmt.executeUpdate();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody("{\"student_id\": " + rows + " }");
+                    break;
+                
+                default:
+                    break;
             }
-        } else if (request.getRequestOrder().equals("SELECT_ALL_STUDENTS")) {
-            try {
-                PreparedStatement statement_select = connection.prepareStatement(Queries.SELECT_ALL_STUDENTS.query);
-                ResultSet resultSet = statement_select.executeQuery();
-                Students student_List = new Students();
-                while (resultSet.next()) {
-                    Student student = new Student().build(resultSet);
-                    /*
-                     * Le build permet de faire Ã§a :
-                     * student.setName(resultSet.getString("name"));
-                     * student.setFirstname(resultSet.getString("firstname"));
-                     * student.setGroup(resultSet.getString("group"));
-                     */
-                    student_List.add(student);
-                }
-                ObjectMapper mapper = new ObjectMapper();
-                return new Response(request.getRequestId(), mapper.writeValueAsString(student_List));
-
-            } catch (Exception EX) {
-                System.out.println(EX.getMessage());
-            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
         }
         return response;
     }

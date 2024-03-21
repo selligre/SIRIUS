@@ -1,5 +1,5 @@
-edu/cgl/sirius/business/server/XMartCityService.class
 edu/cgl/sirius/business/server/XMartCityService$Queries.class
+edu/cgl/sirius/business/server/XMartCityService.class
 edu/cgl/sirius/backend/CoreBackendServer.class
 edu/cgl/sirius/business/server/RequestOrderAnnotation.class
 edu/cgl/sirius/backend/config/CoreBackendServerConfiguration.class

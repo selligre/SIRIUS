@@ -27,10 +27,24 @@
         </plugins>
     </build>
     <dependencies>
+
         <dependency>
             <artifactId>fimafeng-backend</artifactId>
             <groupId>edu.cgl.sirius</groupId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <artifactId>fimafeng-select-client</artifactId>
+            <groupId>edu.cgl.sirius</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <artifactId>fimafeng-insert-client</artifactId>
+            <groupId>edu.cgl.sirius.client</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 </project>
