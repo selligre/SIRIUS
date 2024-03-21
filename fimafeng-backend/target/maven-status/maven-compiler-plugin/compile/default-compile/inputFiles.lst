@@ -1,7 +1,6 @@
-
-D:\Cours\SIRIUS\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\business\server\RequestOrderAnnotation.java
-D:\Cours\SIRIUS\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\RequestHandler.java
-D:\Cours\SIRIUS\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\MainBackendServer.java
-D:\Cours\SIRIUS\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\config\CoreBackendServerConfiguration.java
-D:\Cours\SIRIUS\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\business\server\XMartCityService.java
-D:\Cours\SIRIUS\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\CoreBackendServer.java
+C:\Users\selli\OneDrive\Documents\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\config\CoreBackendServerConfiguration.java
+C:\Users\selli\OneDrive\Documents\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\business\server\XMartCityService.java
+C:\Users\selli\OneDrive\Documents\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\CoreBackendServer.java
+C:\Users\selli\OneDrive\Documents\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\MainBackendServer.java
+C:\Users\selli\OneDrive\Documents\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\business\server\RequestOrderAnnotation.java
+C:\Users\selli\OneDrive\Documents\Sirius\fimafeng-backend\src\main\java\edu\cgl\sirius\backend\RequestHandler.java

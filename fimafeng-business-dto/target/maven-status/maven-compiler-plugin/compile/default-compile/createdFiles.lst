@@ -1,4 +1,7 @@
-
 edu\cgl\sirius\business\dto\Students.class
+edu\cgl\sirius\business\dto\Announce.class
+edu\cgl\sirius\business\dto\Location.class
+edu\cgl\sirius\business\dto\Tag.class
 edu\cgl\sirius\business\dto\Student.class
 edu\cgl\sirius\business\dto\User.class
+edu\cgl\sirius\business\dto\AnnounceTypes\Activity.class

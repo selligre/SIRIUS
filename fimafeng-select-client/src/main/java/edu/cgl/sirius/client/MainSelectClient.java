@@ -32,38 +32,43 @@ public class MainSelectClient {
         return students;
     }
 
-    // public static void main(String[] args) throws IOException, InterruptedException, SQLException {
+    // public static void main(String[] args) throws IOException,
+    // InterruptedException, SQLException {
 
-    //     final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
-    //     logger.debug("Load Network config file : {}", networkConfig.toString());
+    // final NetworkConfig networkConfig =
+    // ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
+    // logger.debug("Load Network config file : {}", networkConfig.toString());
 
-    //     int birthdate = 0;
-    //     final ObjectMapper objectMapper = new ObjectMapper();
-    //     final String requestId = UUID.randomUUID().toString();
-    //     final Request request = new Request();
-    //     request.setRequestId(requestId);
-    //     request.setRequestOrder(requestOrder);
-    //     objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-    //     final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
-    //     LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-    //     final SelectAllStudentsClientRequest clientRequest = new SelectAllStudentsClientRequest(
-    //             networkConfig,
-    //             birthdate++, request, null, requestBytes);
-    //     clientRequests.push(clientRequest);
+    // int birthdate = 0;
+    // final ObjectMapper objectMapper = new ObjectMapper();
+    // final String requestId = UUID.randomUUID().toString();
+    // final Request request = new Request();
+    // request.setRequestId(requestId);
+    // request.setRequestOrder(requestOrder);
+    // objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+    // final byte[] requestBytes =
+    // objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
+    // LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
+    // final SelectAllStudentsClientRequest clientRequest = new
+    // SelectAllStudentsClientRequest(
+    // networkConfig,
+    // birthdate++, request, null, requestBytes);
+    // clientRequests.push(clientRequest);
 
-    //     while (!clientRequests.isEmpty()) {
-    //         final ClientRequest joinedClientRequest = clientRequests.pop();
-    //         joinedClientRequest.join();
-    //         logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-    //         students = (Students) joinedClientRequest.getResult();
-    //         final AsciiTable asciiTable = new AsciiTable();
-    //         for (final Student student : students.getStudents()) {
-    //             asciiTable.addRule();
-    //             asciiTable.addRow(student.getFirstname(), student.getName(), student.getGroup());
-    //         }
-    //         asciiTable.addRule();
-    //         logger.debug("\n{}\n", asciiTable.render());
-    //     }
+    // while (!clientRequests.isEmpty()) {
+    // final ClientRequest joinedClientRequest = clientRequests.pop();
+    // joinedClientRequest.join();
+    // logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
+    // students = (Students) joinedClientRequest.getResult();
+    // final AsciiTable asciiTable = new AsciiTable();
+    // for (final Student student : students.getStudents()) {
+    // asciiTable.addRule();
+    // asciiTable.addRow(student.getFirstname(), student.getName(),
+    // student.getGroup());
+    // }
+    // asciiTable.addRule();
+    // logger.debug("\n{}\n", asciiTable.render());
+    // }
     // }
 
     public MainSelectClient(String requestOrder) throws IOException, InterruptedException {
@@ -91,12 +96,15 @@ public class MainSelectClient {
             students = (Students) joinedClientRequest.getResult();
             final AsciiTable asciiTable = new AsciiTable();
             for (final Student student : students.getStudents()) {
-                sBuilder.append(student.getFirstname() + "; " + student.getName() + "; " + student.getGroup() + "\n");
+                asciiTable.addRule();
+                asciiTable.addRow(student.getFirstname(), student.getName(), student.getGroup());
+                // sBuilder.append(student.getFirstname() + "; " + student.getName() + "; " +
+                // student.getGroup() + "\n");
             }
-            logger.debug("\n{}\n", sBuilder.toString());
+            asciiTable.addRule();
+            logger.debug("\n{}\n", asciiTable.render());
+            // logger.debug("\n{}\n", sBuilder.toString());
         }
     }
-
-    
 
 }
