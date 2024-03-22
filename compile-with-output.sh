@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# compile.sh
+#compile-with-output.sh
 
 # Définition de la clé de connexion
 ssh_key=${PWD}/key
@@ -50,14 +50,14 @@ echo -e '\033[107m\033[1;92m'Téléversement terminé'\033[0m'
 printf "\n\n"
 cd .. && cd ./fimafeng-application-local/
 echo -e '\033[107m\033[1;94m'Lancement de l\'application locale...'\033[0m'
-exec java -jar ./target/fimafeng-application-local-1.0-SNAPSHOT-jar-with-dependencies.jar &
+start java -jar ./target/fimafeng-application-local-1.0-SNAPSHOT-jar-with-dependencies.jar
 echo -e '\033[107m\033[1;92m'Application en cours d\'éxécution'\033[0m'
 
 
 # Lancement du nouveau serveur
 printf "\n\n"
 echo -e '\033[107m\033[1;94m'Exécution du nouveau serveur...'\033[0m'
-exec ssh -i ${ssh_key} cgl-server@172.31.249.69 "java -jar fimafeng-backend-1.0-SNAPSHOT-jar-with-dependencies.jar" &
+ssh -i ${ssh_key} cgl-server@172.31.249.69 "java -jar fimafeng-backend-1.0-SNAPSHOT-jar-with-dependencies.jar &"
 echo -e '\033[107m\033[1;92m'Serveur en ligne'\033[0m'
 
 # Permet de garder la console ouverte
