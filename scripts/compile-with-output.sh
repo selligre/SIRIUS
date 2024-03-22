@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#compile-with-output.sh
-
 # Définition de la clé de connexion
 ssh_key=${PWD}/key
 

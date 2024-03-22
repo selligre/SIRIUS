@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# compile.sh
-
 # Définition de la clé de connexion
+cd ../..
+echo ${PWS}
 ssh_key=${PWD}/key
 
 # Compilation globale du projet
