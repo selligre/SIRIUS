@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # Définition de la clé de connexion
-cd ../..
-echo ${PWS}
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR && cd ../..
 ssh_key=${PWD}/key
+
+cd Sirius/
 
 # Compilation globale du projet
 echo -e '\033[107m\033[1;94m'Lancement de la compilation...'\033[0m'
