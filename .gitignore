@@ -30,3 +30,21 @@ target/*
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# .lst files depending on dev's OS
+fimafeng-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+fimafeng-backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+fimafeng-business-dto/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+fimafeng-business-dto/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+fimafeng-client-commons/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+fimafeng-client-commons/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+fimafeng-commons/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+fimafeng-commons/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+fimafeng-insert-client/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+fimafeng-insert-client/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+fimafeng-select-client/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+fimafeng-select-client/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+logging-utils/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+logging-utils/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+rdbms-connection-pool/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+rdbms-connection-pool/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst

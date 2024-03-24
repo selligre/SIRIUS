@@ -1,6 +1,7 @@
 package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -10,10 +11,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 import edu.cgl.sirius.client.MainSelectClient;
 import edu.cgl.sirius.client.MainInsertClient;
@@ -26,9 +30,9 @@ public class ApplicationLocal {
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.defaultView();
+            app.homeView();
         } catch (Exception e) {
-            // TODO: handle exception
+            System.out.println("ERROR: app.HomeView().");
         }
     }
 
@@ -37,76 +41,84 @@ public class ApplicationLocal {
         this.frame.setTitle("Ville partagée");
         this.frame.setSize(1280, 720);
         this.frame.setLocationRelativeTo(null);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void defaultView() {
-        JButton selectViewButton = new JButton("Selection");
-        selectViewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // JOptionPane.showMessageDialog(null, "Popup de sélection");
-                try {
-                    selectView();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-            }
-        });
-
-        JButton selectTagViewButton = new JButton("Selection avec filtres");
-        selectTagViewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // JOptionPane.showMessageDialog(null, "Popup de sélection");
-                try {
-                    selectTagView();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-            }
-        });
-
-        JButton insertButton = new JButton("Insertion");
-        insertButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // JOptionPane.showMessageDialog(null, "Popup d'insertion");
-                try {
-                    insertView();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-            }
-        });
-
+    public void homeView() {
         JPanel panel = new JPanel();
-        this.frame.setLayout(new BorderLayout());
 
-        panel.add(selectViewButton);
-        panel.add(selectTagViewButton);
-        panel.add(insertButton);
+        JButton jcomp1;
+        JButton jcomp2;
+        JButton jcomp3;
+        JButton jcomp4;
+        JTextField jcomp5;
+        JButton jcomp6;
+        JButton jcomp7;
+        JButton jcomp8;
+        JButton jcomp9;
+        JButton jcomp10;
+        JLabel jcomp11;
+        JComboBox jcomp12;
+        JList jcomp13;
+        JButton jcomp14;
 
-        this.frame.add(panel, BorderLayout.NORTH);
+        // construct preComponents
+        String[] jcomp12Items = { "Date", "Quartier", "Tags" };
+        String[] jcomp13Items = { "Séance pour OSS117" };
 
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // construct components
+        jcomp1 = new JButton("LOGO");
+        jcomp2 = new JButton("(+) Proposer");
+        jcomp3 = new JButton("Deconnexion");
+        jcomp4 = new JButton("Compte");
+        jcomp5 = new JTextField(5);
+        jcomp6 = new JButton("Rechercher");
+        jcomp7 = new JButton("Activités");
+        jcomp8 = new JButton("Matériels");
+        jcomp9 = new JButton("Services");
+        jcomp10 = new JButton("Autour de moi");
+        jcomp11 = new JLabel("Filtrer par :");
+        jcomp12 = new JComboBox(jcomp12Items);
+        jcomp13 = new JList(jcomp13Items);
+        jcomp14 = new JButton("Filtrer");
+
+        // adjust size and set layout
+        panel.setPreferredSize(new Dimension(1270, 720));
+        panel.setLayout(null);
+
+        // add components
+        panel.add(jcomp1);
+        panel.add(jcomp2);
+        panel.add(jcomp3);
+        panel.add(jcomp4);
+        panel.add(jcomp5);
+        panel.add(jcomp6);
+        panel.add(jcomp7);
+        panel.add(jcomp8);
+        panel.add(jcomp9);
+        panel.add(jcomp10);
+        panel.add(jcomp11);
+        panel.add(jcomp12);
+        panel.add(jcomp13);
+        panel.add(jcomp14);
+
+        // set component bounds (only needed by Absolute Positioning)
+        jcomp1.setBounds(25, 25, 125, 50);
+        jcomp2.setBounds(175, 25, 125, 50);
+        jcomp3.setBounds(1120, 25, 125, 50);
+        jcomp4.setBounds(970, 25, 125, 50);
+        jcomp5.setBounds(325, 25, 495, 50);
+        jcomp6.setBounds(820, 25, 125, 50);
+        jcomp7.setBounds(100, 100, 250, 50);
+        jcomp8.setBounds(375, 100, 250, 50);
+        jcomp9.setBounds(650, 100, 250, 50);
+        jcomp10.setBounds(925, 100, 250, 50);
+        jcomp11.setBounds(100, 175, 125, 50);
+        jcomp12.setBounds(225, 175, 125, 50);
+        jcomp13.setBounds(100, 250, 1070, 445);
+        jcomp14.setBounds(350, 175, 125, 50);
+
+        this.frame.add(panel);
         this.frame.setVisible(true);
     }
 
