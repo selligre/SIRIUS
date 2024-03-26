@@ -24,7 +24,7 @@ public class MainSelectClient {
     private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
-    private static final String requestOrder = "SELECT_ALL_Users";
+    private static final String requestOrder = "SELECT_ALL_USERS";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
     private static Users users;
 
@@ -97,7 +97,7 @@ public class MainSelectClient {
             final AsciiTable asciiTable = new AsciiTable();
             for (final User user : users.getUsers()) {
                 asciiTable.addRule();
-                asciiTable.addRow(user.getfirst_name(), user.getlast_name(), user.getdisplay_name(), user.getuser_type(), user.getEmail(), user.getPassword());
+                asciiTable.addRow(user.getFirst_name(), user.getLast_name(), user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
                 // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
                 // User.getGroup() + "\n");
             }

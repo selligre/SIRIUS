@@ -1,8 +1,8 @@
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Tag.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Location.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Students.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Announce.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Student.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/User.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/AnnounceTypes/Activity.java
-/home/tranl/Documents/Sirius/test2/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Users.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/User.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Tag.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Announces.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Student.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Announce.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Students.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Users.java
+/home/tranl/Documents/Sirius/test/Sirius/fimafeng-business-dto/src/main/java/edu/cgl/sirius/business/dto/Location.java

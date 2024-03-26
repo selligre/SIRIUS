@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 
 import edu.cgl.sirius.client.MainSelectClient;
 import edu.cgl.sirius.client.MainInsertClient;
+import edu.cgl.sirius.client.MainSelectAnnounces;
 
 public class ApplicationLocal {
     private JFrame frame;
@@ -119,7 +120,6 @@ public class ApplicationLocal {
 
         System.out.println(selectResult);
 
-        String[] UserData = selectResult.split("User\\{");
 
         this.frame.add(new JScrollPane(panel), BorderLayout.CENTER);
         this.frame.repaint();
@@ -135,12 +135,12 @@ public class ApplicationLocal {
         scrollPane.add(panel);
 
         // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
-        MainSelectClient client = new MainSelectClient("SELECT_ALL_USERS");
-        String selectResult = client.getUsers().toString();
+        MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+        String selectResult = client.getAnnounces().toString();
 
         System.out.println(selectResult);
 
-        String[] UserData = selectResult.split("User\\{");
+        String[] AnnounceData = selectResult.split("Announce\\{");
 
 
         // frame.pack();

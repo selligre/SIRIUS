@@ -1,2 +1,4 @@
-edu/cgl/sirius/client/SelectAllUsersClientRequest.class
+edu/cgl/sirius/client/MainSelectAnnounces.class
+edu/cgl/sirius/client/SelectAllAnnouncesClientRequest.class
 edu/cgl/sirius/client/MainSelectClient.class
+edu/cgl/sirius/client/SelectAllUsersClientRequest.class

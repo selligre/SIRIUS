@@ -1,6 +1,9 @@
 package edu.cgl.sirius.business.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Student;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
@@ -18,12 +21,11 @@ public class XMartCityService {
     private final Logger logger = LoggerFactory.getLogger(LoggingLabel);
 
     private enum Queries {
-        SELECT_ALL_STUDENTS("SELECT t.name, t.first_name, t.group FROM \"ezip-ing1\".Users t"),
-        INSERT_STUDENT("INSERT into \"ezip-ing1\".Users (\"name\", \"first_name\", \"group\") values (?, ?, ?)"),
-
+        
         SELECT_ALL_USERS("SELECT first_name, last_name, display_name, user_type, email, password FROM public.user;"),
-        SELECT_ALL_ACTIVITIES("SELECT * FROM announce AS a LEFT JOIN activity AS a1 ON a.announce_id = a1.ref_announce_id;"),
-        INSERT_USER("INSERT INTO \"user\" (first_name, last_name, display_name, user_type, email, password) VALUES ('Gilles', 'MEUNIER', 'selligre', 'admin', 'selligre@gmail.com', 'password1234');");
+        SELECT_ALL_ANNOUNCES("SELECT * FROM announce;")
+        
+        ;
 
         private final String query;
 
@@ -66,23 +68,27 @@ public class XMartCityService {
                         users.add(user);
                     }
                     mapper = new ObjectMapper();
-
+                    
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(users));
+                    System.out.println(response.getResponseBody());
                     break;
 
-                case "INSERT_STUDENT" :
+                case "SELECT_ALL_ANNOUNCES" :
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_ANNOUNCES.query);
+                    Announces announces = new Announces();
+                    while (res.next()) {
+                        Announce announce = new Announce().build(res);
+                        announces.add(announce);
+                    }
                     mapper = new ObjectMapper();
-                    Student student = mapper.readValue(request.getRequestBody(), Student.class);
-                    pstmt = connection.prepareStatement(Queries.INSERT_STUDENT.query);
-                    pstmt.setString(1, student.getName());
-                    pstmt.setString(3, student.getGroup());
-                    rows = pstmt.executeUpdate();
 
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody("{\"student_id\": " + rows + " }");
+                    response.setResponseBody(mapper.writeValueAsString(announces));
+                    System.out.println(response.getResponseBody());
                     break;
                 
                 default:

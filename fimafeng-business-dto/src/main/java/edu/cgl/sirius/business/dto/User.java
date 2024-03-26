@@ -36,19 +36,19 @@ public class User {
         this.password = password;
     }
 
-    public String getfirst_name() {
+    public String getFirst_name() {
         return first_name;
     }
 
-    public String getlast_name() {
+    public String getLast_name() {
         return last_name;
     }
 
-    public String getdisplay_name() {
+    public String getDisplay_name() {
         return display_name;
     }
 
-    public String getuser_type() {
+    public String getUser_type() {
         return user_type;
     }
 
@@ -61,12 +61,12 @@ public class User {
     }
 
     @JsonProperty("first_name")
-    public void setfirst_name(String first_name) {
+    public void setFirst_name(String first_name) {
         this.first_name = first_name;
     }
 
     @JsonProperty("last_name")
-    public void setlast_name(String last_name) {
+    public void setLast_name(String last_name) {
         this.last_name = last_name;
     }
 
@@ -76,7 +76,7 @@ public class User {
     }
 
     @JsonProperty("user_type")
-    public void setuser_type(String user_type) {
+    public void setUser_type(String user_type) {
         this.user_type = user_type;
     }
 
