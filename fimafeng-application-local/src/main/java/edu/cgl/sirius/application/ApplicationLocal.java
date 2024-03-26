@@ -113,13 +113,57 @@ public class ApplicationLocal {
 
     public void selectView() throws IOException, InterruptedException, SQLException {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0, 3));
+        panel.setLayout(new GridLayout(0, 6));
 
         MainSelectClient client = new MainSelectClient("SELECT_ALL_USERS");
         String selectResult = client.getUsers().toString();
 
         System.out.println(selectResult);
 
+        String[] userData = selectResult.split("User\\{");
+
+        panel.add(new JLabel("Prénom"));
+        panel.add(new JLabel("Nom"));
+        panel.add(new JLabel("Pseudo"));
+        panel.add(new JLabel("Type"));
+        panel.add(new JLabel("Email"));
+        panel.add(new JLabel("Mot de passe"));
+
+        for (String data : userData) {
+            if (data.contains("first_name=")) {
+                String firstName = data.split("first_name='")[1].split("'")[0];
+                String lastName = data.split("last_name='")[1].split("'")[0];
+                String displayName = data.split("display_name='")[1].split("'")[0];
+                String userType = data.split("user_type='")[1].split("'")[0];
+                String email = data.split("email='")[1].split("'")[0];
+                String password = data.split("password='")[1].split("'")[0];
+
+                JLabel labelFirstName = new JLabel(firstName);
+                labelFirstName.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelFirstName);
+
+                JLabel labelLastName = new JLabel(lastName);
+                labelLastName.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelLastName);
+
+                JLabel labelDisplayName = new JLabel(displayName);
+                labelDisplayName.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelDisplayName);
+
+                JLabel labelUserType = new JLabel(userType);
+                labelUserType.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelUserType);
+
+                JLabel labelEmail = new JLabel(email);
+                labelEmail.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelEmail);
+
+                JLabel labelPassword = new JLabel(password);
+                labelPassword.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelPassword);
+
+            }
+        }
 
         this.frame.add(new JScrollPane(panel), BorderLayout.CENTER);
         this.frame.repaint();
@@ -131,7 +175,7 @@ public class ApplicationLocal {
         this.frame.add(scrollPane);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0, 3));
+        panel.setLayout(new GridLayout(0, 11));
         scrollPane.add(panel);
 
         // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
@@ -140,7 +184,81 @@ public class ApplicationLocal {
 
         System.out.println(selectResult);
 
-        String[] AnnounceData = selectResult.split("Announce\\{");
+        String[] announceData = selectResult.split("Announce\\{");
+
+        panel.add(new JLabel("announceId"));
+        panel.add(new JLabel("refAuthorId"));
+        panel.add(new JLabel("publicationDate"));
+        panel.add(new JLabel("status"));
+        panel.add(new JLabel("type"));
+        panel.add(new JLabel("title"));
+        panel.add(new JLabel("description"));
+        panel.add(new JLabel("dateTimeStart"));
+        panel.add(new JLabel("duration"));
+        panel.add(new JLabel("dateTimeEnd"));
+        panel.add(new JLabel("isRecurrent"));
+
+        for (String data : announceData) {
+            if (data.contains("announce_id=")) {
+                String announceId = data.split("announce_id='")[1].split("'")[0];
+                String refAuthorId = data.split("ref_author_id='")[1].split("'")[0];
+                String publicationDate = data.split("publication_date='")[1].split("'")[0];
+                String status = data.split("status='")[1].split("'")[0];
+                String type = data.split("type='")[1].split("'")[0];
+                String title = data.split("title='")[1].split("'")[0];
+                String description = data.split("description='")[1].split("'")[0];
+                String dateTimeStart = data.split("date_time_start='")[1].split("'")[0];
+                String duration = data.split("duration='")[1].split("'")[0];
+                String dateTimeEnd = data.split("date_time_end='")[1].split("'")[0];
+                String isRecurrent = data.split("is_recurrent='")[1].split("'")[0];
+
+                JLabel labelAnnounceId = new JLabel(announceId);
+                labelAnnounceId.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelAnnounceId);
+
+                JLabel labelRefAuthorId = new JLabel(refAuthorId);
+                labelRefAuthorId.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelRefAuthorId);
+
+                JLabel labelPublicationDate = new JLabel(publicationDate);
+                labelPublicationDate.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelPublicationDate);
+
+                JLabel labelStatus = new JLabel(status);
+                labelStatus.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelStatus);
+
+                JLabel labelType = new JLabel(type);
+                labelType.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelType);
+
+                JLabel labelTitle = new JLabel(title);
+                labelTitle.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelTitle);
+
+                JLabel labelDescription = new JLabel(description);
+                labelDescription.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelDescription);
+
+                JLabel labelDateTimeStart = new JLabel(dateTimeStart);
+                labelDateTimeStart.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelDateTimeStart);
+
+                JLabel labelDuration = new JLabel(duration);
+                labelDuration.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelDuration);
+
+                JLabel labelDateTimeEnd = new JLabel(dateTimeEnd);
+                labelDateTimeEnd.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelDateTimeEnd);
+
+                JLabel labelIsRecurrent = new JLabel(isRecurrent);
+                labelIsRecurrent.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelIsRecurrent);
+
+                
+            }
+        }
 
 
         // frame.pack();

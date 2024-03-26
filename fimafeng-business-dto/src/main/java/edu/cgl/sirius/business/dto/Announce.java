@@ -153,7 +153,12 @@ public class Announce {
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         for(final String fieldName : fieldNames ) {
             final Field field = this.getClass().getDeclaredField(fieldName);
-            field.set(this, resultSet.getObject(fieldName).toString());
+            if (resultSet.getObject(fieldName) instanceof String){
+                field.set(this, resultSet.getObject(fieldName));
+            }
+            else{
+                field.set(this, resultSet.getObject(fieldName).toString());
+            }
         }
     }
     private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement, final String ... fieldNames )
