@@ -48,7 +48,7 @@ public class MainSelectAnnouncesLocation {
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
         final SelectAllAnnouncesLocationClientRequest clientRequest = new SelectAllAnnouncesLocationClientRequest(
                 networkConfig,
-                birthdate++, request, "piscine", requestBytes);
+                birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {

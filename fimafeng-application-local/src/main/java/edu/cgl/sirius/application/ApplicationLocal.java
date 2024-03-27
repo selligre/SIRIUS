@@ -279,17 +279,55 @@ public class ApplicationLocal {
                 
             }
         }
-
         
         frame.add(new JScrollPane(panel), BorderLayout.CENTER);
         frame.setVisible(true);
     }
 
     public void SelectPerLocationView() throws IOException, InterruptedException, SQLException {
+
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 4));
+
         MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION");
         String selectResult = client.getAnnouncesLocation().toString();
 
         System.out.println(selectResult);
+
+        String[] announceLocations = selectResult.split("AnnounceLocation\\{");
+
+        panel.add(new JLabel("announceId"));
+        panel.add(new JLabel("title"));
+        panel.add(new JLabel("locationId"));
+        panel.add(new JLabel("name"));
+
+        for (String data : announceLocations) {
+            if (data.contains("announce_id=")) {
+                String announceId = data.split("announce_id='")[1].split("'")[0];
+                String title = data.split("title='")[1].split("'")[0];
+                String locationId = data.split("location_id='")[1].split("'")[0];
+                String name = data.split("name='")[1].split("'")[0];
+
+                JLabel labelAnnounceId = new JLabel(announceId);
+                labelAnnounceId.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelAnnounceId);
+
+                JLabel labelTitle = new JLabel(title);
+                labelTitle.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelTitle);
+
+                JLabel labelLocationId = new JLabel(locationId);
+                labelLocationId.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelLocationId);
+
+                JLabel labelName = new JLabel(name);
+                labelName.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
+                panel.add(labelName);
+            }
+        }
+
+        frame.add(new JScrollPane(panel), BorderLayout.CENTER);
+        frame.setVisible(true);
     }
 
 }

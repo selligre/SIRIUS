@@ -12,7 +12,7 @@ import edu.cgl.sirius.commons.Request;
 public class SelectAllAnnouncesLocationClientRequest extends ClientRequest<Object, AnnouncesLocation> {
 
     public SelectAllAnnouncesLocationClientRequest(
-            NetworkConfig networkConfig, int myBirthDate, Request request, String info, byte[] bytes)
+            NetworkConfig networkConfig, int myBirthDate, Request request, Object info, byte[] bytes)
             throws IOException {
         super(networkConfig, myBirthDate, request, info, bytes);
     }
