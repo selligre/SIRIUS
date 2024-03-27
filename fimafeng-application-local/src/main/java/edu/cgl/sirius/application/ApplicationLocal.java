@@ -6,23 +6,31 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import edu.cgl.sirius.client.MainSelectClient;
+import edu.cgl.sirius.client.MainSelectUsers;
+import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.AnnounceLocation;
 import edu.cgl.sirius.client.MainInsertClient;
 import edu.cgl.sirius.client.MainSelectAnnounces;
+import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 
 public class ApplicationLocal {
     private JFrame frame;
+    public static String choosedLocation;
     private final int HEAD_LABEL_SIZE = 20;
     private final int VALUE_LABEL_SIZE = 14;
+    JPanel panel;
 
     public static void main(String[] args) {
         try {
@@ -41,12 +49,12 @@ public class ApplicationLocal {
     }
 
     public void defaultView() {
-        JButton selectViewButton = new JButton("Selection");
-        selectViewButton.addActionListener(new ActionListener() {
+        JButton selectUsersButton = new JButton("Selection Des Utilisateurs");
+        selectUsersButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // JOptionPane.showMessageDialog(null, "Popup de sélection");
                 try {
-                    selectView();
+                    selectUsers();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -60,12 +68,12 @@ public class ApplicationLocal {
             }
         });
 
-        JButton selectTagViewButton = new JButton("Selection avec filtres");
-        selectTagViewButton.addActionListener(new ActionListener() {
+        JButton selectAnnouncesButton = new JButton("Selection Des Annonces");
+        selectAnnouncesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // JOptionPane.showMessageDialog(null, "Popup de sélection");
                 try {
-                    selectTagView();
+                    selectAnnounces();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -79,12 +87,12 @@ public class ApplicationLocal {
             }
         });
 
-        JButton insertButton = new JButton("Insertion");
-        insertButton.addActionListener(new ActionListener() {
+        JButton SelectPerLocationButton = new JButton("Annonces Par Lieu");
+        SelectPerLocationButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // JOptionPane.showMessageDialog(null, "Popup d'insertion");
                 try {
-                    insertView();
+                    SelectPerLocationView();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -97,13 +105,29 @@ public class ApplicationLocal {
                 }
             }
         });
+
+        String location[] = {"Piscine", "Cinéma"};
+        JComboBox<String> locationChoice = new JComboBox<>(location);
+        locationChoice.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e){ 
+                if (e.getItem().equals("Piscine")){
+                    choosedLocation = "piscine";
+                }
+                if (e.getItem().equals("Cinéma")){
+                    choosedLocation = "cinema";
+                }
+            }
+        });
+
+
 
         JPanel panel = new JPanel();
         this.frame.setLayout(new BorderLayout());
 
-        panel.add(selectViewButton);
-        panel.add(selectTagViewButton);
-        panel.add(insertButton);
+        panel.add(selectUsersButton);
+        panel.add(selectAnnouncesButton);
+        panel.add(SelectPerLocationButton);
+        panel.add(locationChoice);
 
         this.frame.add(panel, BorderLayout.NORTH);
 
@@ -111,11 +135,12 @@ public class ApplicationLocal {
         this.frame.setVisible(true);
     }
 
-    public void selectView() throws IOException, InterruptedException, SQLException {
-        JPanel panel = new JPanel();
+    public void selectUsers() throws IOException, InterruptedException, SQLException {
+
+        panel = new JPanel();
         panel.setLayout(new GridLayout(0, 6));
 
-        MainSelectClient client = new MainSelectClient("SELECT_ALL_USERS");
+        MainSelectUsers client = new MainSelectUsers("SELECT_ALL_USERS");
         String selectResult = client.getUsers().toString();
 
         System.out.println(selectResult);
@@ -165,20 +190,15 @@ public class ApplicationLocal {
             }
         }
 
-        this.frame.add(new JScrollPane(panel), BorderLayout.CENTER);
-        this.frame.repaint();
-        this.frame.setVisible(true);
+        frame.add(new JScrollPane(panel), BorderLayout.CENTER);
+        frame.setVisible(true);
     }
 
-    public void selectTagView() throws IOException, InterruptedException, SQLException {
-        JScrollPane scrollPane = new JScrollPane();
-        this.frame.add(scrollPane);
+    public void selectAnnounces() throws IOException, InterruptedException, SQLException {
 
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setLayout(new GridLayout(0, 11));
-        scrollPane.add(panel);
 
-        // MainSelectClient client = new MainSelectClient("SELECT_ALL_ACTIVITIES");
         MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
         String selectResult = client.getAnnounces().toString();
 
@@ -260,15 +280,16 @@ public class ApplicationLocal {
             }
         }
 
-
-        // frame.pack();
-        this.frame.add(panel, BorderLayout.CENTER);
-        this.frame.repaint();
-        this.frame.setVisible(true);
+        
+        frame.add(new JScrollPane(panel), BorderLayout.CENTER);
+        frame.setVisible(true);
     }
 
-    public void insertView() throws IOException, InterruptedException, SQLException {
-        MainInsertClient client = new MainInsertClient();
+    public void SelectPerLocationView() throws IOException, InterruptedException, SQLException {
+        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION");
+        String selectResult = client.getAnnouncesLocation().toString();
+
+        System.out.println(selectResult);
     }
 
 }

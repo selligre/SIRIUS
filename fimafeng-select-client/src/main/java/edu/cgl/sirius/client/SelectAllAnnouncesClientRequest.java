@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announces;
-import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.NetworkConfig;
 import edu.cgl.sirius.commons.Request;

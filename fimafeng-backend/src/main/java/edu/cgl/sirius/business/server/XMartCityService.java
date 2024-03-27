@@ -3,7 +3,9 @@ package edu.cgl.sirius.business.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.AnnounceLocation;
 import edu.cgl.sirius.business.dto.Announces;
+import edu.cgl.sirius.business.dto.AnnouncesLocation;
 import edu.cgl.sirius.business.dto.Student;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
@@ -23,7 +25,8 @@ public class XMartCityService {
     private enum Queries {
         
         SELECT_ALL_USERS("SELECT first_name, last_name, display_name, user_type, email, password FROM public.user;"),
-        SELECT_ALL_ANNOUNCES("SELECT * FROM announce;")
+        SELECT_ALL_ANNOUNCES("SELECT * FROM announce;"),
+        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, title, location_id, name FROM announce JOIN announce_location ON ref_announce_id = announce_id JOIN location ON ref_location_id = location_id WHERE name = ?;")
         
         ;
 
@@ -88,6 +91,28 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                    case "SELECT_ANNOUNCES_FOR_LOCATION" :
+                    mapper = new ObjectMapper();
+                    String location = mapper.readValue(request.getRequestBody(), String.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
+                    pstmt.setString(1, location);
+                    res = pstmt.executeQuery();
+                    // stmt = connection.createStatement();
+                    // res = stmt.executeQuery(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
+
+                    AnnouncesLocation announcesLocation = new AnnouncesLocation();
+                    while (res.next()) {
+                        AnnounceLocation announceLocation = new AnnounceLocation().build(res);
+                        announcesLocation.add(announceLocation);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announcesLocation));
                     System.out.println(response.getResponseBody());
                     break;
                 
