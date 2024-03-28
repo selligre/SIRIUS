@@ -1,7 +1,6 @@
 package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,17 +16,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
+import ch.qos.logback.core.net.server.Client;
 import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.AnnounceLocation;
-import edu.cgl.sirius.client.MainInsertClient;
+import edu.cgl.sirius.business.dto.AnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 
 public class ApplicationLocal {
     private JFrame frame;
-    public static String choosedLocation = "piscine";
+    private static DefaultTableModel defaultTableModel;
+    private static String choosedLocation = "piscine";
     private final int HEAD_LABEL_SIZE = 20;
     private final int VALUE_LABEL_SIZE = 14;
     JPanel panel;
@@ -293,6 +296,13 @@ public class ApplicationLocal {
         String selectResult = client.getAnnouncesLocation().toString();
 
         System.out.println(selectResult);
+
+        JTable table = new JTable(defaultTableModel);
+
+        defaultTableModel.setRowCount(0);
+
+        String[] tableHeader = {"announceId", "title", "locationId", "name"}; 
+        defaultTableModel.setColumnIdentifiers(tableHeader);
 
         String[] announceLocations = selectResult.split("AnnounceLocation\\{");
 
