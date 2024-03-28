@@ -33,22 +33,28 @@ public class MainSelectAnnouncesLocation {
         return announcesLocation;
     }
 
-    public MainSelectAnnouncesLocation(String requestOrder) throws IOException, InterruptedException {
+    public MainSelectAnnouncesLocation(String requestOrder, String location) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
+        AnnounceLocation announceLocationName = new AnnounceLocation();
+        announceLocationName.setName(location);
+
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper2 = new ObjectMapper();
+        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter().writeValueAsString(announceLocationName);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
+        request.setRequestContent(jsonifiedAnnounce);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
         final SelectAllAnnouncesLocationClientRequest clientRequest = new SelectAllAnnouncesLocationClientRequest(
                 networkConfig,
-                birthdate++, request, null, requestBytes);
+                birthdate++, request, announceLocationName, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {

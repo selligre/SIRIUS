@@ -27,7 +27,7 @@ import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 
 public class ApplicationLocal {
     private JFrame frame;
-    public static String choosedLocation;
+    public static String choosedLocation = "piscine";
     private final int HEAD_LABEL_SIZE = 20;
     private final int VALUE_LABEL_SIZE = 14;
     JPanel panel;
@@ -289,7 +289,7 @@ public class ApplicationLocal {
         panel = new JPanel();
         panel.setLayout(new GridLayout(0, 4));
 
-        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION");
+        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION", choosedLocation);
         String selectResult = client.getAnnouncesLocation().toString();
 
         System.out.println(selectResult);
