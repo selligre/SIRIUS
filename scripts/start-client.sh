@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Lancement du nouveau client
+# Define key adress
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd $SCRIPT_DIR && cd ..
+
+# Launching client
 echo -e '\033[107m\033[1;92m'Application en cours d\'éxécution'\033[0m'
 cd ./fimafeng-application-local/
 echo -e '\033[107m\033[1;94m'Lancement de l\'application locale...'\033[0m'

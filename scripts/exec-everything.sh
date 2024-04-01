@@ -1,20 +1,21 @@
 #!/bin/bash
 
+# Define key adress
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR && cd ..
 
 
-# Compilation globale
+# Global compilation
 $SCRIPT_DIR/compile-project.sh 
 
-# Package du client
+# Package client
 $SCRIPT_DIR/compile-client.sh
 
-# Package du serveur
+# Package server
 $SCRIPT_DIR/compile-serveur.sh
 
-# Mise à jour du serveur
+# Updating and running server
 $SCRIPT_DIR/upload-and-restart-server.sh &
 
-# Démarrage du client
+# Launching client
 $SCRIPT_DIR/start-client.sh
