@@ -7,5 +7,5 @@ cd $SCRIPT_DIR
 cd ../../..
 ssh_key=${PWD}/key
 
-echo Connexion a la VM
+echo Connexion a la VM Serveur
 ssh -i $ssh_key cgl-server@172.31.249.69

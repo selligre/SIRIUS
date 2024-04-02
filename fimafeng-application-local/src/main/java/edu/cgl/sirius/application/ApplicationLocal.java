@@ -30,9 +30,9 @@ public class ApplicationLocal {
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.homeView();
+            app.selectView();
         } catch (Exception e) {
-            System.out.println("ERROR: app.HomeView().");
+            System.out.println("ERROR: Error starting app.HomeView().");
         }
     }
 
@@ -47,40 +47,26 @@ public class ApplicationLocal {
     public void homeView() {
         JPanel panel = new JPanel();
 
-        JButton jcomp1;
-        JButton jcomp2;
-        JButton jcomp3;
-        JButton jcomp4;
-        JTextField jcomp5;
-        JButton jcomp6;
-        JButton jcomp7;
-        JButton jcomp8;
-        JButton jcomp9;
-        JButton jcomp10;
-        JLabel jcomp11;
-        JComboBox jcomp12;
-        JList jcomp13;
-        JButton jcomp14;
-
         // construct preComponents
-        String[] jcomp12Items = { "Date", "Quartier", "Tags" };
-        String[] jcomp13Items = { "Séance pour OSS117" };
+        String[] jcomp12Items = { "Tag1", "Tag2", "Tag3" };
+        String[] jcomp13Items = { "Annonce1", "Annonce2", "Annonce3" };
 
         // construct components
-        jcomp1 = new JButton("LOGO");
-        jcomp2 = new JButton("(+) Proposer");
-        jcomp3 = new JButton("Deconnexion");
-        jcomp4 = new JButton("Compte");
-        jcomp5 = new JTextField(5);
-        jcomp6 = new JButton("Rechercher");
-        jcomp7 = new JButton("Activités");
-        jcomp8 = new JButton("Matériels");
-        jcomp9 = new JButton("Services");
-        jcomp10 = new JButton("Autour de moi");
-        jcomp11 = new JLabel("Filtrer par :");
-        jcomp12 = new JComboBox(jcomp12Items);
-        jcomp13 = new JList(jcomp13Items);
-        jcomp14 = new JButton("Filtrer");
+        JButton jcomp1 = new JButton("LOGO");
+        JButton jcomp2 = new JButton("(+) Proposer");
+        JButton jcomp3 = new JButton("Deconnexion");
+        JButton jcomp4 = new JButton("Compte");
+        JTextField jcomp5 = new JTextField(5);
+        JButton jcomp6 = new JButton("Rechercher");
+        JButton jcomp7 = new JButton("Activités");
+        JButton jcomp8 = new JButton("Matériels");
+        JButton jcomp9 = new JButton("Services");
+        JButton jcomp10 = new JButton("Autour de moi");
+        JLabel jcomp11 = new JLabel("Filtrer par :");
+        JComboBox jcomp12 = new JComboBox(jcomp12Items);
+        // JList jcomp13 = new JList(jcomp13Items);
+        JPanel jcomp13 = new JPanel();
+        JButton jcomp14 = new JButton("Filtrer");
 
         // adjust size and set layout
         panel.setPreferredSize(new Dimension(1270, 720));
@@ -101,6 +87,22 @@ public class ApplicationLocal {
         panel.add(jcomp12);
         panel.add(jcomp13);
         panel.add(jcomp14);
+
+        // enable / disable components
+        jcomp1.setEnabled(false);
+        jcomp2.setEnabled(true);
+        jcomp3.setEnabled(false);
+        jcomp4.setEnabled(false);
+        jcomp5.setEnabled(false);
+        jcomp6.setEnabled(false);
+        jcomp7.setEnabled(true);
+        jcomp8.setEnabled(false);
+        jcomp9.setEnabled(false);
+        jcomp10.setEnabled(true);
+        jcomp11.setEnabled(true);
+        jcomp12.setEnabled(true);
+        jcomp13.setEnabled(true);
+        jcomp14.setEnabled(true);
 
         // set component bounds (only needed by Absolute Positioning)
         jcomp1.setBounds(25, 25, 125, 50);
