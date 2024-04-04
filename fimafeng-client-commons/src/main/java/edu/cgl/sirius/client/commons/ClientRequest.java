@@ -2,7 +2,7 @@ package edu.cgl.sirius.client.commons;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cgl.sirius.commons.LoggingUtils;
-import edu.cgl.sirius.business.dto.Students;
+import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.commons.Request;
 import edu.cgl.sirius.commons.Response;
 import org.slf4j.Logger;

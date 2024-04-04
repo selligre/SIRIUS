@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.vandermeer.asciitable.AsciiTable;
 import edu.cgl.sirius.commons.LoggingUtils;
-import edu.cgl.sirius.business.dto.Student;
-import edu.cgl.sirius.business.dto.Students;
+import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
 import edu.cgl.sirius.client.commons.NetworkConfig;
@@ -14,22 +14,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
 
-public class MainSelectClient {
+public class MainSelectUsers {
 
     private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
-    private static final String requestOrder = "SELECT_ALL_STUDENTS";
+    private static final String requestOrder = "SELECT_ALL_USERS";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
-    private static Students students;
+    private static Users users;
 
-    public Students getStudents() {
-        return students;
+    public Users getUsers() {
+        return users;
     }
 
     // public static void main(String[] args) throws IOException,
@@ -49,8 +48,8 @@ public class MainSelectClient {
     // final byte[] requestBytes =
     // objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
     // LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-    // final SelectAllStudentsClientRequest clientRequest = new
-    // SelectAllStudentsClientRequest(
+    // final SelectAllUsersClientRequest clientRequest = new
+    // SelectAllUsersClientRequest(
     // networkConfig,
     // birthdate++, request, null, requestBytes);
     // clientRequests.push(clientRequest);
@@ -59,19 +58,19 @@ public class MainSelectClient {
     // final ClientRequest joinedClientRequest = clientRequests.pop();
     // joinedClientRequest.join();
     // logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-    // students = (Students) joinedClientRequest.getResult();
+    // Users = (Users) joinedClientRequest.getResult();
     // final AsciiTable asciiTable = new AsciiTable();
-    // for (final Student student : students.getStudents()) {
+    // for (final User User : Users.getUsers()) {
     // asciiTable.addRule();
-    // asciiTable.addRow(student.getFirstname(), student.getName(),
-    // student.getGroup());
+    // asciiTable.addRow(User.getfirst_name(), User.getName(),
+    // User.getGroup());
     // }
     // asciiTable.addRule();
     // logger.debug("\n{}\n", asciiTable.render());
     // }
     // }
 
-    public MainSelectClient(String requestOrder) throws IOException, InterruptedException {
+    public MainSelectUsers(String requestOrder) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
@@ -84,7 +83,7 @@ public class MainSelectClient {
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-        final SelectAllStudentsClientRequest clientRequest = new SelectAllStudentsClientRequest(
+        final SelectAllUsersClientRequest clientRequest = new SelectAllUsersClientRequest(
                 networkConfig,
                 birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
@@ -93,13 +92,13 @@ public class MainSelectClient {
             final ClientRequest joinedClientRequest = clientRequests.pop();
             joinedClientRequest.join();
             logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-            students = (Students) joinedClientRequest.getResult();
+            users = (Users) joinedClientRequest.getResult();
             final AsciiTable asciiTable = new AsciiTable();
-            for (final Student student : students.getStudents()) {
+            for (final User user : users.getUsers()) {
                 asciiTable.addRule();
-                asciiTable.addRow(student.getFirstname(), student.getName(), student.getGroup());
-                // sBuilder.append(student.getFirstname() + "; " + student.getName() + "; " +
-                // student.getGroup() + "\n");
+                asciiTable.addRow(user.getFirst_name(), user.getLast_name(), user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
+                // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
+                // User.getGroup() + "\n");
             }
             asciiTable.addRule();
             logger.debug("\n{}\n", asciiTable.render());
