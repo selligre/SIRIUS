@@ -1,6 +1,7 @@
 package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -30,9 +32,9 @@ public class ApplicationLocal {
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.selectView();
+            app.homeView();
         } catch (Exception e) {
-            System.out.println("ERROR: Error starting app.HomeView().");
+            System.out.println("ERROR: Error starting app.homeView().");
         }
     }
 
@@ -62,11 +64,8 @@ public class ApplicationLocal {
         JButton jcomp8 = new JButton("Matériels");
         JButton jcomp9 = new JButton("Services");
         JButton jcomp10 = new JButton("Autour de moi");
-        JLabel jcomp11 = new JLabel("Filtrer par :");
-        JComboBox jcomp12 = new JComboBox(jcomp12Items);
-        // JList jcomp13 = new JList(jcomp13Items);
-        JPanel jcomp13 = new JPanel();
-        JButton jcomp14 = new JButton("Filtrer");
+        JPanel jcomp11 = new JPanel();
+        jcomp11.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // adjust size and set layout
         panel.setPreferredSize(new Dimension(1270, 720));
@@ -84,9 +83,6 @@ public class ApplicationLocal {
         panel.add(jcomp9);
         panel.add(jcomp10);
         panel.add(jcomp11);
-        panel.add(jcomp12);
-        panel.add(jcomp13);
-        panel.add(jcomp14);
 
         // enable / disable components
         jcomp1.setEnabled(false);
@@ -100,9 +96,6 @@ public class ApplicationLocal {
         jcomp9.setEnabled(false);
         jcomp10.setEnabled(true);
         jcomp11.setEnabled(true);
-        jcomp12.setEnabled(true);
-        jcomp13.setEnabled(true);
-        jcomp14.setEnabled(true);
 
         // set component bounds (only needed by Absolute Positioning)
         jcomp1.setBounds(25, 25, 125, 50);
@@ -115,10 +108,7 @@ public class ApplicationLocal {
         jcomp8.setBounds(375, 100, 250, 50);
         jcomp9.setBounds(650, 100, 250, 50);
         jcomp10.setBounds(925, 100, 250, 50);
-        jcomp11.setBounds(100, 175, 125, 50);
-        jcomp12.setBounds(225, 175, 125, 50);
-        jcomp13.setBounds(100, 250, 1070, 445);
-        jcomp14.setBounds(350, 175, 125, 50);
+        jcomp11.setBounds(25, 175, 1220, 490);
 
         this.frame.add(panel);
         this.frame.setVisible(true);
