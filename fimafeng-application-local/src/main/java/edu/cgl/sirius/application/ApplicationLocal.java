@@ -3,9 +3,9 @@ package edu.cgl.sirius.application;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -18,18 +18,13 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextField;
 
-import ch.qos.logback.core.net.server.Client;
 import edu.cgl.sirius.client.MainSelectUsers;
-import edu.cgl.sirius.business.dto.Announce;
-import edu.cgl.sirius.business.dto.AnnounceLocation;
-import edu.cgl.sirius.business.dto.AnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 
@@ -135,15 +130,61 @@ public class ApplicationLocal {
 
         // construct components
         JButton jcomp1 = new JButton("LOGO");
+        jcomp1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+            }
+        });
         JButton jcomp2 = new JButton("(+) Proposer");
+        jcomp2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
+            }
+        });
         JButton jcomp3 = new JButton("Deconnexion");
+        jcomp3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+            }
+        });
         JButton jcomp4 = new JButton("Compte");
+        jcomp4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
+            }
+        });
         JTextField jcomp5 = new JTextField(5);
         JButton jcomp6 = new JButton("Rechercher");
+        jcomp6.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String content = "Recherche du terme \"" + jcomp5.getText() + "\" dans les annonces.";
+                JOptionPane.showMessageDialog(null, content);
+            }
+        });
         JButton jcomp7 = new JButton("Activités");
+        jcomp7.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
+            }
+        });
         JButton jcomp8 = new JButton("Matériels");
+        jcomp8.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
+            }
+        });
         JButton jcomp9 = new JButton("Services");
+        jcomp9.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
+            }
+        });
         JButton jcomp10 = new JButton("Autour de moi");
+        jcomp10.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
+            }
+        });
         JPanel jcomp11 = new JPanel();
         jcomp11.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -165,15 +206,15 @@ public class ApplicationLocal {
         panel.add(jcomp11);
 
         // enable / disable components
-        jcomp1.setEnabled(false);
+        jcomp1.setEnabled(true);
         jcomp2.setEnabled(true);
-        jcomp3.setEnabled(false);
-        jcomp4.setEnabled(false);
-        jcomp5.setEnabled(false);
-        jcomp6.setEnabled(false);
+        jcomp3.setEnabled(true);
+        jcomp4.setEnabled(true);
+        jcomp5.setEnabled(true);
+        jcomp6.setEnabled(true);
         jcomp7.setEnabled(true);
-        jcomp8.setEnabled(false);
-        jcomp9.setEnabled(false);
+        jcomp8.setEnabled(true);
+        jcomp9.setEnabled(true);
         jcomp10.setEnabled(true);
         jcomp11.setEnabled(true);
 
