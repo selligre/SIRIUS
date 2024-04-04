@@ -33,7 +33,7 @@ public class ApplicationLocal {
     private static String choosedLocation = "piscine";
     private final int HEAD_LABEL_SIZE = 20;
     private final int VALUE_LABEL_SIZE = 14;
-    JPanel panel;
+    private static JPanel panel;
 
     public static void main(String[] args) {
         try {
@@ -296,13 +296,6 @@ public class ApplicationLocal {
         String selectResult = client.getAnnouncesLocation().toString();
 
         System.out.println(selectResult);
-
-        JTable table = new JTable(defaultTableModel);
-
-        defaultTableModel.setRowCount(0);
-
-        String[] tableHeader = {"announceId", "title", "locationId", "name"}; 
-        defaultTableModel.setColumnIdentifiers(tableHeader);
 
         String[] announceLocations = selectResult.split("AnnounceLocation\\{");
 
