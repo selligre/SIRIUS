@@ -1,6 +1,9 @@
 package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,14 +13,17 @@ import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JTextField;
 
 import ch.qos.logback.core.net.server.Client;
 import edu.cgl.sirius.client.MainSelectUsers;
@@ -38,9 +44,9 @@ public class ApplicationLocal {
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.defaultView();
+            app.homeView();
         } catch (Exception e) {
-            // TODO: handle exception
+            System.out.println("ERROR: Error starting app.homeView().");
         }
     }
 
@@ -49,6 +55,7 @@ public class ApplicationLocal {
         this.frame.setTitle("Ville partagée");
         this.frame.setSize(1280, 720);
         this.frame.setLocationRelativeTo(null);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void defaultView() {
@@ -109,32 +116,81 @@ public class ApplicationLocal {
             }
         });
 
-        String location[] = {"Piscine", "Cinéma"};
+        String location[] = { "Piscine", "Cinéma" };
         JComboBox<String> locationChoice = new JComboBox<>(location);
         locationChoice.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e){ 
-                if (e.getItem().equals("Piscine")){
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getItem().equals("Piscine")) {
                     choosedLocation = "piscine";
                 }
-                if (e.getItem().equals("Cinéma")){
+                if (e.getItem().equals("Cinéma")) {
                     choosedLocation = "cinema";
                 }
             }
         });
+    }
 
-
-
+    public void homeView() {
         JPanel panel = new JPanel();
-        this.frame.setLayout(new BorderLayout());
 
-        panel.add(selectUsersButton);
-        panel.add(selectAnnouncesButton);
-        panel.add(SelectPerLocationButton);
-        panel.add(locationChoice);
+        // construct components
+        JButton jcomp1 = new JButton("LOGO");
+        JButton jcomp2 = new JButton("(+) Proposer");
+        JButton jcomp3 = new JButton("Deconnexion");
+        JButton jcomp4 = new JButton("Compte");
+        JTextField jcomp5 = new JTextField(5);
+        JButton jcomp6 = new JButton("Rechercher");
+        JButton jcomp7 = new JButton("Activités");
+        JButton jcomp8 = new JButton("Matériels");
+        JButton jcomp9 = new JButton("Services");
+        JButton jcomp10 = new JButton("Autour de moi");
+        JPanel jcomp11 = new JPanel();
+        jcomp11.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        this.frame.add(panel, BorderLayout.NORTH);
+        // adjust size and set layout
+        panel.setPreferredSize(new Dimension(1270, 720));
+        panel.setLayout(null);
 
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // add components
+        panel.add(jcomp1);
+        panel.add(jcomp2);
+        panel.add(jcomp3);
+        panel.add(jcomp4);
+        panel.add(jcomp5);
+        panel.add(jcomp6);
+        panel.add(jcomp7);
+        panel.add(jcomp8);
+        panel.add(jcomp9);
+        panel.add(jcomp10);
+        panel.add(jcomp11);
+
+        // enable / disable components
+        jcomp1.setEnabled(false);
+        jcomp2.setEnabled(true);
+        jcomp3.setEnabled(false);
+        jcomp4.setEnabled(false);
+        jcomp5.setEnabled(false);
+        jcomp6.setEnabled(false);
+        jcomp7.setEnabled(true);
+        jcomp8.setEnabled(false);
+        jcomp9.setEnabled(false);
+        jcomp10.setEnabled(true);
+        jcomp11.setEnabled(true);
+
+        // set component bounds (only needed by Absolute Positioning)
+        jcomp1.setBounds(25, 25, 125, 50);
+        jcomp2.setBounds(175, 25, 125, 50);
+        jcomp3.setBounds(1120, 25, 125, 50);
+        jcomp4.setBounds(970, 25, 125, 50);
+        jcomp5.setBounds(325, 25, 495, 50);
+        jcomp6.setBounds(820, 25, 125, 50);
+        jcomp7.setBounds(100, 100, 250, 50);
+        jcomp8.setBounds(375, 100, 250, 50);
+        jcomp9.setBounds(650, 100, 250, 50);
+        jcomp10.setBounds(925, 100, 250, 50);
+        jcomp11.setBounds(25, 175, 1220, 490);
+
+        this.frame.add(panel);
         this.frame.setVisible(true);
     }
 
@@ -279,10 +335,9 @@ public class ApplicationLocal {
                 labelIsRecurrent.setFont(new Font("Arial", Font.BOLD, VALUE_LABEL_SIZE));
                 panel.add(labelIsRecurrent);
 
-                
             }
         }
-        
+
         frame.add(new JScrollPane(panel), BorderLayout.CENTER);
         frame.setVisible(true);
     }
@@ -292,7 +347,8 @@ public class ApplicationLocal {
         panel = new JPanel();
         panel.setLayout(new GridLayout(0, 4));
 
-        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION", choosedLocation);
+        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION",
+                choosedLocation);
         String selectResult = client.getAnnouncesLocation().toString();
 
         System.out.println(selectResult);
