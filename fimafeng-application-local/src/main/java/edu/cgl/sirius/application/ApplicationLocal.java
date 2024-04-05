@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -21,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextField;
 
 import edu.cgl.sirius.client.MainSelectUsers;
@@ -29,17 +27,31 @@ import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 
 public class ApplicationLocal {
-    private JFrame frame;
-    private static DefaultTableModel defaultTableModel;
+    // private static DefaultTableModel defaultTableModel;
     private static String choosedLocation = "piscine";
-    private final int HEAD_LABEL_SIZE = 20;
-    private final int VALUE_LABEL_SIZE = 14;
-    private static JPanel panel;
+    // private final int HEAD_LABEL_SIZE = 10;
+    private final int VALUE_LABEL_SIZE = 8;
+
+    private JFrame frame;
+    // construct components
+    JButton jcomp1 = new JButton("LOGO");
+    JButton jcomp2 = new JButton("(+) Proposer");
+    JButton jcomp3 = new JButton("Deconnexion");
+    JButton jcomp4 = new JButton("Compte");
+    JTextField jcomp5 = new JTextField(5);
+    JButton jcomp6 = new JButton("Rechercher");
+    JButton jcomp7 = new JButton("Activités");
+    JButton jcomp8 = new JButton("Matériels");
+    JButton jcomp9 = new JButton("Services");
+    JButton jcomp10 = new JButton("Autour de moi");
+    JPanel jcomp11 = new JPanel();
 
     public static void main(String[] args) {
         try {
             ApplicationLocal app = new ApplicationLocal();
-            app.homeView();
+            // new ApplicationLocal();
+            // app.homeView();
+            app.defaultView();
         } catch (Exception e) {
             System.out.println("ERROR: Error starting app.homeView().");
         }
@@ -51,6 +63,9 @@ public class ApplicationLocal {
         this.frame.setSize(1280, 720);
         this.frame.setLocationRelativeTo(null);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // this.homeView();
+        // this.defaultView();
     }
 
     public void defaultView() {
@@ -123,121 +138,24 @@ public class ApplicationLocal {
                 }
             }
         });
-    }
 
-    public void homeView() {
         JPanel panel = new JPanel();
+        this.frame.setLayout(new BorderLayout());
 
-        // construct components
-        JButton jcomp1 = new JButton("LOGO");
-        jcomp1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
-            }
-        });
-        JButton jcomp2 = new JButton("(+) Proposer");
-        jcomp2.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
-            }
-        });
-        JButton jcomp3 = new JButton("Deconnexion");
-        jcomp3.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
-            }
-        });
-        JButton jcomp4 = new JButton("Compte");
-        jcomp4.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
-            }
-        });
-        JTextField jcomp5 = new JTextField(5);
-        JButton jcomp6 = new JButton("Rechercher");
-        jcomp6.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String content = "Recherche du terme \"" + jcomp5.getText() + "\" dans les annonces.";
-                JOptionPane.showMessageDialog(null, content);
-            }
-        });
-        JButton jcomp7 = new JButton("Activités");
-        jcomp7.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
-            }
-        });
-        JButton jcomp8 = new JButton("Matériels");
-        jcomp8.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
-            }
-        });
-        JButton jcomp9 = new JButton("Services");
-        jcomp9.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
-            }
-        });
-        JButton jcomp10 = new JButton("Autour de moi");
-        jcomp10.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
-            }
-        });
-        JPanel jcomp11 = new JPanel();
-        jcomp11.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panel.add(selectUsersButton);
+        panel.add(selectAnnouncesButton);
+        panel.add(SelectPerLocationButton);
+        panel.add(locationChoice);
 
-        // adjust size and set layout
-        panel.setPreferredSize(new Dimension(1270, 720));
-        panel.setLayout(null);
+        this.frame.add(panel, BorderLayout.NORTH);
 
-        // add components
-        panel.add(jcomp1);
-        panel.add(jcomp2);
-        panel.add(jcomp3);
-        panel.add(jcomp4);
-        panel.add(jcomp5);
-        panel.add(jcomp6);
-        panel.add(jcomp7);
-        panel.add(jcomp8);
-        panel.add(jcomp9);
-        panel.add(jcomp10);
-        panel.add(jcomp11);
-
-        // enable / disable components
-        jcomp1.setEnabled(true);
-        jcomp2.setEnabled(true);
-        jcomp3.setEnabled(true);
-        jcomp4.setEnabled(true);
-        jcomp5.setEnabled(true);
-        jcomp6.setEnabled(true);
-        jcomp7.setEnabled(true);
-        jcomp8.setEnabled(true);
-        jcomp9.setEnabled(true);
-        jcomp10.setEnabled(true);
-        jcomp11.setEnabled(true);
-
-        // set component bounds (only needed by Absolute Positioning)
-        jcomp1.setBounds(25, 25, 125, 50);
-        jcomp2.setBounds(175, 25, 125, 50);
-        jcomp3.setBounds(1120, 25, 125, 50);
-        jcomp4.setBounds(970, 25, 125, 50);
-        jcomp5.setBounds(325, 25, 495, 50);
-        jcomp6.setBounds(820, 25, 125, 50);
-        jcomp7.setBounds(100, 100, 250, 50);
-        jcomp8.setBounds(375, 100, 250, 50);
-        jcomp9.setBounds(650, 100, 250, 50);
-        jcomp10.setBounds(925, 100, 250, 50);
-        jcomp11.setBounds(25, 175, 1220, 490);
-
-        this.frame.add(panel);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setVisible(true);
     }
 
     public void selectUsers() throws IOException, InterruptedException, SQLException {
 
-        panel = new JPanel();
+        JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 6));
 
         MainSelectUsers client = new MainSelectUsers("SELECT_ALL_USERS");
@@ -296,7 +214,7 @@ public class ApplicationLocal {
 
     public void selectAnnounces() throws IOException, InterruptedException, SQLException {
 
-        panel = new JPanel();
+        JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 11));
 
         MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
@@ -385,7 +303,7 @@ public class ApplicationLocal {
 
     public void SelectPerLocationView() throws IOException, InterruptedException, SQLException {
 
-        panel = new JPanel();
+        JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 4));
 
         MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ANNOUNCES_FOR_LOCATION",
@@ -428,6 +346,111 @@ public class ApplicationLocal {
 
         frame.add(new JScrollPane(panel), BorderLayout.CENTER);
         frame.setVisible(true);
+    }
+
+    public void homeView() {
+        JPanel panel = new JPanel();
+
+        // add component functions
+        this.jcomp1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+            }
+        });
+        this.jcomp2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
+            }
+        });
+        this.jcomp3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+            }
+        });
+        this.jcomp4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
+            }
+        });
+        this.jcomp6.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String content = "Recherche du terme \"" + jcomp5.getText() + "\" dans les annonces.";
+                JOptionPane.showMessageDialog(null, content);
+            }
+        });
+        this.jcomp7.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
+                try {
+                    selectAnnounces();
+                    frame.repaint();
+                } catch (IOException | InterruptedException | SQLException e1) {
+                    System.out.println("ERROR: jcomp7.actionPerformed(), selectUsers(jcomp11);");
+                }
+            }
+        });
+        this.jcomp8.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
+            }
+        });
+        this.jcomp9.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
+            }
+        });
+        this.jcomp10.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
+            }
+        });
+        this.jcomp11.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // adjust size and set layout
+        // panel.setPreferredSize(new Dimension(1270, 720));
+        // panel.setLayout(null);
+
+        // add components
+        panel.add(this.jcomp1);
+        panel.add(this.jcomp2);
+        panel.add(this.jcomp3);
+        panel.add(this.jcomp4);
+        panel.add(this.jcomp5);
+        panel.add(this.jcomp6);
+        panel.add(this.jcomp7);
+        panel.add(this.jcomp8);
+        panel.add(this.jcomp9);
+        panel.add(this.jcomp10);
+        panel.add(this.jcomp11);
+
+        // enable / disable components
+        this.jcomp1.setEnabled(true);
+        this.jcomp2.setEnabled(true);
+        this.jcomp3.setEnabled(true);
+        this.jcomp4.setEnabled(true);
+        this.jcomp5.setEnabled(true);
+        this.jcomp6.setEnabled(true);
+        this.jcomp7.setEnabled(true);
+        this.jcomp8.setEnabled(true);
+        this.jcomp9.setEnabled(true);
+        this.jcomp10.setEnabled(true);
+        this.jcomp11.setEnabled(true);
+
+        // set component bounds (only needed by Absolute Positioning)
+        this.jcomp1.setBounds(25, 25, 125, 50);
+        this.jcomp2.setBounds(175, 25, 125, 50);
+        this.jcomp3.setBounds(1120, 25, 125, 50);
+        this.jcomp4.setBounds(970, 25, 125, 50);
+        this.jcomp5.setBounds(325, 25, 495, 50);
+        this.jcomp6.setBounds(820, 25, 125, 50);
+        this.jcomp7.setBounds(100, 100, 250, 50);
+        this.jcomp8.setBounds(375, 100, 250, 50);
+        this.jcomp9.setBounds(650, 100, 250, 50);
+        this.jcomp10.setBounds(925, 100, 250, 50);
+        this.jcomp11.setBounds(25, 175, 1220, 490);
+
+        this.frame.add(panel);
+        this.frame.setVisible(true);
     }
 
 }
