@@ -16,7 +16,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>edu.cgl.sirius.application.ApplicationLocal</mainClass>
+                            <mainClass>edu.cgl.sirius.application.Application</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

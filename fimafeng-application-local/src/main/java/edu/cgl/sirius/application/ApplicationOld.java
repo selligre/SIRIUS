@@ -26,7 +26,7 @@ import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 
-public class ApplicationLocal {
+public class ApplicationOld {
     // private static DefaultTableModel defaultTableModel;
     private static String choosedLocation = "piscine";
     // private final int HEAD_LABEL_SIZE = 10;
@@ -48,7 +48,7 @@ public class ApplicationLocal {
 
     public static void main(String[] args) {
         try {
-            ApplicationLocal app = new ApplicationLocal();
+            ApplicationOld app = new ApplicationOld();
             // new ApplicationLocal();
             // app.homeView();
             app.defaultView();
@@ -57,7 +57,7 @@ public class ApplicationLocal {
         }
     }
 
-    public ApplicationLocal() {
+    public ApplicationOld() {
         this.frame = new JFrame();
         this.frame.setTitle("Ville partagée");
         this.frame.setSize(1280, 720);
