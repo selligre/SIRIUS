@@ -1,9 +1,9 @@
-databaseName: "ezip-ing1"
-# databaseName: "ville"
+#databaseName: "ezip-ing1"
+databaseName: "ville"
 host: "172.31.253.60"
 port: 5432
-username: "pgil"
-# username: "cgl-data"
-password: "ezipspirit"
-# password: "cgl-admin"
+#username: "pgil"
+username: "cgl-data"
+# password: "ezipspirit"
+password: "cgl-admin"
 poolSize: 1

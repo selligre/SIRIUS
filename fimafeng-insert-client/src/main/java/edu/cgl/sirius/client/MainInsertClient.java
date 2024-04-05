@@ -96,7 +96,7 @@ public class MainInsertClient {
     //         final Student guy = (Student)clientRequest.getInfo();
     //         logger.debug("Thread {} complete : {} {} {} --> {}",
     //                                 clientRequest.getThreadName(),
-    //                                 guy.getFirstname(), guy.getName(), guy.getGroup(),
+    //                                 guy.getfirst_name(), guy.getName(), guy.getGroup(),
     //                                 clientRequest.getResult());
     //     }
     // }
