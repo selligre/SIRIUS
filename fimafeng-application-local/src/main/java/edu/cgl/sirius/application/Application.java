@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 
 public class Application {
-    private final int LABEL_SIZE = 8;
+    private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
@@ -47,6 +47,7 @@ public class Application {
     public Application() {
         configFrame();
         configHomePage();
+        this.frame.setVisible(true);
     }
 
     public void configFrame() {
@@ -56,7 +57,6 @@ public class Application {
         this.frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         this.frame.setResizable(false);
         this.frame.setLocationRelativeTo(null);
-        this.frame.setVisible(true);
     }
 
     public void configHomePage() {
@@ -148,15 +148,15 @@ public class Application {
         this.aroundMeButton.setBounds(925, 100, 250, 50);
         this.pageContent.setBounds(25, 175, 1220, 490);
         // enable or disable components
-        this.logoButton.setEnabled(true);
+        this.logoButton.setEnabled(false);
         this.createButton.setEnabled(true);
-        this.logOutButton.setEnabled(true);
-        this.accountButton.setEnabled(true);
-        this.searchField.setEnabled(true);
-        this.searchButton.setEnabled(true);
+        this.logOutButton.setEnabled(false);
+        this.accountButton.setEnabled(false);
+        this.searchField.setEnabled(false);
+        this.searchButton.setEnabled(false);
         this.activitiesButton.setEnabled(true);
-        this.materialsButton.setEnabled(true);
-        this.servicesButton.setEnabled(true);
+        this.materialsButton.setEnabled(false);
+        this.servicesButton.setEnabled(false);
         this.aroundMeButton.setEnabled(true);
         this.pageContent.setEnabled(true);
         // add components
@@ -181,18 +181,22 @@ public class Application {
             String result = client.getAnnounces().toString();
             String[] data = result.split("Announce\\{");
 
-            this.pageContent.setLayout(new GridLayout(0, 11));
-            this.pageContent.add(new JLabel("announceId"));
-            this.pageContent.add(new JLabel("refAuthorId"));
-            this.pageContent.add(new JLabel("publicationDate"));
-            this.pageContent.add(new JLabel("status"));
-            this.pageContent.add(new JLabel("type"));
-            this.pageContent.add(new JLabel("title"));
-            this.pageContent.add(new JLabel("description"));
-            this.pageContent.add(new JLabel("dateTimeStart"));
-            this.pageContent.add(new JLabel("duration"));
-            this.pageContent.add(new JLabel("dateTimeEnd"));
-            this.pageContent.add(new JLabel("isRecurrent"));
+            JPanel panel = new JPanel();
+            panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            panel.setBounds(25, 175, 1220, 490);
+
+            panel.setLayout(new GridLayout(0, 11));
+            panel.add(new JLabel("announceId"));
+            panel.add(new JLabel("refAuthorId"));
+            panel.add(new JLabel("publicationDate"));
+            panel.add(new JLabel("status"));
+            panel.add(new JLabel("type"));
+            panel.add(new JLabel("title"));
+            panel.add(new JLabel("description"));
+            panel.add(new JLabel("dateTimeStart"));
+            panel.add(new JLabel("duration"));
+            panel.add(new JLabel("dateTimeEnd"));
+            panel.add(new JLabel("isRecurrent"));
 
             for (String d : data) {
                 if (d.contains("announce_id=")) {
@@ -210,49 +214,56 @@ public class Application {
 
                     JLabel labelAnnounceId = new JLabel(announceId);
                     labelAnnounceId.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelAnnounceId);
+                    panel.add(labelAnnounceId);
 
                     JLabel labelRefAuthorId = new JLabel(refAuthorId);
                     labelRefAuthorId.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelRefAuthorId);
+                    panel.add(labelRefAuthorId);
 
                     JLabel labelPublicationDate = new JLabel(publicationDate);
                     labelPublicationDate.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelPublicationDate);
+                    panel.add(labelPublicationDate);
 
                     JLabel labelStatus = new JLabel(status);
                     labelStatus.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelStatus);
+                    panel.add(labelStatus);
 
                     JLabel labelType = new JLabel(type);
                     labelType.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelType);
+                    panel.add(labelType);
 
                     JLabel labelTitle = new JLabel(title);
                     labelTitle.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelTitle);
+                    panel.add(labelTitle);
 
                     JLabel labelDescription = new JLabel(description);
                     labelDescription.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelDescription);
+                    panel.add(labelDescription);
 
                     JLabel labelDateTimeStart = new JLabel(dateTimeStart);
                     labelDateTimeStart.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelDateTimeStart);
+                    panel.add(labelDateTimeStart);
 
                     JLabel labelDuration = new JLabel(duration);
                     labelDuration.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelDuration);
+                    panel.add(labelDuration);
 
                     JLabel labelDateTimeEnd = new JLabel(dateTimeEnd);
                     labelDateTimeEnd.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelDateTimeEnd);
+                    panel.add(labelDateTimeEnd);
 
                     JLabel labelIsRecurrent = new JLabel(isRecurrent);
                     labelIsRecurrent.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    this.pageContent.add(labelIsRecurrent);
+                    panel.add(labelIsRecurrent);
                 }
             }
+
+            // this.pageContent.add(panel);
+            this.page.remove(this.pageContent);
+            this.pageContent = panel;
+            this.page.add(this.pageContent);
+            this.page.validate();
+            this.page.repaint();
         } catch (IOException | InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
