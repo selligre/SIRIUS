@@ -6,8 +6,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,7 +16,7 @@ import javax.swing.JTextField;
 
 import edu.cgl.sirius.client.MainSelectAnnounces;
 
-public class Application {
+public class ApplicationLocal {
     private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
@@ -41,10 +39,10 @@ public class Application {
     private String chosenLocation;
 
     public static void main(String[] args) {
-        new Application();
+        new ApplicationLocal();
     }
 
-    public Application() {
+    public ApplicationLocal() {
         configFrame();
         configHomePage();
         this.frame.setVisible(true);
