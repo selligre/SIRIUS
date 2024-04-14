@@ -24,31 +24,35 @@
                </image>
             </ImageView>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="➕ Proposer">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="➕ Proposer"
+               onAction="#handleCreate">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
             <TextField prefHeight="50.0" prefWidth="480.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" fx:id="searchBar">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </TextField>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🔍 Rechercher">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🔍 Rechercher"
+               onAction="#handleSearch">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🙂 Compte">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🙂 Compte"
+               onAction="#handleAccount">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🚪 Deconnexion">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🚪 Deconnexion"
+               onAction="#handleLogOut">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
@@ -67,25 +71,28 @@
          <children>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="250.0"
                style="-fx-border-radius: 16; -fx-background-radius: 16;" text="💿 Activités"
-               onAction="#handleButtonAction" fx:id="buttonActivities">
+               onAction="#handleActivities">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="250.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🔨 Matériels">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🔨 Matériels"
+               onAction="#handleMaterials">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="250.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🤝 Services">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="🤝 Services"
+               onAction="#handleServices">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
             <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="250.0"
-               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="📌 Autour de moi">
+               style="-fx-border-radius: 16; -fx-background-radius: 16;" text="📌 Autour de moi"
+               onAction="#handleAroundMe">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
