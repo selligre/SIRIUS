@@ -24,9 +24,9 @@ public class XMartCityService {
 
     private enum Queries {
         
-        SELECT_ALL_USERS("SELECT first_name, last_name, display_name, user_type, email, password FROM public.user;"),
-        SELECT_ALL_ANNOUNCES("SELECT * FROM announce;"),
-        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, title, location_id, name FROM announce JOIN announce_location ON ref_announce_id = announce_id JOIN location ON ref_location_id = location_id WHERE name = ?;")
+        SELECT_ALL_USERS("SELECT * FROM users;"),
+        SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
+        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
         
         ;
 
@@ -98,7 +98,7 @@ public class XMartCityService {
                     mapper = new ObjectMapper();
                     AnnounceLocation location = mapper.readValue(request.getRequestBody(), AnnounceLocation.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    pstmt.setString(1, location.getName());
+                    pstmt.setString(1, location.getRef_location_id());
                     res = pstmt.executeQuery();
                     // stmt = connection.createStatement();
                     // res = stmt.executeQuery(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
