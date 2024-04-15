@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
 
+    private String user_id;
     private String first_name;
     private String last_name;
     private String display_name;
@@ -20,20 +21,25 @@ public class User {
     }
     public final User build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "first_name","last_name", "display_name", "user_type", "email", "password");
+        setFieldsFromResulset(resultSet, "user_id", "first_name","last_name", "display_name", "user_type", "email", "password");
         return this;
     }
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
         return buildPreparedStatement(preparedStatement, first_name, last_name, display_name, user_type, email, password);
     }
-    public User(String first_name, String last_name, String display_name, String user_type, String email, String password) {
+    public User(String user_id, String first_name, String last_name, String display_name, String user_type, String email, String password) {
+        this.user_id = user_id
         this.first_name = first_name;
         this.last_name = last_name;
         this.display_name = display_name;
         this.user_type = user_type;
         this.email = email;
         this.password = password;
+    }
+
+    public String getUser_id() {
+        return user_id;
     }
 
     public String getFirst_name() {
@@ -58,6 +64,11 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    @JsonProperty("user_id")
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     @JsonProperty("first_name")
@@ -109,7 +120,8 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "first_name='" + first_name + '\'' +
+                "user_id='" + user_id + '\'' +
+                ", first_name='" + first_name + '\'' +
                 ", last_name='" + last_name + '\'' +
                 ", display_name='" + display_name + '\'' +
                 ", user_type='" + user_type + '\'' +
