@@ -19,17 +19,23 @@ public class User {
 
     public User() {
     }
+
     public final User build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "user_id", "first_name","last_name", "display_name", "user_type", "email", "password");
+        setFieldsFromResulset(resultSet, "user_id", "first_name", "last_name", "display_name", "user_type", "email",
+                "password");
         return this;
     }
+
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        return buildPreparedStatement(preparedStatement, first_name, last_name, display_name, user_type, email, password);
+        return buildPreparedStatement(preparedStatement, first_name, last_name, display_name, user_type, email,
+                password);
     }
-    public User(String user_id, String first_name, String last_name, String display_name, String user_type, String email, String password) {
-        this.user_id = user_id
+
+    public User(String user_id, String first_name, String last_name, String display_name, String user_type,
+            String email, String password) {
+        this.user_id = user_id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.display_name = display_name;
@@ -101,17 +107,19 @@ public class User {
         this.password = password;
     }
 
-    private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
+    private void setFieldsFromResulset(final ResultSet resultSet, final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             final Field field = this.getClass().getDeclaredField(fieldName);
             field.set(this, resultSet.getObject(fieldName));
         }
     }
-    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement, final String ... fieldNames )
+
+    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement,
+            final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         int ix = 0;
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             preparedStatement.setString(++ix, fieldName);
         }
         return preparedStatement;

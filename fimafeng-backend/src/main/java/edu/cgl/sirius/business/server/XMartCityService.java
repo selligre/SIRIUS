@@ -23,11 +23,12 @@ public class XMartCityService {
     private final Logger logger = LoggerFactory.getLogger(LoggingLabel);
 
     private enum Queries {
-        
+
         SELECT_ALL_USERS("SELECT * FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
-        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
-        
+        SELECT_ANNOUNCES_FOR_LOCATION(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
+
         ;
 
         private final String query;
@@ -52,8 +53,8 @@ public class XMartCityService {
 
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
-            Response response = null;
-        
+        Response response = null;
+
         PreparedStatement pstmt;
         Statement stmt;
         ResultSet res;
@@ -61,7 +62,8 @@ public class XMartCityService {
         int rows;
         try {
             switch (request.getRequestOrder()) {
-                // Premier essai avec la bdd de test, inutile maintenant mais on garde temporairement pour l'exemple
+                // Premier essai avec la bdd de test, inutile maintenant mais on garde
+                // temporairement pour l'exemple
                 case "SELECT_ALL_USERS":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_ALL_USERS.query);
@@ -71,14 +73,14 @@ public class XMartCityService {
                         users.add(user);
                     }
                     mapper = new ObjectMapper();
-                    
+
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(users));
                     System.out.println(response.getResponseBody());
                     break;
 
-                case "SELECT_ALL_ANNOUNCES" :
+                case "SELECT_ALL_ANNOUNCES":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_ALL_ANNOUNCES.query);
                     Announces announces = new Announces();
@@ -94,11 +96,11 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
-                    case "SELECT_ANNOUNCES_FOR_LOCATION" :
+                case "SELECT_ANNOUNCES_FOR_LOCATION":
                     mapper = new ObjectMapper();
                     AnnounceLocation location = mapper.readValue(request.getRequestBody(), AnnounceLocation.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    pstmt.setString(1, location.getRef_location_id());
+                    pstmt.setString(1, location.getLocation_id());
                     res = pstmt.executeQuery();
                     // stmt = connection.createStatement();
                     // res = stmt.executeQuery(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
@@ -115,12 +117,11 @@ public class XMartCityService {
                     response.setResponseBody(mapper.writeValueAsString(announcesLocation));
                     System.out.println(response.getResponseBody());
                     break;
-                
+
                 default:
                     break;
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
