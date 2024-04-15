@@ -38,7 +38,7 @@ public class MainSelectAnnouncesLocation {
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         AnnounceLocation announceLocationName = new AnnounceLocation();
-        announceLocationName.setRef_location_id(location);
+        announceLocationName.setName(location);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
