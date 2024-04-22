@@ -38,12 +38,13 @@ public class MainSelectAnnouncesLocation {
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         AnnounceLocation announceLocationName = new AnnounceLocation();
-        announceLocationName.setName(location);
+        announceLocationName.setLocation_id(location);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
         final ObjectMapper objectMapper2 = new ObjectMapper();
-        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter().writeValueAsString(announceLocationName);
+        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(announceLocationName);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
@@ -65,8 +66,9 @@ public class MainSelectAnnouncesLocation {
             final AsciiTable asciiTable = new AsciiTable();
             for (final AnnounceLocation announceLocation : announcesLocation.getAnnouncesLocation()) {
                 asciiTable.addRule();
-                asciiTable.addRow(announceLocation.getAnnounce_id(), announceLocation.getTitle(), announceLocation.getLocation_id(), 
-                announceLocation.getName());
+                asciiTable.addRow(announceLocation.getAnnounce_id(), announceLocation.getTitle(),
+                        announceLocation.getLocation_id(),
+                        announceLocation.getName());
                 // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
                 // User.getGroup() + "\n");
             }

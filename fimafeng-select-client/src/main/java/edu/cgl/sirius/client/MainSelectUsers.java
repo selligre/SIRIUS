@@ -96,7 +96,7 @@ public class MainSelectUsers {
             final AsciiTable asciiTable = new AsciiTable();
             for (final User user : users.getUsers()) {
                 asciiTable.addRule();
-                asciiTable.addRow(user.getFirst_name(), user.getLast_name(), user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
+                asciiTable.addRow(user.getUser_id(), user.getFirst_name(), user.getLast_name(), user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
                 // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
                 // User.getGroup() + "\n");
             }
