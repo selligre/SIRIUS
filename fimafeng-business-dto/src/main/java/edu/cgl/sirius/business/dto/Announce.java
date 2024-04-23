@@ -17,22 +17,26 @@ public class Announce {
     private String description;
     private String date_time_start;
     private String duration;
-    private String date_time_end ;
+    private String date_time_end;
     private String is_recurrent;
+    private String slots_number;
+    private String slots_available;
+    private String price;
+    private String ref_location_id;
 
     public Announce() {
     }
     public final Announce build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
         setFieldsFromResulset(resultSet, "announce_id", "ref_author_id", "publication_date", "status", "type", "title",
-                            "description", "date_time_start", "duration", "date_time_end", "is_recurrent");
+                            "description", "date_time_start", "duration", "date_time_end", "is_recurrent", "slots_number", "slots_available", "price", "ref_location_id");
         return this;
     }
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
         return buildPreparedStatement(preparedStatement, announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent);
     }
-    public Announce(String announce_id, String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent) {
+    public Announce(String announce_id, String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent, String slots_number, String slots_available, String price, String ref_location_id) {
         this.announce_id = announce_id;
         this.ref_author_id = ref_author_id;
         this.publication_date = publication_date;
@@ -44,6 +48,10 @@ public class Announce {
         this.duration = duration;
         this.date_time_end = date_time_end;
         this.is_recurrent = is_recurrent;
+        this.slots_number = slots_number;
+        this.slots_available = slots_available;
+        this.price = price;
+        this.ref_location_id = ref_location_id;
     }
 
     public String getAnnounce_id() {
@@ -88,6 +96,22 @@ public class Announce {
 
     public String getIs_recurrent() {
         return is_recurrent;
+    }
+
+    public String getSlots_number() {
+        return slots_number;
+    }
+
+    public String getSlots_available() {
+        return slots_available;
+    }
+    
+    public String getPrice() {
+        return price;
+    }
+
+    public String getRef_location_id() {
+        return ref_location_id;
     }
 
     @JsonProperty("announce_id")
@@ -145,6 +169,26 @@ public class Announce {
         this.is_recurrent = is_recurrent;
     }
 
+    @JsonProperty("slots_number")
+    public void setSlots_number(String slots_number) {
+        this.slots_number = slots_number;
+    }
+
+    @JsonProperty("slots_available")
+    public void setSlots_available(String slots_available) {
+        this.slots_available = slots_available;
+    }
+
+    @JsonProperty("price")
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    @JsonProperty("ref_location_id")
+    public void setRef_location_id(String ref_location_id) {
+        this.ref_location_id = ref_location_id;
+    }
+
     private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         for(final String fieldName : fieldNames ) {
@@ -180,6 +224,10 @@ public class Announce {
                 ", duration='" + duration + '\'' +
                 ", date_time_end='" + date_time_end + '\'' +
                 ", is_recurrent='" + is_recurrent + '\'' +
+                ", slots_number='" + slots_number + '\'' +
+                ", slots_available='" + slots_available + '\'' +
+                ", price='" + price + '\'' +
+                ", ref_location_id='" + ref_location_id + '\'' +
                 '}';
     }
 }
