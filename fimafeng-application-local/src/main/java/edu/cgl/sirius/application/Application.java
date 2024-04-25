@@ -1,6 +1,8 @@
 package edu.cgl.sirius.application;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -184,79 +186,113 @@ public class Application {
             JPanel panel = new JPanel();
             panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             panel.setBounds(25, 175, 1220, 490);
+            panel.setLayout(new BorderLayout());
 
-            panel.setLayout(new GridLayout(0, 11));
-            panel.add(new JLabel("announce_id"));
-            panel.add(new JLabel("ref_author_id"));
-            panel.add(new JLabel("publicationDate"));
-            panel.add(new JLabel("status"));
-            panel.add(new JLabel("type"));
-            panel.add(new JLabel("title"));
-            panel.add(new JLabel("description"));
-            panel.add(new JLabel("dateTimeStart"));
-            panel.add(new JLabel("duration"));
-            panel.add(new JLabel("dateTimeEnd"));
-            panel.add(new JLabel("isRecurrent"));
+            JPanel header = new JPanel();
+            header.setLayout(new GridLayout(0, 15));
+
+            header.add(new JLabel("announce_id"));
+            header.add(new JLabel("ref_author_id"));
+            header.add(new JLabel("publication_date"));
+            header.add(new JLabel("status"));
+            header.add(new JLabel("type"));
+            header.add(new JLabel("title"));
+            header.add(new JLabel("description"));
+            header.add(new JLabel("date_time_start"));
+            header.add(new JLabel("duration"));
+            header.add(new JLabel("date_time_end"));
+            header.add(new JLabel("is_recurrent"));
+            header.add(new JLabel("slots_number"));
+            header.add(new JLabel("slots_available"));
+            header.add(new JLabel("price"));
+            header.add(new JLabel("ref_location_id"));
+
+            panel.add(header, BorderLayout.NORTH);
+
+            JPanel request_result = new JPanel();
+            request_result.setLayout(new GridLayout(0, 15));
 
             for (String d : data) {
                 if (d.contains("announce_id=")) {
-                    String announceId = d.split("announce_id='")[1].split("'")[0];
-                    String refAuthorId = d.split("ref_author_id='")[1].split("'")[0];
-                    String publicationDate = d.split("publication_date='")[1].split("'")[0];
+                    String announce_id = d.split("announce_id='")[1].split("'")[0];
+                    String ref_author_id = d.split("ref_author_id='")[1].split("'")[0];
+                    String publication_date = d.split("publication_date='")[1].split("'")[0];
                     String status = d.split("status='")[1].split("'")[0];
                     String type = d.split("type='")[1].split("'")[0];
                     String title = d.split("title='")[1].split("'")[0];
                     String description = d.split("description='")[1].split("'")[0];
-                    String dateTimeStart = d.split("date_time_start='")[1].split("'")[0];
+                    String date_time_start = d.split("date_time_start='")[1].split("'")[0];
                     String duration = d.split("duration='")[1].split("'")[0];
-                    String dateTimeEnd = d.split("date_time_end='")[1].split("'")[0];
-                    String isRecurrent = d.split("is_recurrent='")[1].split("'")[0];
+                    String date_time_end = d.split("date_time_end='")[1].split("'")[0];
+                    String is_recurrent = d.split("is_recurrent='")[1].split("'")[0];
+                    String slots_number = d.split("slots_number='")[1].split("'")[0];
+                    String slots_available = d.split("slots_available='")[1].split("'")[0];
+                    String price = d.split("price='")[1].split("'")[0];
+                    String ref_location_id = d.split("ref_location_id='")[1].split("'")[0];
 
-                    JLabel labelAnnounceId = new JLabel(announceId);
-                    labelAnnounceId.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelAnnounceId);
+                    JLabel label_announce_id = new JLabel(announce_id);
+                    label_announce_id.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_announce_id);
 
-                    JLabel labelRefAuthorId = new JLabel(refAuthorId);
-                    labelRefAuthorId.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelRefAuthorId);
+                    JLabel label_ref_author_id = new JLabel(ref_author_id);
+                    label_ref_author_id.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_ref_author_id);
 
-                    JLabel labelPublicationDate = new JLabel(publicationDate);
-                    labelPublicationDate.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelPublicationDate);
+                    JLabel label_publication_date = new JLabel(publication_date);
+                    label_publication_date.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_publication_date);
 
-                    JLabel labelStatus = new JLabel(status);
-                    labelStatus.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelStatus);
+                    JLabel label_status = new JLabel(status);
+                    label_status.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_status);
 
-                    JLabel labelType = new JLabel(type);
-                    labelType.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelType);
+                    JLabel label_type = new JLabel(type);
+                    label_type.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_type);
 
-                    JLabel labelTitle = new JLabel(title);
-                    labelTitle.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelTitle);
+                    JLabel label_title = new JLabel(title);
+                    label_title.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_title);
 
-                    JLabel labelDescription = new JLabel(description);
-                    labelDescription.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelDescription);
+                    JLabel label_description = new JLabel(description);
+                    label_description.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_description);
 
-                    JLabel labelDateTimeStart = new JLabel(dateTimeStart);
-                    labelDateTimeStart.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelDateTimeStart);
+                    JLabel label_date_time_start = new JLabel(date_time_start);
+                    label_date_time_start.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_date_time_start);
 
-                    JLabel labelDuration = new JLabel(duration);
-                    labelDuration.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelDuration);
+                    JLabel label_duration = new JLabel(duration);
+                    label_duration.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_duration);
 
-                    JLabel labelDateTimeEnd = new JLabel(dateTimeEnd);
-                    labelDateTimeEnd.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelDateTimeEnd);
+                    JLabel label_date_time_end = new JLabel(date_time_end);
+                    label_date_time_end.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_date_time_end);
 
-                    JLabel labelIsRecurrent = new JLabel(isRecurrent);
-                    labelIsRecurrent.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
-                    panel.add(labelIsRecurrent);
+                    JLabel label_is_recurrent = new JLabel(is_recurrent);
+                    label_is_recurrent.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_is_recurrent);
+
+                    JLabel label_slots_number = new JLabel(slots_number);
+                    label_slots_number.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_slots_number);
+
+                    JLabel label_slots_available = new JLabel(slots_available);
+                    label_slots_available.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_slots_available);
+
+                    JLabel label_price = new JLabel(price);
+                    label_price.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_price);
+
+                    JLabel label_ref_location_id = new JLabel(ref_location_id);
+                    label_ref_location_id.setFont(new Font("Arial", Font.BOLD, LABEL_SIZE));
+                    request_result.add(label_ref_location_id);
                 }
             }
+
+            panel.add(request_result);
 
             // this.pageContent.add(panel);
             this.page.remove(this.pageContent);
@@ -264,7 +300,7 @@ public class Application {
             this.page.add(this.pageContent);
             this.page.validate();
             this.page.repaint();
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
