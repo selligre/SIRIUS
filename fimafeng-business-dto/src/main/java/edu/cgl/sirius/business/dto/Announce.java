@@ -28,13 +28,13 @@ public class Announce {
     }
     public final Announce build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "announce_id", "ref_author_id", "publication_date", "status", "type", "title",
-                            "description", "date_time_start", "duration", "date_time_end", "is_recurrent", "slots_number", "slots_available", "price", "ref_location_id");
+        setFieldsFromResulset(resultSet, "announce_id", "ref_author_id", "publication_date", "status", "type", "title", "description", "date_time_start", "duration", "date_time_end", "is_recurrent", "slots_number", "slots_available", "price", "ref_location_id");
         return this;
     }
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        return buildPreparedStatement(preparedStatement, announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent);
+        return buildPreparedStatement(preparedStatement, announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price,
+        ref_location_id);
     }
     public Announce(String announce_id, String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent, String slots_number, String slots_available, String price, String ref_location_id) {
         this.announce_id = announce_id;
@@ -73,11 +73,11 @@ public class Announce {
     public String getType() {
         return type;
     }
-
+    
     public String getTitle() {
         return title;
     }
-
+    
     public String getDescription() {
         return description;
     }
@@ -105,7 +105,7 @@ public class Announce {
     public String getSlots_available() {
         return slots_available;
     }
-    
+
     public String getPrice() {
         return price;
     }
@@ -193,8 +193,8 @@ public class Announce {
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         for(final String fieldName : fieldNames ) {
             final Field field = this.getClass().getDeclaredField(fieldName);
-            if (resultSet.getObject(fieldName) instanceof String){
-                field.set(this, resultSet.getObject(fieldName));
+            if (resultSet.getObject(fieldName) == null){
+                field.set(this, " ");
             }
             else{
                 field.set(this, resultSet.getObject(fieldName).toString());

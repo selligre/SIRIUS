@@ -26,8 +26,7 @@ public class XMartCityService {
 
         SELECT_ALL_USERS("SELECT * FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
-        SELECT_ANNOUNCES_FOR_LOCATION(
-                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
+        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
 
         ;
 
