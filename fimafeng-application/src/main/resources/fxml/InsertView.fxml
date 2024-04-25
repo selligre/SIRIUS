@@ -19,36 +19,47 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.cgl.sirius.application.FXMLController">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21"
+   xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.cgl.sirius.application.FXMLController">
    <children>
-      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" prefWrapLength="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" prefWrapLength="0.0"
+         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="50.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@ville-partage-high-resolution-logo-transparent.png" />
                </image>
             </ImageView>
-            <Button mnemonicParsing="false" onAction="#handleCreate" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="➕ Proposer">
+            <Button mnemonicParsing="false" onAction="#handleCreate" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="➕ Proposer">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <TextField fx:id="searchBar" prefHeight="50.0" prefWidth="480.0" style="-fx-border-radius: 8; -fx-background-radius: 8;">
+            <TextField fx:id="searchBar" prefHeight="50.0" prefWidth="480.0"
+               style="-fx-border-radius: 8; -fx-background-radius: 8;">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </TextField>
-            <Button mnemonicParsing="false" onAction="#handleSearch" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🔍 Rechercher">
+            <Button mnemonicParsing="false" onAction="#handleSearch" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🔍 Rechercher">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleAccount" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🙂 Compte">
+            <Button mnemonicParsing="false" onAction="#handleAccount" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🙂 Compte">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleLogOut" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🚪 Deconnexion">
+            <Button mnemonicParsing="false" onAction="#handleLogOut" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🚪 Deconnexion">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
@@ -61,24 +72,34 @@
             <Insets />
          </opaqueInsets>
       </FlowPane>
-      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" layoutY="75.0" prefWrapLength="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="75.0">
+      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" layoutY="75.0"
+         prefWrapLength="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+         AnchorPane.topAnchor="75.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleActivities" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="💿 Activités">
+            <Button mnemonicParsing="false" onAction="#handleActivities" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="💿 Activités">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleMaterials" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🔨 Matériels">
+            <Button mnemonicParsing="false" onAction="#handleMaterials" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🔨 Matériels">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleServices" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🤝 Services">
+            <Button mnemonicParsing="false" onAction="#handleServices" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🤝 Services">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleAroundMe" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="📌 Autour de moi">
+            <Button mnemonicParsing="false" onAction="#handleAroundMe" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="📌 Autour de moi">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
@@ -91,7 +112,9 @@
             <Insets />
          </opaqueInsets>
       </FlowPane>
-      <Pane layoutY="175.0" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="175.0">
+      <Pane layoutY="175.0" prefHeight="720.0" prefWidth="1280.0"
+         style="-fx-background-color: white;" AnchorPane.bottomAnchor="25.0"
+         AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="175.0">
          <children>
             <VBox layoutX="80.0" prefHeight="520.0" prefWidth="1077.0">
                <children>
@@ -180,57 +203,68 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="15.0" layoutY="15.0" mnemonicParsing="false" text="Choral">
+                              <CheckBox layoutX="15.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Choral">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="88.0" layoutY="15.0" mnemonicParsing="false" text="Festival">
+                              <CheckBox layoutX="88.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Festival">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="224.0" layoutY="15.0" mnemonicParsing="false" text="Enfants">
+                              <CheckBox layoutX="224.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Enfants">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="154.0" layoutY="15.0" mnemonicParsing="false" text="Jeunes">
+                              <CheckBox layoutX="154.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Jeunes">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="294.0" layoutY="15.0" mnemonicParsing="false" text="Adultes">
+                              <CheckBox layoutX="294.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Adultes">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="361.0" layoutY="15.0" mnemonicParsing="false" text="Séniors">
+                              <CheckBox layoutX="361.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Séniors">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="432.0" layoutY="15.0" mnemonicParsing="false" text="Tout public">
+                              <CheckBox layoutX="432.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Tout public">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="502.0" layoutY="15.0" mnemonicParsing="false" text="Musée">
+                              <CheckBox layoutX="502.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Musée">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="593.0" layoutY="15.0" mnemonicParsing="false" text="Peinture">
+                              <CheckBox layoutX="593.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Peinture">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="660.0" layoutY="15.0" mnemonicParsing="false" text="Théatre">
+                              <CheckBox layoutX="660.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Théatre">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox layoutX="735.0" layoutY="15.0" mnemonicParsing="false" text="Visite">
+                              <CheckBox layoutX="735.0" layoutY="15.0" mnemonicParsing="false"
+                                 text="Visite">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
@@ -251,7 +285,8 @@
                               <Insets left="10.0" right="10.0" />
                            </VBox.margin>
                         </Label>
-                        <TextArea minHeight="-Infinity" prefHeight="130.0" prefWidth="1057.0" promptText="Saisissez votre description ici" wrapText="true">
+                        <TextArea minHeight="-Infinity" prefHeight="130.0" prefWidth="1057.0"
+                           promptText="Saisissez votre description ici" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="10.0" left="10.0" right="10.0" />
                            </VBox.margin>
@@ -273,16 +308,16 @@
                                  </FlowPane.margin>
                               </Label>
                               <MenuButton mnemonicParsing="false" text="Sélectionner">
-                                <items>
-                                  <MenuItem mnemonicParsing="false" text="Théâtre" />
-                                  <MenuItem mnemonicParsing="false" text="Piscine" />
+                                 <items>
+                                    <MenuItem mnemonicParsing="false" text="Théâtre" />
+                                    <MenuItem mnemonicParsing="false" text="Piscine" />
                                     <MenuItem mnemonicParsing="false" text="Cinéma" />
                                     <MenuItem mnemonicParsing="false" text="Bar St Patricks" />
                                     <MenuItem mnemonicParsing="false" text="Place de la Mairie" />
                                     <MenuItem mnemonicParsing="false" text="Parc du chateau" />
                                     <MenuItem mnemonicParsing="false" text="Salle des fêtes" />
                                     <MenuItem mnemonicParsing="false" text="Mairie" />
-                                </items>
+                                 </items>
                               </MenuButton>
                            </children>
                            <padding>
@@ -313,6 +348,7 @@
                   </VBox>
                </children>
             </VBox>
-         </children></Pane>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>
