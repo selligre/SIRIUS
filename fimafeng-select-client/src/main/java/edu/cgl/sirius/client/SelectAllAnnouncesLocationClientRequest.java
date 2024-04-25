@@ -4,24 +4,24 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.cgl.sirius.business.dto.AnnounceLocation;
-import edu.cgl.sirius.business.dto.AnnouncesLocation;
+import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.NetworkConfig;
 import edu.cgl.sirius.commons.Request;
 
-public class SelectAllAnnouncesLocationClientRequest extends ClientRequest<Object, AnnouncesLocation> {
+public class SelectAllAnnouncesLocationClientRequest extends ClientRequest<Object, Announces> {
 
     public SelectAllAnnouncesLocationClientRequest(
-            NetworkConfig networkConfig, int myBirthDate, Request request, AnnounceLocation info, byte[] bytes)
+            NetworkConfig networkConfig, int myBirthDate, Request request, Announce info, byte[] bytes)
             throws IOException {
         super(networkConfig, myBirthDate, request, info, bytes);
     }
 
     @Override
-    public AnnouncesLocation readResult(String body) throws IOException {
+    public Announces readResult(String body) throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
-        final AnnouncesLocation AnnouncesLocation = mapper.readValue(body, AnnouncesLocation.class);
+        final Announces AnnouncesLocation = mapper.readValue(body, Announces.class);
         return AnnouncesLocation;
     }
 }

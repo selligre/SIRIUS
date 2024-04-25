@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.vandermeer.asciitable.AsciiTable;
-import edu.cgl.sirius.business.dto.AnnounceLocation;
-import edu.cgl.sirius.business.dto.AnnouncesLocation;
+import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
 import edu.cgl.sirius.client.commons.NetworkConfig;
@@ -27,29 +27,25 @@ public class MainSelectAnnouncesLocation {
     private final static String networkConfigFile = "network.yaml";
     private static final String requestOrder = "SELECT_ALL_ANNOUNCES";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
-    private static AnnouncesLocation announcesLocation;
+    private static Announces announces;
 
-    public AnnouncesLocation getAnnouncesLocation() {
-        return announcesLocation;
+    public Announces getAnnounces() {
+        return announces;
     }
 
     public MainSelectAnnouncesLocation(String requestOrder, String location) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        AnnounceLocation announceLocationName = new AnnounceLocation();
-        announceLocationName.setLocation_id(location);
+        Announce announceLocationName = new Announce();
+        announceLocationName.setRef_author_id(location);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
-        final ObjectMapper objectMapper2 = new ObjectMapper();
-        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(announceLocationName);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
-        request.setRequestContent(jsonifiedAnnounce);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
@@ -62,13 +58,14 @@ public class MainSelectAnnouncesLocation {
             final ClientRequest joinedClientRequest = clientRequests.pop();
             joinedClientRequest.join();
             logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-            announcesLocation = (AnnouncesLocation) joinedClientRequest.getResult();
+            announces = (Announces) joinedClientRequest.getResult();
             final AsciiTable asciiTable = new AsciiTable();
-            for (final AnnounceLocation announceLocation : announcesLocation.getAnnouncesLocation()) {
+            for (final Announce announce : announces.getAnnounces()) {
                 asciiTable.addRule();
-                asciiTable.addRow(announceLocation.getAnnounce_id(), announceLocation.getTitle(),
-                        announceLocation.getLocation_id(),
-                        announceLocation.getName());
+                asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(), announce.getPublication_date(), 
+                                    announce.getStatus(), announce.getType(), announce.getTitle(), announce.getDescription(), announce.getDate_time_start(), 
+                                    announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(), announce.getSlots_number(), 
+                                    announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
                 // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
                 // User.getGroup() + "\n");
             }
