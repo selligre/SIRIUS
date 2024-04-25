@@ -3,9 +3,7 @@ package edu.cgl.sirius.business.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announce;
-import edu.cgl.sirius.business.dto.AnnounceLocation;
 import edu.cgl.sirius.business.dto.Announces;
-import edu.cgl.sirius.business.dto.AnnouncesLocation;
 import edu.cgl.sirius.business.dto.Student;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
@@ -26,7 +24,7 @@ public class XMartCityService {
 
         SELECT_ALL_USERS("SELECT * FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
-        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
+        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
 
         ;
 
@@ -97,16 +95,16 @@ public class XMartCityService {
 
                 case "SELECT_ANNOUNCES_FOR_LOCATION":
                     mapper = new ObjectMapper();
-                    AnnounceLocation location = mapper.readValue(request.getRequestBody(), AnnounceLocation.class);
+                    Announce location = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    pstmt.setString(1, location.getLocation_id());
+                    pstmt.setString(1, location.getRef_location_id());
                     res = pstmt.executeQuery();
                     // stmt = connection.createStatement();
                     // res = stmt.executeQuery(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
 
-                    AnnouncesLocation announcesLocation = new AnnouncesLocation();
+                    Announces announcesLocation = new Announces();
                     while (res.next()) {
-                        AnnounceLocation announceLocation = new AnnounceLocation().build(res);
+                        Announce announceLocation = new Announce().build(res);
                         announcesLocation.add(announceLocation);
                     }
                     mapper = new ObjectMapper();
