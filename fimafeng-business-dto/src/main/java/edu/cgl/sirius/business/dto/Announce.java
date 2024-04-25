@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Announce {
 
-    private String announce_id; 
+    private String announce_id;
     private String ref_author_id;
     private String publication_date;
     private String status;
@@ -26,17 +26,30 @@ public class Announce {
 
     public Announce() {
     }
+
     public final Announce build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "announce_id", "ref_author_id", "publication_date", "status", "type", "title",
-                            "description", "date_time_start", "duration", "date_time_end", "is_recurrent", "slots_number", "slots_available", "price", "ref_location_id");
+        setFieldsFromResulset(resultSet, "announce_id", "ref_author_id",
+                "publication_date", "status", "type", "title",
+                "description", "date_time_start", "duration", "date_time_end",
+                "is_recurrent", "slots_number",
+                "slots_available", "price", "ref_location_id");
         return this;
     }
+
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        return buildPreparedStatement(preparedStatement, announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent);
+        return buildPreparedStatement(preparedStatement, announce_id, ref_author_id,
+                publication_date, status, type,
+                title, description, date_time_start, duration, date_time_end, is_recurrent,
+                slots_number,
+                slots_available, price, ref_location_id);
     }
-    public Announce(String announce_id, String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent, String slots_number, String slots_available, String price, String ref_location_id) {
+
+    public Announce(String announce_id, String ref_author_id, String publication_date, String status, String type,
+            String title, String description, String date_time_start, String duration,
+            String date_time_end,
+            String is_recurrent, String slots_number, String slots_available, String price, String ref_location_id) {
         this.announce_id = announce_id;
         this.ref_author_id = ref_author_id;
         this.publication_date = publication_date;
@@ -105,7 +118,7 @@ public class Announce {
     public String getSlots_available() {
         return slots_available;
     }
-    
+
     public String getPrice() {
         return price;
     }
@@ -189,22 +202,23 @@ public class Announce {
         this.ref_location_id = ref_location_id;
     }
 
-    private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
+    private void setFieldsFromResulset(final ResultSet resultSet, final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             final Field field = this.getClass().getDeclaredField(fieldName);
-            if (resultSet.getObject(fieldName) instanceof String){
+            if (resultSet.getObject(fieldName) instanceof String) {
                 field.set(this, resultSet.getObject(fieldName));
-            }
-            else{
+            } else {
                 field.set(this, resultSet.getObject(fieldName).toString());
             }
         }
     }
-    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement, final String ... fieldNames )
+
+    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement,
+            final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         int ix = 0;
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             preparedStatement.setString(++ix, fieldName);
         }
         return preparedStatement;
@@ -230,4 +244,5 @@ public class Announce {
                 ", ref_location_id='" + ref_location_id + '\'' +
                 '}';
     }
+
 }

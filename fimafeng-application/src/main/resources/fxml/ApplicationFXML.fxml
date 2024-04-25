@@ -10,36 +10,48 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="edu.cgl.sirius.application.FXMLController">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0"
+   xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="edu.cgl.sirius.application.FXMLController">
    <children>
-      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" prefWrapLength="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" prefWrapLength="0.0"
+         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="50.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@ville-partage-high-resolution-logo-transparent.png" />
                </image>
             </ImageView>
-            <Button mnemonicParsing="false" onAction="#handleCreate" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="➕ Proposer">
+            <Button mnemonicParsing="false" onAction="#handleCreate" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="➕ Proposer">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <TextField fx:id="searchBar" prefHeight="50.0" prefWidth="480.0" style="-fx-border-radius: 8; -fx-background-radius: 8;">
+            <TextField fx:id="searchBar" prefHeight="50.0" prefWidth="480.0"
+               style="-fx-border-radius: 8; -fx-background-radius: 8;">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </TextField>
-            <Button mnemonicParsing="false" onAction="#handleSearch" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🔍 Rechercher">
+            <Button mnemonicParsing="false" onAction="#handleSearch" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🔍 Rechercher">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleAccount" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🙂 Compte">
+            <Button mnemonicParsing="false" onAction="#handleAccount" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🙂 Compte">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleLogOut" prefHeight="50.0" prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🚪 Deconnexion">
+            <Button mnemonicParsing="false" onAction="#handleLogOut" prefHeight="50.0"
+               prefWidth="125.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🚪 Deconnexion">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
@@ -52,24 +64,34 @@
             <Insets />
          </opaqueInsets>
       </FlowPane>
-      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" layoutY="75.0" prefWrapLength="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="75.0">
+      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="25.0" layoutY="75.0"
+         prefWrapLength="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+         AnchorPane.topAnchor="75.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleActivities" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="💿 Activités">
+            <Button mnemonicParsing="false" onAction="#handleActivities" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="💿 Activités">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleMaterials" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🔨 Matériels">
+            <Button mnemonicParsing="false" onAction="#handleMaterials" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🔨 Matériels">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleServices" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="🤝 Services">
+            <Button mnemonicParsing="false" onAction="#handleServices" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="🤝 Services">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleAroundMe" prefHeight="50.0" prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;" text="📌 Autour de moi">
+            <Button mnemonicParsing="false" onAction="#handleAroundMe" prefHeight="50.0"
+               prefWidth="250.0" style="-fx-border-radius: 8; -fx-background-radius: 8;"
+               text="📌 Autour de moi">
                <font>
                   <Font name="Verdana" size="12.0" />
                </font>
@@ -82,6 +104,8 @@
             <Insets />
          </opaqueInsets>
       </FlowPane>
-      <Pane layoutY="175.0" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="175.0" />
+      <Pane layoutY="175.0" prefHeight="720.0" prefWidth="1280.0"
+         style="-fx-background-color: white;" AnchorPane.bottomAnchor="25.0"
+         AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="175.0" fx:id="contentPane"/>
    </children>
 </AnchorPane>
