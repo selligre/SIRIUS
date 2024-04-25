@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import edu.cgl.sirius.client.MainSelectAnnounces;
+import edu.cgl.sirius.application.InsertView;
 
 public class Application {
     private final int LABEL_SIZE = 10;
@@ -59,6 +60,10 @@ public class Application {
         this.frame.setLocationRelativeTo(null);
     }
 
+    public void changeViewToInsert() {
+        InsertView.start(this.frame);
+    }
+
     public void configHomePage() {
         this.page = new JPanel();
         this.page.setLayout(null);
@@ -93,7 +98,8 @@ public class Application {
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
+                changeViewToInsert();
+                // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
