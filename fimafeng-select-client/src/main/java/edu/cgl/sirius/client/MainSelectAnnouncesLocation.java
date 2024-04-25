@@ -62,10 +62,13 @@ public class MainSelectAnnouncesLocation {
             final AsciiTable asciiTable = new AsciiTable();
             for (final Announce announce : announces.getAnnounces()) {
                 asciiTable.addRule();
-                asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(), announce.getPublication_date(), 
-                                    announce.getStatus(), announce.getType(), announce.getTitle(), announce.getDescription(), announce.getDate_time_start(), 
-                                    announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(), announce.getSlots_number(), 
-                                    announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
+                asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(),
+                        announce.getPublication_date(),
+                        announce.getStatus(), announce.getType(), announce.getTitle(), announce.getDescription(),
+                        announce.getDate_time_start(),
+                        announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(),
+                        announce.getSlots_number(),
+                        announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
                 // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
                 // User.getGroup() + "\n");
             }
