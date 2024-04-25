@@ -186,8 +186,8 @@ public class Application {
             panel.setBounds(25, 175, 1220, 490);
 
             panel.setLayout(new GridLayout(0, 11));
-            panel.add(new JLabel("announceId"));
-            panel.add(new JLabel("refAuthorId"));
+            panel.add(new JLabel("announce_id"));
+            panel.add(new JLabel("ref_author_id"));
             panel.add(new JLabel("publicationDate"));
             panel.add(new JLabel("status"));
             panel.add(new JLabel("type"));
