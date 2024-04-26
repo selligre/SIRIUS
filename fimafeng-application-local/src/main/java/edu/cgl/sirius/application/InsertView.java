@@ -15,10 +15,12 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.client.MainInsertAnnounce;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.zip.DataFormatException;
 
 public class InsertView extends JPanel {
     private final int FRAME_WIDTH = 1280;
@@ -308,34 +310,41 @@ public class InsertView extends JPanel {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
             Date date_now = new Date();
             String publication_date = dateFormat.format(date_now);
-            Boolean isRecurrent = false;
-            Double price = 0.0;
-            int author_id = 1;
+            String is_recurrent = "f";
+            String price = "0.0";
+            String author_id = "1";
             String date_time_start = "";
             String date_time_end = "";
-            String announce_status = "online";
+            String status = "online";
             String title = checkTitle();
             ArrayList<Integer> list_tags_id = checkTags();
             String description = checkDescription();
-            int location_id = checkLocation();
-            Double duration = checkDuration();
+            int iloc_id = checkLocation();
+            System.out.println(iloc_id);
+            String location_id = String.valueOf(checkLocation());
+            System.out.println(location_id);
+            String duration = String.valueOf(checkDuration());
             JOptionPane.showMessageDialog(this, "Donneés valides");
-        } catch (IOException e) {
+            new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date, status, "activité", title,
+                    description, null, duration, null, is_recurrent, null, null, price, location_id);
+        } catch (DataFormatException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Saisie incorrecte", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            // Todo
         }
 
     }
 
-    private String checkTitle() throws IOException {
+    private String checkTitle() throws DataFormatException {
         String title = this.tf_title.getText();
         if (title.equals(""))
-            throw new IOException("Le titre n'est pas renseigné");
+            throw new DataFormatException("Le titre n'est pas renseigné");
         if (title.length() > 100)
-            throw new IOException("Le titre est trop long (sup. à 100 caractères)");
+            throw new DataFormatException("Le titre est trop long (sup. à 100 caractères)");
         return title;
     }
 
-    private ArrayList<Integer> checkTags() throws IOException {
+    private ArrayList<Integer> checkTags() throws DataFormatException {
         ArrayList<Integer> selected_tags_id = new ArrayList<>();
         for (JCheckBox jCheckBox : list_tags_checkBoxs) {
             if (jCheckBox.isSelected()) {
@@ -343,31 +352,31 @@ public class InsertView extends JPanel {
             }
         }
         if (selected_tags_id.isEmpty())
-            throw new IOException("Aucun tag n'a été sélectionné");
+            throw new DataFormatException("Aucun tag n'a été sélectionné");
         if (selected_tags_id.size() > 5)
-            throw new IOException("Trop de tags ont été sélectionnés (+ de 5)");
+            throw new DataFormatException("Trop de tags ont été sélectionnés (+ de 5)");
         return selected_tags_id;
 
     }
 
-    private String checkDescription() throws IOException {
+    private String checkDescription() throws DataFormatException {
         String description = this.tfa_description.getText();
         if (description.length() > 1000)
-            throw new IOException("La description est trop longue (sup. à 1000 caractères)");
+            throw new DataFormatException("La description est trop longue (sup. à 1000 caractères)");
         return description;
     }
 
-    private int checkLocation() throws IOException {
+    private int checkLocation() throws DataFormatException {
         int location_id = map_locationsItems.get(cb_locations.getSelectedItem());
         if (location_id == 0)
-            throw new IOException("Aucun emplacement choisit");
+            throw new DataFormatException("Aucun emplacement choisit");
         return location_id;
     }
 
-    private double checkDuration() throws IOException {
+    private double checkDuration() throws DataFormatException {
         double duration = map_durationItems.get(cb_durations.getSelectedItem());
         if (duration == 0.0)
-            throw new IOException("Aucune durée choisie");
+            throw new DataFormatException("Aucune durée choisie");
         return duration;
     }
 
