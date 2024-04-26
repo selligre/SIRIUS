@@ -30,7 +30,7 @@ public class MainInsertAnnounce {
     private static final String requestOrder = "INSERT_STUDENT";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
 
-    public MainInsertAnnounce(String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent) throws IOException, InterruptedException {
+    public MainInsertAnnounce(String requestOrder, String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent, String slots_number, String slots_available, String price, String ref_location_id) throws IOException, InterruptedException {
         final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
         final NetworkConfig networkConfig =  ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
@@ -47,6 +47,10 @@ public class MainInsertAnnounce {
         announce.setDuration(duration);
         announce.setDate_time_end(date_time_end);
         announce.setIs_recurrent(is_recurrent);
+        announce.setSlots_number(slots_number);
+        announce.setSlots_available(slots_available);
+        announce.setPrice(price);
+        announce.setRef_author_id(ref_location_id);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -73,7 +77,8 @@ public class MainInsertAnnounce {
                                     announceG.getAnnounce_id(), announceG.getRef_author_id(), announceG.getPublication_date(),
                                     announceG.getStatus(), announceG.getType(), announceG.getTitle(), announceG.getDescription(),
                                     announceG.getDate_time_start(), announceG.getDuration(), announceG.getDate_time_end(), 
-                                    announceG.getIs_recurrent(),
+                                    announceG.getIs_recurrent(),announceG.getSlots_number(), announceG.getSlots_available(),
+                                    announceG.getPrice(), announceG.getRef_location_id(),
                                     joinedClientRequest.getResult());
         }
     }

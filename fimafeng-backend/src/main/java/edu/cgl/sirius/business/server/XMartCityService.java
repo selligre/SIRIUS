@@ -24,8 +24,8 @@ public class XMartCityService {
 
         SELECT_ALL_USERS("SELECT * FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
-        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';")
-
+        SELECT_ANNOUNCES_FOR_LOCATION("SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';"),
+        INSERT_ANNOUNCE("INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  );")
         ;
 
         private final String query;
@@ -115,6 +115,31 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                    case "INSERT_ANNOUNCE" :
+                    mapper = new ObjectMapper();
+                    Announce announce = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE.query);
+                    pstmt.setString(1, announce.getRef_author_id());
+                    pstmt.setString(2, announce.getPublication_date());
+                    pstmt.setString(3, announce.getStatus());
+                    pstmt.setString(4, announce.getType());
+                    pstmt.setString(5, announce.getTitle());
+                    pstmt.setString(6, announce.getDescription());
+                    pstmt.setString(7, announce.getDate_time_start());
+                    pstmt.setString(8, announce.getDuration());
+                    pstmt.setString(9, announce.getDate_time_end());
+                    pstmt.setString(10, announce.getIs_recurrent());
+                    pstmt.setString(11, announce.getSlots_number());
+                    pstmt.setString(12, announce.getSlots_available());
+                    pstmt.setString(13, announce.getPrice());
+                    pstmt.setString(14, announce.getRef_author_id());
+                    rows = pstmt.executeUpdate();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody("{\"announce_id\": " + rows + " }");
+                    break;
+                    
                 default:
                     break;
             }
