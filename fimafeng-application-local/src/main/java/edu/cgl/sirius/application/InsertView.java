@@ -6,15 +6,21 @@ package edu.cgl.sirius.application;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 import javax.swing.*;
 import javax.swing.event.*;
 
+import edu.cgl.sirius.business.dto.Announce;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class InsertView extends JPanel {
-    private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
@@ -28,13 +34,21 @@ public class InsertView extends JPanel {
     private JButton materialsButton;
     private JButton servicesButton;
     private JButton aroundMeButton;
+
+    // Announce type
     private JLabel lbl_announce_type;
     private JRadioButton rbtn_activity;
     private JRadioButton rbtn_loan;
     private JRadioButton rbtn_service;
-    private JCheckBox cbtn_reccurence;
+
+    // Announce datetime and recurrence
+    private JCheckBox cbtn_recurrence;
+
+    // Announce title
     private JLabel lbl_title;
     private JTextField tf_title;
+
+    // Announces tags
     private JLabel lbl_tags;
     private JCheckBox cbtn_concert;
     private JCheckBox cbtn_choral;
@@ -49,24 +63,33 @@ public class InsertView extends JPanel {
     private JCheckBox cbtn_painting;
     private JCheckBox cbtn_theater;
     private JCheckBox cbtn_visits;
+
+    // Announce description
     private JTextArea tfa_description;
     private JLabel lbl_description;
+
+    // Announce location and duration
     private JComboBox<String[]> cb_locations;
+    private JComboBox<String[]> cb_durations;
     private JLabel lbl_location;
+    private JLabel lbl_duration;
+
+    // Publish btn and warning
     private JButton btn_publish;
     private JLabel lbl_annouce_warning;
 
     private HashMap<String, Integer> map_locationsItems;
     private HashMap<String, Integer> map_tagsItems;
+    private HashMap<String, Double> map_durationItems;
 
     private ArrayList<JCheckBox> list_tags_checkBoxs;
-    private ArrayList<Integer> selected_tags;
 
     public InsertView() {
         // construct preComponents
+        final String SELECT_ITEM = "<Sélectionner>";
 
         map_locationsItems = new HashMap<>();
-        map_locationsItems.put("<Sélectionner>", 0);
+        map_locationsItems.put(SELECT_ITEM, 0);
         map_locationsItems.put("Théâtre", 1);
         map_locationsItems.put("Piscine", 2);
         map_locationsItems.put("Cinéma", 3);
@@ -74,9 +97,10 @@ public class InsertView extends JPanel {
         map_locationsItems.put("Place de la Mairie", 5);
         map_locationsItems.put("Parc du chateau", 6);
         map_locationsItems.put("Salle de fêtes", 7);
-        map_locationsItems.put("Cinéma", 8);
+        map_locationsItems.put("Mairie", 8);
 
-        String[] cb_locationsItems = map_locationsItems.keySet().toArray(new String[map_locationsItems.size()]);
+        String[] cb_locationsItems = { SELECT_ITEM, "Bar St Patricks", "Cinéma", "Mairie", "Parc du chateau", "Piscine",
+                "Place de la Mairie", "Salle de fêtes", "Théâtre" };
 
         map_tagsItems = new HashMap<>();
         map_tagsItems.put("Concert", 1);
@@ -95,6 +119,17 @@ public class InsertView extends JPanel {
 
         list_tags_checkBoxs = new ArrayList<>();
 
+        map_durationItems = new HashMap<>();
+        map_durationItems.put(SELECT_ITEM, 0.0);
+        map_durationItems.put("15min", 0.25);
+        map_durationItems.put("30min", 0.5);
+        map_durationItems.put("45min", 0.75);
+        map_durationItems.put("1h00", 1.0);
+        map_durationItems.put("1h30", 1.5);
+        map_durationItems.put("2h00", 2.0);
+
+        String[] cb_durationsItems = { SELECT_ITEM, "15min", "30min", "45min", "1h00", "1h30", "2h00" };
+
         // construct components
         logoButton = new JButton("LOGO");
         createButton = new JButton("(+) Proposer");
@@ -111,7 +146,7 @@ public class InsertView extends JPanel {
         rbtn_activity = new JRadioButton("Activité");
         rbtn_loan = new JRadioButton("Prêt");
         rbtn_service = new JRadioButton("Service");
-        cbtn_reccurence = new JCheckBox("Récurrent ?");
+        cbtn_recurrence = new JCheckBox("Récurrent ?");
         lbl_title = new JLabel("Titre :");
         tf_title = new JTextField(5);
         lbl_tags = new JLabel("Tags :");
@@ -132,6 +167,8 @@ public class InsertView extends JPanel {
         lbl_description = new JLabel("Description :");
         cb_locations = new JComboBox(cb_locationsItems);
         lbl_location = new JLabel("Emplacement :");
+        lbl_duration = new JLabel("Duration :");
+        cb_durations = new JComboBox(cb_durationsItems);
         btn_publish = new JButton("Publier l'annonce");
         lbl_annouce_warning = new JLabel("L'annonce sera publiée avec l'ID de la mairie");
 
@@ -154,9 +191,10 @@ public class InsertView extends JPanel {
         rbtn_activity.setSelected(true);
         rbtn_loan.setEnabled(false);
         rbtn_service.setEnabled(false);
-        cbtn_reccurence.setEnabled(false);
+        cbtn_recurrence.setEnabled(false);
         tfa_description.setLineWrap(true);
-        cb_locations.setSelectedItem("<Sélectionner>");
+        cb_locations.setSelectedItem(SELECT_ITEM);
+        cb_durations.setSelectedItem(SELECT_ITEM);
         // tfa_description.setAutoscrolls(true);
 
         // adjust size and set layout
@@ -186,7 +224,7 @@ public class InsertView extends JPanel {
         add(rbtn_activity);
         add(rbtn_loan);
         add(rbtn_service);
-        add(cbtn_reccurence);
+        add(cbtn_recurrence);
         add(lbl_title);
         add(tf_title);
         add(lbl_tags);
@@ -207,6 +245,8 @@ public class InsertView extends JPanel {
         add(lbl_description);
         add(cb_locations);
         add(lbl_location);
+        add(cb_durations);
+        add(lbl_duration);
         add(btn_publish);
         add(lbl_annouce_warning);
 
@@ -225,7 +265,7 @@ public class InsertView extends JPanel {
         rbtn_activity.setBounds(210, 180, 100, 25);
         rbtn_loan.setBounds(315, 180, 100, 25);
         rbtn_service.setBounds(415, 180, 100, 25);
-        cbtn_reccurence.setBounds(925, 180, 100, 25);
+        cbtn_recurrence.setBounds(925, 180, 100, 25);
         lbl_title.setBounds(100, 230, 100, 25);
         tf_title.setBounds(140, 225, 1035, 35);
         lbl_tags.setBounds(100, 280, 100, 25);
@@ -243,9 +283,11 @@ public class InsertView extends JPanel {
         cbtn_theater.setBounds(450, 280, 100, 25);
         cbtn_visits.setBounds(550, 280, 100, 25);
         tfa_description.setBounds(175, 350, 1005, 85);
-        lbl_description.setBounds(100, 355, 100, 25);
+        lbl_description.setBounds(100, 350, 100, 25);
         cb_locations.setBounds(1030, 280, 145, 25);
         lbl_location.setBounds(935, 280, 100, 25);
+        cb_durations.setBounds(1030, 310, 145, 25);
+        lbl_duration.setBounds(935, 310, 100, 25);
         btn_publish.setBounds(560, 460, 165, 45);
         lbl_annouce_warning.setBounds(515, 510, 260, 30);
         // enable or disable components
@@ -263,53 +305,70 @@ public class InsertView extends JPanel {
 
     private void checkInputs() {
         try {
-            checkTitle();
-            checkTags();
-            checkDescription();
-            checkLocation();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
+            Date date_now = new Date();
+            String publication_date = dateFormat.format(date_now);
+            Boolean isRecurrent = false;
+            Double price = 0.0;
+            int author_id = 1;
+            String date_time_start = "";
+            String date_time_end = "";
+            String announce_status = "online";
+            String title = checkTitle();
+            ArrayList<Integer> list_tags_id = checkTags();
+            String description = checkDescription();
+            int location_id = checkLocation();
+            Double duration = checkDuration();
+            JOptionPane.showMessageDialog(this, "Donneés valides");
         } catch (IOException e) {
-            // TODO: handle exception
             JOptionPane.showMessageDialog(this, e.getMessage(), "Saisie incorrecte", JOptionPane.ERROR_MESSAGE);
         }
 
     }
 
-    private Boolean checkTitle() throws IOException {
+    private String checkTitle() throws IOException {
         String title = this.tf_title.getText();
         if (title.equals(""))
             throw new IOException("Le titre n'est pas renseigné");
         if (title.length() > 100)
             throw new IOException("Le titre est trop long (sup. à 100 caractères)");
-        return true;
+        return title;
     }
 
-    private Boolean checkTags() throws IOException {
-        selected_tags = new ArrayList<>();
+    private ArrayList<Integer> checkTags() throws IOException {
+        ArrayList<Integer> selected_tags_id = new ArrayList<>();
         for (JCheckBox jCheckBox : list_tags_checkBoxs) {
             if (jCheckBox.isSelected()) {
-                selected_tags.add(map_tagsItems.get(jCheckBox.getText()));
+                selected_tags_id.add(map_tagsItems.get(jCheckBox.getText()));
             }
         }
-        if (selected_tags.isEmpty())
+        if (selected_tags_id.isEmpty())
             throw new IOException("Aucun tag n'a été sélectionné");
-        if (selected_tags.size() > 5)
+        if (selected_tags_id.size() > 5)
             throw new IOException("Trop de tags ont été sélectionnés (+ de 5)");
-        return true;
+        return selected_tags_id;
 
     }
 
-    private Boolean checkDescription() throws IOException {
+    private String checkDescription() throws IOException {
         String description = this.tfa_description.getText();
         if (description.length() > 1000)
             throw new IOException("La description est trop longue (sup. à 1000 caractères)");
-        return true;
+        return description;
     }
 
-    private Boolean checkLocation() throws IOException {
+    private int checkLocation() throws IOException {
         int location_id = map_locationsItems.get(cb_locations.getSelectedItem());
         if (location_id == 0)
             throw new IOException("Aucun emplacement choisit");
-        return true;
+        return location_id;
+    }
+
+    private double checkDuration() throws IOException {
+        double duration = map_durationItems.get(cb_durations.getSelectedItem());
+        if (duration == 0.0)
+            throw new IOException("Aucune durée choisie");
+        return duration;
     }
 
     public static void start(Component component) {
