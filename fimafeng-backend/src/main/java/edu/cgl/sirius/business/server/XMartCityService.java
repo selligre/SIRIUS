@@ -100,20 +100,18 @@ public class XMartCityService {
 
                 case "SELECT_ANNOUNCES_FOR_LOCATION":
                     mapper = new ObjectMapper();
-                    Announce location = mapper.readValue(request.getRequestBody(), Announce.class);
+                    Announce announceL = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    pstmt.setString(1, location.getRef_location_id());
+                    pstmt.setString(1, announceL.getRef_location_id());
                     res = pstmt.executeQuery();
-                    // stmt = connection.createStatement();
-                    // res = stmt.executeQuery(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-
+                    
+                    mapper = new ObjectMapper();
                     Announces announcesLocation = new Announces();
                     while (res.next()) {
                         Announce announceLocation = new Announce().build(res);
                         announcesLocation.add(announceLocation);
                     }
-                    mapper = new ObjectMapper();
-
+                
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announcesLocation));

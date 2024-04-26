@@ -28,25 +28,29 @@ public class MainSelectAnnouncesLocation {
     private final static String networkConfigFile = "network.yaml";
     private static final String requestOrder = "SELECT_ALL_ANNOUNCES";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
-    private static Announces announces;
+    private static Announces announcesLocation;
 
-    public Announces getAnnounces() {
-        return announces;
+    public Announces getAnnouncesLocation() {
+        return announcesLocation;
     }
 
-    public MainSelectAnnouncesLocation(String requestOrder, String location) {
+    public MainSelectAnnouncesLocation(String requestOrder, String location) throws JsonProcessingException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         Announce announceLocationName = new Announce();
-        announceLocationName.setRef_author_id(location);
+        announceLocationName.setRef_location_id(location);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper2 = new ObjectMapper();
+        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(announceLocationName);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
+        request.setRequestContent(jsonifiedAnnounce);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         byte[] requestBytes;
         try {
@@ -64,9 +68,9 @@ public class MainSelectAnnouncesLocation {
                 final ClientRequest joinedClientRequest = clientRequests.pop();
                 joinedClientRequest.join();
                 logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-                announces = (Announces) joinedClientRequest.getResult();
+                announcesLocation = (Announces) joinedClientRequest.getResult();
                 final AsciiTable asciiTable = new AsciiTable();
-                for (final Announce announce : announces.getAnnounces()) {
+                for (final Announce announce : announcesLocation.getAnnounces()) {
                     asciiTable.addRule();
                     asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(),
                             announce.getPublication_date(),
@@ -78,6 +82,7 @@ public class MainSelectAnnouncesLocation {
                 }
                 asciiTable.addRule();
                 // logger.debug("\n{}\n", asciiTable.render());
+
             }
         } catch (IOException | InterruptedException e) {
             // TODO Auto-generated catch block
