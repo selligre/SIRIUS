@@ -69,12 +69,9 @@ public class MainSelectAnnouncesLocation {
                         announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(),
                         announce.getSlots_number(),
                         announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
-                // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
-                // User.getGroup() + "\n");
             }
             asciiTable.addRule();
-            logger.debug("\n{}\n", asciiTable.render());
-            // logger.debug("\n{}\n", sBuilder.toString());
+            // logger.debug("\n{}\n", asciiTable.render());
         }
     }
 }

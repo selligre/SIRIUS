@@ -33,12 +33,12 @@ public class MainSelectAnnouncesTag {
         return announces;
     }
 
-    public MainSelectAnnouncesTag(String requestOrder, String tag) throws IOException, InterruptedException {
+    public MainSelectAnnouncesTag(String requestOrder, String tag_id) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        Announce announceTagId = new Announce();
-        announceTagId.setRef_author_id(tag);
+        Announce announce_tag_id = new Announce();
+        announce_tag_id.setRef_author_id(tag_id);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -51,7 +51,7 @@ public class MainSelectAnnouncesTag {
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
         final SelectAllAnnouncesLocationClientRequest clientRequest = new SelectAllAnnouncesLocationClientRequest(
                 networkConfig,
-                birthdate++, request, announceTagId, requestBytes);
+                birthdate++, request, announce_tag_id, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {
@@ -69,12 +69,9 @@ public class MainSelectAnnouncesTag {
                         announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(),
                         announce.getSlots_number(),
                         announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
-                // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
-                // User.getGroup() + "\n");
             }
             asciiTable.addRule();
-            logger.debug("\n{}\n", asciiTable.render());
-            // logger.debug("\n{}\n", sBuilder.toString());
+            // logger.debug("\n{}\n", asciiTable.render());
         }
     }
 }
