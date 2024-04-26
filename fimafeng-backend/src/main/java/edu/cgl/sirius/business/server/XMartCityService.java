@@ -24,10 +24,10 @@ public class XMartCityService {
         // SELECT Queries
         SELECT_ALL_USERS("SELECT * FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
-        SELECT_ANNOUNCES_FOR_TAG_ID(
-                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = 1;"),
         SELECT_ANNOUNCES_FOR_LOCATION(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN locations ON ref_location_id = location_id WHERE name = '?';"),
+        SELECT_ANNOUNCES_FOR_TAG_ID(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = 1;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(

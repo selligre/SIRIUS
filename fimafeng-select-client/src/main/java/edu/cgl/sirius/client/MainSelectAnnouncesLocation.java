@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -33,7 +34,7 @@ public class MainSelectAnnouncesLocation {
         return announces;
     }
 
-    public MainSelectAnnouncesLocation(String requestOrder, String location) throws IOException, InterruptedException {
+    public MainSelectAnnouncesLocation(String requestOrder, String location) {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
@@ -47,31 +48,40 @@ public class MainSelectAnnouncesLocation {
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-        final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
-        LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-        final SelectAllAnnouncesLocationClientRequest clientRequest = new SelectAllAnnouncesLocationClientRequest(
-                networkConfig,
-                birthdate++, request, announceLocationName, requestBytes);
-        clientRequests.push(clientRequest);
+        byte[] requestBytes;
+        try {
+            requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
 
-        while (!clientRequests.isEmpty()) {
-            final ClientRequest joinedClientRequest = clientRequests.pop();
-            joinedClientRequest.join();
-            logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-            announces = (Announces) joinedClientRequest.getResult();
-            final AsciiTable asciiTable = new AsciiTable();
-            for (final Announce announce : announces.getAnnounces()) {
+            LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
+            SelectAllAnnouncesLocationClientRequest clientRequest;
+            clientRequest = new SelectAllAnnouncesLocationClientRequest(
+                    networkConfig,
+                    birthdate++, request, announceLocationName, requestBytes);
+
+            clientRequests.push(clientRequest);
+
+            while (!clientRequests.isEmpty()) {
+                final ClientRequest joinedClientRequest = clientRequests.pop();
+                joinedClientRequest.join();
+                logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
+                announces = (Announces) joinedClientRequest.getResult();
+                final AsciiTable asciiTable = new AsciiTable();
+                for (final Announce announce : announces.getAnnounces()) {
+                    asciiTable.addRule();
+                    asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(),
+                            announce.getPublication_date(),
+                            announce.getStatus(), announce.getType(), announce.getTitle(), announce.getDescription(),
+                            announce.getDate_time_start(),
+                            announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(),
+                            announce.getSlots_number(),
+                            announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
+                }
                 asciiTable.addRule();
-                asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(),
-                        announce.getPublication_date(),
-                        announce.getStatus(), announce.getType(), announce.getTitle(), announce.getDescription(),
-                        announce.getDate_time_start(),
-                        announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(),
-                        announce.getSlots_number(),
-                        announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
+                // logger.debug("\n{}\n", asciiTable.render());
             }
-            asciiTable.addRule();
-            // logger.debug("\n{}\n", asciiTable.render());
+        } catch (IOException | InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 }

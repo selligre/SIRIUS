@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneLayout;
 
+import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
+
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
@@ -46,6 +48,8 @@ public class Application {
     private JPanel pageContent;
 
     private String chosenLocation;
+
+    public static String[] data;
 
     public static void main(String[] args) {
         new Application();
@@ -191,7 +195,7 @@ public class Application {
         try {
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             String result = client.getAnnounces().toString();
-            String[] data = result.split("Announce\\{");
+            Application.data = result.split("Announce\\{");
 
             JPanel panel = new JPanel();
             panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -223,10 +227,10 @@ public class Application {
                     try {
                         MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID", "1");
                         String result = client.getAnnounces().toString();
-                        String[] data = result.split("Announce\\{");
-                        System.out.println("TAG TAG TAG TAG TAG TAG TAG TAG TAG TAG");
-                        System.out.println(data);
-                        System.out.println("TAG TAG TAG TAG TAG TAG TAG TAG TAG TAG");
+                        Application.data = result.split("Announce\\{");
+                        System.out.println("TAG TAG TAG TAG TAG");
+                        System.out.println(Application.data);
+                        System.out.println("TAG TAG TAG TAG TAG");
                     } catch (IOException | InterruptedException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
@@ -237,34 +241,26 @@ public class Application {
             JButton filter_by_location = new JButton("Filter par Quartier 1");
             filter_by_location.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    JOptionPane.showMessageDialog(null, "Filtrage par quartier.");
-                    try {
-                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ALL_ANNOUNCES",
-                                "Théâtre");
-                        String result = client.getAnnounces().toString();
-                        String[] data = result.split("Announce\\{");
-                        System.out.println(
-                                "LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION");
-                        System.out.println(data);
-                        System.out.println(
-                                "LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION LOCATION");
-                    } catch (IOException | InterruptedException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
+                    // JOptionPane.showMessageDialog(null, "Filtrage par quartier.");
+                    MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ALL_ANNOUNCES",
+                            "Théâtre");
+                    String result = client.getAnnounces().toString();
+                    Application.data = result.split("Announce\\{");
                 }
             });
             header.add(filter_by_location);
 
             panel.add(header, BorderLayout.NORTH);
 
-            // JScrollPane request_result_pane = new JScrollPane();
-            // request_result_pane.setLayout(new ScrollPaneLayout());
+            JScrollPane request_result_pane = new JScrollPane();
+            request_result_pane.setLayout(new ScrollPaneLayout());
+            request_result_pane.setBounds(25, 175, 1220, 490);
 
             JPanel request_result = new JPanel();
             request_result.setLayout(new GridLayout(0, 15));
+            // request_result.setBounds(25, 175, 1220, 490);
 
-            for (String d : data) {
+            for (String d : Application.data) {
                 if (d.contains("announce_id=")) {
                     String announce_id = d.split("announce_id='")[1].split("'")[0];
                     String ref_author_id = d.split("ref_author_id='")[1].split("'")[0];
@@ -344,8 +340,8 @@ public class Application {
                 }
             }
 
-            // request_result_pane.add(request_result);
-            panel.add(request_result, BorderLayout.CENTER);
+            request_result_pane.add(request_result);
+            panel.add(request_result_pane, BorderLayout.CENTER);
 
             this.page.remove(this.pageContent);
             this.pageContent = panel;

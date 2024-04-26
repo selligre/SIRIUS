@@ -50,7 +50,7 @@ public class MainInsertAnnounce {
         announce.setSlots_number(slots_number);
         announce.setSlots_available(slots_available);
         announce.setPrice(price);
-        announce.setRef_author_id(ref_location_id);
+        announce.setRef_location_id(ref_location_id);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
