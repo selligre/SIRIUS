@@ -2,14 +2,11 @@ package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,12 +17,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneLayout;
 
-import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
-import edu.cgl.sirius.application.InsertView;
 
 public class Application {
     private final int LABEL_SIZE = 10;
@@ -242,10 +238,16 @@ public class Application {
             filter_by_location.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     // JOptionPane.showMessageDialog(null, "Filtrage par quartier.");
-                    MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ALL_ANNOUNCES",
-                            "Théâtre");
-                    String result = client.getAnnounces().toString();
-                    Application.data = result.split("Announce\\{");
+                    try {
+                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ALL_ANNOUNCES",
+                                "Théâtre");
+                        String result = client.getAnnouncesLocation().toString();
+                        Application.data = result.split("Announce\\{");
+                    } catch (JsonProcessingException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+
                 }
             });
             header.add(filter_by_location);
