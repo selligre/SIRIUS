@@ -25,7 +25,7 @@ public class XMartCityService {
         SELECT_ALL_USERS("SELECT * FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
         SELECT_ANNOUNCES_FOR_LOCATION("SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
-        INSERT_ANNOUNCE("INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  );")
+        INSERT_ANNOUNCE("INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  ) RETURNING announce_id;")
         ;
 
         private final String query;
@@ -51,6 +51,7 @@ public class XMartCityService {
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
         Response response = null;
+        Announce announce;
 
         PreparedStatement pstmt;
         Statement stmt;
@@ -82,7 +83,7 @@ public class XMartCityService {
                     res = stmt.executeQuery(Queries.SELECT_ALL_ANNOUNCES.query);
                     Announces announces = new Announces();
                     while (res.next()) {
-                        Announce announce = new Announce().build(res);
+                        announce = new Announce().build(res);
                         announces.add(announce);
                     }
                     mapper = new ObjectMapper();
@@ -115,7 +116,7 @@ public class XMartCityService {
 
                     case "INSERT_ANNOUNCE" :
                     mapper = new ObjectMapper();
-                    Announce announce = mapper.readValue(request.getRequestBody(), Announce.class);
+                    announce = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE.query);
                     pstmt.setString(1, announce.getRef_author_id());
                     pstmt.setString(2, announce.getPublication_date());
@@ -131,11 +132,19 @@ public class XMartCityService {
                     pstmt.setString(12, announce.getSlots_available());
                     pstmt.setString(13, announce.getPrice());
                     pstmt.setString(14, announce.getRef_author_id());
-                    rows = pstmt.executeUpdate();
+                    
+                    res = pstmt.executeQuery();
+
+                    
+                    if (res.next()) {
+                        String id = String.valueOf(res.getInt("announce_id"));
+                        System.out.println("ID récupéré : " + id);
+                    }
 
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody("{\"announce_id\": " + rows + " }");
+                    response.setResponseBody(mapper.writeValueAsString(announce));
+                    System.out.println(response.getResponseBody());
                     break;
                     
                 default:
