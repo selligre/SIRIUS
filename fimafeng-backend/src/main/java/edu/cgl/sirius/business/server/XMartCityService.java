@@ -26,6 +26,10 @@ public class XMartCityService {
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
         SELECT_ANNOUNCES_FOR_LOCATION(
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
+        SELECT_ANNOUNCES_FOR_TAG_ID(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = 1;"),
+
+        // INSERT Queries
         INSERT_ANNOUNCE(
                 "INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  ) RETURNING announce_id;"),
         INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);");
@@ -116,6 +120,26 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ANNOUNCES_FOR_TAG_ID":
+                    mapper = new ObjectMapper();
+                    Announce announceT = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
+                    pstmt.setString(1, announceT.getAnnounce_id());
+                    res = pstmt.executeQuery();
+
+                    mapper = new ObjectMapper();
+                    Announces announcesTag = new Announces();
+                    while (res.next()) {
+                        Announce announceLocation = new Announce().build(res);
+                        announcesTag.add(announceLocation);
+                    }
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announcesTag));
+                    System.out.println(response.getResponseBody());
+                    break;
+
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
                     announce = mapper.readValue(request.getRequestBody(), Announce.class);
@@ -140,7 +164,7 @@ public class XMartCityService {
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
                         System.out.println("ID récupéré : " + id);
-                        for (Integer tagId : announce.getAnnounceTags()){
+                        for (Integer tagId : announce.getAnnounceTags()) {
                             System.out.println(tagId);
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
                             pstmt.setString(1, id);
