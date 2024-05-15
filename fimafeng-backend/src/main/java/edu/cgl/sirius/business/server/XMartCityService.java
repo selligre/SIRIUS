@@ -140,6 +140,7 @@ public class XMartCityService {
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
                         System.out.println("ID récupéré : " + id);
+                        System.out.println(announce.getAnnounceTags());
                     }
 
                     response = new Response();

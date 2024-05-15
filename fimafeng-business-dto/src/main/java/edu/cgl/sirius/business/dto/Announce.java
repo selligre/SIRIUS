@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Announce {
@@ -23,6 +25,7 @@ public class Announce {
     private String slots_available;
     private String price;
     private String ref_location_id;
+    private ArrayList<Integer> announceTags;
 
     public Announce() {
     }
@@ -110,6 +113,10 @@ public class Announce {
         return price;
     }
 
+    public ArrayList<Integer> getAnnounceTags(){
+        return announceTags;
+    }
+
     public String getRef_location_id() {
         return ref_location_id;
     }
@@ -187,6 +194,11 @@ public class Announce {
     @JsonProperty("ref_location_id")
     public void setRef_location_id(String ref_location_id) {
         this.ref_location_id = ref_location_id;
+    }
+
+    @JsonProperty("announceTags")
+    public void setAnnounceTags(ArrayList<Integer> announceTags) {
+        this.announceTags = announceTags;
     }
 
     private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
