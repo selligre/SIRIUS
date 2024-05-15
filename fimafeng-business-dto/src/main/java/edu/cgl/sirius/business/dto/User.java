@@ -22,7 +22,8 @@ public class User {
 
     public final User build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "user_id", "first_name", "last_name", "display_name", "user_type", "email", "password");
+        setFieldsFromResulset(resultSet, "user_id", "first_name", "last_name", "display_name", "user_type", "email",
+                "password");
         return this;
     }
 
@@ -108,12 +109,11 @@ public class User {
 
     private void setFieldsFromResulset(final ResultSet resultSet, final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             final Field field = this.getClass().getDeclaredField(fieldName);
-            if (resultSet.getObject(fieldName) instanceof String){
+            if (resultSet.getObject(fieldName) instanceof String) {
                 field.set(this, resultSet.getObject(fieldName));
-            }
-            else{
+            } else {
                 field.set(this, resultSet.getObject(fieldName).toString());
             }
         }

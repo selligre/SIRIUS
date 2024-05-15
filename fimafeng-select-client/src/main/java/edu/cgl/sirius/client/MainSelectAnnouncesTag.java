@@ -21,7 +21,7 @@ import edu.cgl.sirius.client.commons.NetworkConfig;
 import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.commons.Request;
 
-public class MainSelectAnnounces {
+public class MainSelectAnnouncesTag {
     private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
@@ -33,9 +33,12 @@ public class MainSelectAnnounces {
         return announces;
     }
 
-    public MainSelectAnnounces(String requestOrder) throws IOException, InterruptedException {
+    public MainSelectAnnouncesTag(String requestOrder, String tag_id) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
+
+        Announce announce_tag_id = new Announce();
+        announce_tag_id.setAnnounce_id(tag_id);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -46,9 +49,9 @@ public class MainSelectAnnounces {
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-        final SelectAllAnnouncesClientRequest clientRequest = new SelectAllAnnouncesClientRequest(
+        final SelectAllAnnouncesLocationClientRequest clientRequest = new SelectAllAnnouncesLocationClientRequest(
                 networkConfig,
-                birthdate++, request, null, requestBytes);
+                birthdate++, request, announce_tag_id, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {
@@ -59,22 +62,13 @@ public class MainSelectAnnounces {
             final AsciiTable asciiTable = new AsciiTable();
             for (final Announce announce : announces.getAnnounces()) {
                 asciiTable.addRule();
-                asciiTable.addRow(
-                        announce.getAnnounce_id(),
-                        announce.getRef_author_id(),
+                asciiTable.addRow(announce.getAnnounce_id(), announce.getRef_author_id(),
                         announce.getPublication_date(),
-                        announce.getStatus(),
-                        announce.getType(),
-                        announce.getTitle(),
-                        announce.getDescription(),
+                        announce.getStatus(), announce.getType(), announce.getTitle(), announce.getDescription(),
                         announce.getDate_time_start(),
-                        announce.getDuration(),
-                        announce.getDate_time_end(),
-                        announce.getIs_recurrent(),
+                        announce.getDuration(), announce.getDate_time_end(), announce.getIs_recurrent(),
                         announce.getSlots_number(),
-                        announce.getSlots_available(),
-                        announce.getPrice(),
-                        announce.getRef_location_id());
+                        announce.getSlots_available(), announce.getPrice(), announce.getRef_location_id());
             }
             asciiTable.addRule();
             // logger.debug("\n{}\n", asciiTable.render());

@@ -5,7 +5,6 @@ package edu.cgl.sirius.application;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -100,6 +99,7 @@ public class InsertView extends JPanel {
 
     private ArrayList<JCheckBox> list_tags_checkBoxs;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public InsertView() {
         // construct preComponents
         final String SELECT_ITEM = "<Sélectionner>";
@@ -356,6 +356,7 @@ public class InsertView extends JPanel {
 
             String status = "online";
             String title = checkTitle();
+            @SuppressWarnings("unused")
             ArrayList<Integer> list_tags_id = checkTags();
             String description = checkDescription();
             String location_id = String.valueOf(checkLocation());

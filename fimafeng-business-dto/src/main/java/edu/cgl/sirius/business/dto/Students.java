@@ -9,7 +9,7 @@ public class Students {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("students")
-    private  Set<Student> students = new LinkedHashSet<Student>();
+    private Set<Student> students = new LinkedHashSet<Student>();
 
     public Set<Student> getStudents() {
         return students;
@@ -19,7 +19,7 @@ public class Students {
         this.students = students;
     }
 
-    public final Students add (final Student student) {
+    public final Students add(final Student student) {
         students.add(student);
         return this;
     }
