@@ -214,36 +214,32 @@ public class Application {
             header.add(new JLabel("slots_available"));
             header.add(new JLabel("price"));
             header.add(new JLabel("ref_location_id"));
-            JButton filter_by_tag = new JButton("Filter par Tag 1");
+            JButton filter_by_tag = new JButton("Tags");
             filter_by_tag.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    JOptionPane.showMessageDialog(null, "Filtrage par tag.");
+                    // JOptionPane.showMessageDialog(null, "Filtrage par tag.");
+                    // SelectTagView selectTagView = new SelectTagView();
                     try {
-                        SelectTagView selectTagView = new SelectTagView();
                         MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID", "1");
-                        // String result = client.getAnnounces().toString();
-                        // Application.data = result.split("Announce\\{");
-                        // System.out.println("TAG TAG TAG TAG TAG");
-                        // System.out.println(Application.data);
-                        // System.out.println("TAG TAG TAG TAG TAG");
+                        String result = client.getAnnounces().toString();
+                        Application.data = result.split("Announce\\{");
                     } catch (IOException | InterruptedException e1) {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
                 }
             });
             header.add(filter_by_tag);
-            JButton filter_by_location = new JButton("Filter par Quartier 1");
+            JButton filter_by_location = new JButton("Quartiers");
             filter_by_location.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     // JOptionPane.showMessageDialog(null, "Filtrage par quartier.");
                     try {
-                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation("SELECT_ALL_ANNOUNCES",
+                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
+                                "SELECT_ANNOUNCES_FOR_LOCATION",
                                 "Théâtre");
                         String result = client.getAnnouncesLocation().toString();
                         Application.data = result.split("Announce\\{");
                     } catch (JsonProcessingException e1) {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
 
@@ -350,7 +346,6 @@ public class Application {
             this.page.validate();
             this.page.repaint();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

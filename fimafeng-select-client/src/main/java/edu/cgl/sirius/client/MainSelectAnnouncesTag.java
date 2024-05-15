@@ -38,7 +38,7 @@ public class MainSelectAnnouncesTag {
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         Announce announce_tag_id = new Announce();
-        announce_tag_id.setRef_author_id(tag_id);
+        announce_tag_id.setAnnounce_id(tag_id);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
