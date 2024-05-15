@@ -8,18 +8,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AnnounceTags {
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("announceTags")
-    private Set<AnnounceTags> announceTags = new LinkedHashSet<AnnounceTags>();
+    @JsonProperty("announces")
+    private  Set<AnnounceTag> announceTags = new LinkedHashSet<AnnounceTag>();
 
-    public Set<AnnounceTags> getAnnounceTags() {
+    public Set<AnnounceTag> getAnnounces() {
         return announceTags;
     }
 
-    public void setAnnounceTags(Set<AnnounceTag> announceTags) {
+    public void setAnnounces(Set<AnnounceTag> announceTags) {
         this.announceTags = announceTags;
     }
 
-    public final AnnounceTags add(final AnnounceTag announceTag) {
+    public final AnnounceTags add (final AnnounceTag announceTag) {
         announceTags.add(announceTag);
         return this;
     }

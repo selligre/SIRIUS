@@ -59,4 +59,34 @@ public class AnnounceTag {
         this.ref_tag_id = ref_tag_id;
     }
 
+    private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
+            throws NoSuchFieldException, SQLException, IllegalAccessException {
+        for(final String fieldName : fieldNames ) {
+            final Field field = this.getClass().getDeclaredField(fieldName);
+            if (resultSet.getObject(fieldName) == null){
+                field.set(this, " ");
+            }
+            else{
+                field.set(this, resultSet.getObject(fieldName).toString());
+            }
+        }
+    }
+
+    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement, final String ... fieldNames )
+            throws NoSuchFieldException, SQLException, IllegalAccessException {
+        int ix = 0;
+        for(final String fieldName : fieldNames ) {
+            preparedStatement.setString(++ix, fieldName);
+        }
+        return preparedStatement;
+    }
+
+    @Override
+    public String toString() {
+        return "Announce{" +
+                "announce_tag_id='" + announce_tag_id + '\'' +
+                ", ref_announce_id='" + ref_announce_id + '\'' +
+                ", ref_tag_id='" + ref_tag_id + '\'' +
+                '}';
+    }
 }
