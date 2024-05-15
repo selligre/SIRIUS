@@ -358,7 +358,6 @@ public class InsertView extends JPanel {
             String title = checkTitle();
             ArrayList<Integer> list_tags_id = checkTags();
             String description = checkDescription();
-            // int iloc_id = checkLocation();
             String location_id = String.valueOf(checkLocation());
 
             double vduration = checkDuration();
