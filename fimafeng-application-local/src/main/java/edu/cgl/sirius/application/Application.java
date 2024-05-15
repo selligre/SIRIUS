@@ -43,8 +43,6 @@ public class Application {
     private JButton aroundMeButton;
     private JPanel pageContent;
 
-    private String chosenLocation;
-
     public static String[] data;
 
     public static void main(String[] args) {
@@ -104,8 +102,8 @@ public class Application {
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                changeViewToInsert();
                 // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
+                changeViewToInsert();
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
@@ -221,12 +219,13 @@ public class Application {
                 public void actionPerformed(ActionEvent e) {
                     JOptionPane.showMessageDialog(null, "Filtrage par tag.");
                     try {
+                        SelectTagView selectTagView = new SelectTagView();
                         MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID", "1");
-                        String result = client.getAnnounces().toString();
-                        Application.data = result.split("Announce\\{");
-                        System.out.println("TAG TAG TAG TAG TAG");
-                        System.out.println(Application.data);
-                        System.out.println("TAG TAG TAG TAG TAG");
+                        // String result = client.getAnnounces().toString();
+                        // Application.data = result.split("Announce\\{");
+                        // System.out.println("TAG TAG TAG TAG TAG");
+                        // System.out.println(Application.data);
+                        // System.out.println("TAG TAG TAG TAG TAG");
                     } catch (IOException | InterruptedException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();

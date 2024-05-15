@@ -5,16 +5,9 @@ package edu.cgl.sirius.application;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-
 import javax.swing.*;
-import javax.swing.event.*;
-
-import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 
 import java.util.ArrayList;
@@ -86,6 +79,7 @@ public class InsertView extends JPanel {
 
     private ArrayList<JCheckBox> list_tags_checkBoxs;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public InsertView() {
         // construct preComponents
         final String SELECT_ITEM = "<Sélectionner>";
@@ -317,6 +311,7 @@ public class InsertView extends JPanel {
             String date_time_end = "";
             String status = "online";
             String title = checkTitle();
+            @SuppressWarnings("unused")
             ArrayList<Integer> list_tags_id = checkTags();
             String description = checkDescription();
             int iloc_id = checkLocation();

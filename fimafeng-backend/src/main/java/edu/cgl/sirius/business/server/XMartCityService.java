@@ -104,14 +104,14 @@ public class XMartCityService {
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
                     pstmt.setString(1, announceL.getRef_location_id());
                     res = pstmt.executeQuery();
-                    
+
                     mapper = new ObjectMapper();
                     Announces announcesLocation = new Announces();
                     while (res.next()) {
                         Announce announceLocation = new Announce().build(res);
                         announcesLocation.add(announceLocation);
                     }
-                
+
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announcesLocation));
