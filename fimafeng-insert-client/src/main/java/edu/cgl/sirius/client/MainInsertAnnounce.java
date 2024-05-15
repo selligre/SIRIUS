@@ -54,6 +54,11 @@ public class MainInsertAnnounce {
         announce.setSlots_available(slots_available);
         announce.setPrice(price);
         announce.setRef_location_id(ref_location_id);
+        ArrayList<Integer> nb = new ArrayList<>();
+        for (int i=1; i<3; i++){
+            nb.add(i);
+        }
+        announce.setAnnounceTags(nb);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
