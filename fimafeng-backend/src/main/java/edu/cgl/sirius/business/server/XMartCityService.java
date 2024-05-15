@@ -3,6 +3,7 @@ package edu.cgl.sirius.business.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.AnnounceTag;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
@@ -122,21 +123,22 @@ public class XMartCityService {
 
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
-                    Announce announceT = mapper.readValue(request.getRequestBody(), Announce.class);
+                    AnnounceTag announceTag = mapper.readValue(request.getRequestBody(), AnnounceTag.class);
+
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
-                    pstmt.setString(1, announceT.getAnnounce_id());
+                    pstmt.setString(1, announceTag.getRef_tag_id());
                     res = pstmt.executeQuery();
 
                     mapper = new ObjectMapper();
-                    Announces announcesTag = new Announces();
+                    Announces announces2 = new Announces();
                     while (res.next()) {
-                        Announce announceTag = new Announce().build(res);
-                        announcesTag.add(announceTag);
+                        announce = new Announce().build(res);
+                        announces2.add(announce);
                     }
 
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody(mapper.writeValueAsString(announcesTag));
+                    response.setResponseBody(mapper.writeValueAsString(announces2));
                     System.out.println(response.getResponseBody());
                     break;
 
