@@ -26,8 +26,8 @@ public class AnnounceTags {
 
     @Override
     public String toString() {
-        return "Announces{" +
-                "announces=" + announceTags +
+        return "AnnounceTags{" +
+                "announceTags=" + announceTags +
                 '}';
     }
 }
