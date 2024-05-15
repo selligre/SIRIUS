@@ -145,7 +145,7 @@ public class XMartCityService {
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
                             pstmt.setString(1, id);
                             pstmt.setString(2, String.valueOf(tagId));
-                            pstmt.executeQuery();
+                            pstmt.executeUpdate();
                         }
                     }
 
