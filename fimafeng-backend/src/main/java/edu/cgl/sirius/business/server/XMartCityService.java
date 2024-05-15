@@ -27,7 +27,7 @@ public class XMartCityService {
         SELECT_ANNOUNCES_FOR_LOCATION(
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
-                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = 1;"),
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = ?;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -123,15 +123,15 @@ public class XMartCityService {
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
                     Announce announceT = mapper.readValue(request.getRequestBody(), Announce.class);
-                    pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
                     pstmt.setString(1, announceT.getAnnounce_id());
                     res = pstmt.executeQuery();
 
                     mapper = new ObjectMapper();
                     Announces announcesTag = new Announces();
                     while (res.next()) {
-                        Announce announceLocation = new Announce().build(res);
-                        announcesTag.add(announceLocation);
+                        Announce announceTag = new Announce().build(res);
+                        announcesTag.add(announceTag);
                     }
 
                     response = new Response();
