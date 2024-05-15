@@ -7,7 +7,25 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAmount;
+
 import javax.swing.*;
+import javax.swing.event.*;
+
+import com.github.lgooddatepicker.components.CalendarPanel;
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
+import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
+
+import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 
 import java.util.ArrayList;
@@ -37,7 +55,9 @@ public class InsertView extends JPanel {
     private JRadioButton rbtn_service;
 
     // Announce datetime and recurrence
+    private JLabel lbl_datetimestart;
     private JCheckBox cbtn_recurrence;
+    private DateTimePicker dtpicker_panel;
 
     // Announce title
     private JLabel lbl_title;
@@ -83,6 +103,8 @@ public class InsertView extends JPanel {
     public InsertView() {
         // construct preComponents
         final String SELECT_ITEM = "<Sélectionner>";
+
+        final LocalDate today = LocalDate.now();
 
         map_locationsItems = new HashMap<>();
         map_locationsItems.put(SELECT_ITEM, 0);
@@ -142,6 +164,7 @@ public class InsertView extends JPanel {
         rbtn_activity = new JRadioButton("Activité");
         rbtn_loan = new JRadioButton("Prêt");
         rbtn_service = new JRadioButton("Service");
+        lbl_datetimestart = new JLabel("Date et heure de début :");
         cbtn_recurrence = new JCheckBox("Récurrent ?");
         lbl_title = new JLabel("Titre :");
         tf_title = new JTextField(5);
@@ -163,7 +186,7 @@ public class InsertView extends JPanel {
         lbl_description = new JLabel("Description :");
         cb_locations = new JComboBox(cb_locationsItems);
         lbl_location = new JLabel("Emplacement :");
-        lbl_duration = new JLabel("Duration :");
+        lbl_duration = new JLabel("Durée :");
         cb_durations = new JComboBox(cb_durationsItems);
         btn_publish = new JButton("Publier l'annonce");
         lbl_annouce_warning = new JLabel("L'annonce sera publiée avec l'ID de la mairie");
@@ -191,6 +214,21 @@ public class InsertView extends JPanel {
         tfa_description.setLineWrap(true);
         cb_locations.setSelectedItem(SELECT_ITEM);
         cb_durations.setSelectedItem(SELECT_ITEM);
+        tfa_description.setBorder(tf_title.getBorder());
+
+        DatePickerSettings dateSettings = new DatePickerSettings();
+        TimePickerSettings timeSettings = new TimePickerSettings();
+        dateSettings.setAllowEmptyDates(false);
+        dateSettings.setWeekNumbersDisplayed(true, true);
+        dateSettings.setFormatForDatesCommonEra("dd/MM/yyyy");
+        dateSettings.setFormatForDatesBeforeCommonEra("dd/MM/yyyy");
+        timeSettings.setAllowEmptyTimes(false);
+        timeSettings.use24HourClockFormat();
+        timeSettings.initialTime = LocalTime.of(15, 30);
+        timeSettings.generatePotentialMenuTimes(TimeIncrement.FifteenMinutes, null, null);
+        dtpicker_panel = new DateTimePicker(dateSettings, timeSettings);
+
+        dateSettings.setDateRangeLimits(today, today.plusYears(1));
         // tfa_description.setAutoscrolls(true);
 
         // adjust size and set layout
@@ -220,6 +258,8 @@ public class InsertView extends JPanel {
         add(rbtn_activity);
         add(rbtn_loan);
         add(rbtn_service);
+        add(lbl_datetimestart);
+        add(dtpicker_panel);
         add(cbtn_recurrence);
         add(lbl_title);
         add(tf_title);
@@ -258,10 +298,12 @@ public class InsertView extends JPanel {
         servicesButton.setBounds(650, 100, 250, 50);
         aroundMeButton.setBounds(925, 100, 250, 50);
         lbl_announce_type.setBounds(100, 180, 100, 25);
-        rbtn_activity.setBounds(210, 180, 100, 25);
-        rbtn_loan.setBounds(315, 180, 100, 25);
-        rbtn_service.setBounds(415, 180, 100, 25);
-        cbtn_recurrence.setBounds(925, 180, 100, 25);
+        rbtn_activity.setBounds(210, 180, 70, 25);
+        rbtn_loan.setBounds(300, 180, 60, 25);
+        rbtn_service.setBounds(370, 180, 70, 25);
+        lbl_datetimestart.setBounds(480, 180, 150, 25);
+        dtpicker_panel.setBounds(630, 180, 200, 25);
+        cbtn_recurrence.setBounds(870, 180, 100, 25);
         lbl_title.setBounds(100, 230, 100, 25);
         tf_title.setBounds(140, 225, 1035, 35);
         lbl_tags.setBounds(100, 280, 100, 25);
@@ -278,7 +320,7 @@ public class InsertView extends JPanel {
         cbtn_painting.setBounds(750, 280, 100, 25);
         cbtn_theater.setBounds(450, 280, 100, 25);
         cbtn_visits.setBounds(550, 280, 100, 25);
-        tfa_description.setBounds(175, 350, 1005, 85);
+        tfa_description.setBounds(180, 350, 1000, 85);
         lbl_description.setBounds(100, 350, 100, 25);
         cb_locations.setBounds(1030, 280, 145, 25);
         lbl_location.setBounds(935, 280, 100, 25);
@@ -307,21 +349,34 @@ public class InsertView extends JPanel {
             String is_recurrent = "f";
             String price = "0.0";
             String author_id = "1";
-            String date_time_start = "";
-            String date_time_end = "";
+
+            LocalDateTime ldt_start = dtpicker_panel.getDateTimeStrict();
+            Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());
+            String date_time_start = dateFormat.format(dstart);
+
             String status = "online";
             String title = checkTitle();
             @SuppressWarnings("unused")
             ArrayList<Integer> list_tags_id = checkTags();
             String description = checkDescription();
-            int iloc_id = checkLocation();
-            System.out.println(iloc_id);
             String location_id = String.valueOf(checkLocation());
-            System.out.println(location_id);
-            String duration = String.valueOf(checkDuration());
+
+            double vduration = checkDuration();
+            String duration = String.valueOf(vduration);
+            vduration = vduration * 60;
+            long minutes_duration = (long) vduration;
+
+            LocalDateTime ldt_end = ldt_start.plusMinutes(minutes_duration);
+            Date dend = Date.from(ldt_end.atZone(ZoneId.systemDefault()).toInstant());
+            String date_time_end = dateFormat.format(dend);
+
             JOptionPane.showMessageDialog(this, "Donneés valides");
-            new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date, status, "activité", title,
-                    description, null, duration, null, is_recurrent, null, null, price, location_id);
+
+            new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date,
+                    status, "activité", title,
+                    description, date_time_start, duration, date_time_end, is_recurrent, null,
+                    null, price, location_id);
+
         } catch (DataFormatException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Saisie incorrecte", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
