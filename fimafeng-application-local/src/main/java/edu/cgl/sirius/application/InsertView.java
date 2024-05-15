@@ -301,7 +301,7 @@ public class InsertView extends JPanel {
 
     private void checkInputs() {
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date_now = new Date();
             String publication_date = dateFormat.format(date_now);
             String is_recurrent = "f";
