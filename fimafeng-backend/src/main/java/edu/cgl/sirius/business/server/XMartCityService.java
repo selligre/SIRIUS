@@ -159,7 +159,7 @@ public class XMartCityService {
                     pstmt.setString(11, announce.getSlots_number());
                     pstmt.setString(12, announce.getSlots_available());
                     pstmt.setString(13, announce.getPrice());
-                    pstmt.setString(14, announce.getRef_author_id());
+                    pstmt.setString(14, announce.getRef_location_id());
 
                     res = pstmt.executeQuery();
 
