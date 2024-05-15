@@ -55,7 +55,7 @@ public class MainInsertAnnounce {
         announce.setPrice(price);
         announce.setRef_location_id(ref_location_id);
         ArrayList<Integer> nb = new ArrayList<>();
-        for (int i=0; i<11; i++){
+        for (int i=1; i<3; i++){
             nb.add(i);
         }
         announce.setAnnounceTags(nb);

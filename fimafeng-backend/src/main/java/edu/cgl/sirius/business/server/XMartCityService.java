@@ -28,7 +28,7 @@ public class XMartCityService {
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
         INSERT_ANNOUNCE(
                 "INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  ) RETURNING announce_id;"),
-        INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int)");
+        INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);");
 
         private final String query;
 
@@ -140,7 +140,13 @@ public class XMartCityService {
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
                         System.out.println("ID récupéré : " + id);
-                        System.out.println(announce.getAnnounceTags());
+                        for (Integer tagId : announce.getAnnounceTags()){
+                            System.out.println(tagId);
+                            pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
+                            pstmt.setString(1, id);
+                            pstmt.setString(2, String.valueOf(tagId));
+                            pstmt.executeQuery();
+                        }
                     }
 
                     response = new Response();
