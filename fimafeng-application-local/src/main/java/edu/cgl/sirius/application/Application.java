@@ -241,7 +241,8 @@ public class Application {
             request_result_pane.setBounds(25, 175, 1220, 490);
 
             String requestResult = Application.data;
-            String[] requestResultSplited = requestResult.split("Announces{announces=[");
+            // String[] requestResultSplited = requestResult.split("Announces{announces=[");
+            String[] requestResultSplited = requestResult.split("");
             for (String s : requestResultSplited) {
                 System.out.println("stringstringstringstringstring");
                 System.out.println("stringstringstringstringstring");
