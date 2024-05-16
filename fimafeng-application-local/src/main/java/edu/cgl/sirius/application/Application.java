@@ -290,7 +290,7 @@ public class Application {
         });
         headerPanel.add(filter_by_tag);
 
-        String locations[] = { "Plaza", "Court", "Pass", "Place", "Park", "Bar St Patricks", "Place de la Mairie",
+        String locations[] = { "-", "Plaza", "Court", "Pass", "Place", "Park", "Bar St Patricks", "Place de la Mairie",
                 "Parc du chateau", "Salle de fêtes", "Piscine", "Cinéma", "Théâtre", "Mairie" };
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final JComboBox locationList = new JComboBox(locations);
@@ -301,10 +301,12 @@ public class Application {
             public void actionPerformed(ActionEvent e) {
                 try {
                     String selectedLocation = locationList.getSelectedItem().toString();
-                    MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
-                            "SELECT_ANNOUNCES_FOR_LOCATION",
-                            selectedLocation);
-                    Application.requestResult = client.getAnnouncesLocation();
+                    if (!selectedLocation.equals("-")) {
+                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
+                                "SELECT_ANNOUNCES_FOR_LOCATION",
+                                selectedLocation);
+                        Application.requestResult = client.getAnnouncesLocation();
+                    }
                 } catch (JsonProcessingException e1) {
                     e1.printStackTrace();
                 }
