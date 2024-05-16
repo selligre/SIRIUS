@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.vandermeer.asciitable.AsciiTable;
 import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.AnnounceTag;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
@@ -33,25 +34,30 @@ public class MainSelectAnnouncesTag {
         return announces;
     }
 
-    public MainSelectAnnouncesTag(String requestOrder, String tag_id) throws IOException, InterruptedException {
+    public MainSelectAnnouncesTag(String requestOrder, String ref_tag_id) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        Announce announce_tag_id = new Announce();
-        announce_tag_id.setAnnounce_id(tag_id);
+        AnnounceTag tagId = new AnnounceTag();
+        tagId.setRef_tag_id(ref_tag_id);
 
         int birthdate = 0;
+
         final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper2 = new ObjectMapper();
+        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(tagId);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
+        request.setRequestContent(jsonifiedAnnounce);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-        final SelectAllAnnouncesLocationClientRequest clientRequest = new SelectAllAnnouncesLocationClientRequest(
+        final SelectAllAnnouncesTagClientRequest clientRequest = new SelectAllAnnouncesTagClientRequest(
                 networkConfig,
-                birthdate++, request, announce_tag_id, requestBytes);
+                birthdate++, request, tagId, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {
