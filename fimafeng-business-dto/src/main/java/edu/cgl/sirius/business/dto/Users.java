@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Users {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("users")
-    private  Set<User> users = new LinkedHashSet<User>();
+    private Set<User> users = new LinkedHashSet<User>();
 
     public Set<User> getUsers() {
         return users;
@@ -19,7 +19,7 @@ public class Users {
         this.users = users;
     }
 
-    public final Users add (final User user) {
+    public final Users add(final User user) {
         users.add(user);
         return this;
     }

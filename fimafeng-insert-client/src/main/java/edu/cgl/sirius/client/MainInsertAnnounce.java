@@ -30,9 +30,12 @@ public class MainInsertAnnounce {
     private static final String requestOrder = "INSERT_STUDENT";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
 
-    public MainInsertAnnounce(String ref_author_id, String publication_date, String status, String type, String title, String description, String date_time_start, String duration, String date_time_end, String is_recurrent) throws IOException, InterruptedException {
+    public MainInsertAnnounce(String requestOrder, String ref_author_id, String publication_date, String status,
+            String type, String title, String description, String date_time_start, String duration,
+            String date_time_end, String is_recurrent, String slots_number, String slots_available, String price,
+            String ref_location_id) throws IOException, InterruptedException {
         final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
-        final NetworkConfig networkConfig =  ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
+        final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         Announce announce = new Announce();
@@ -47,6 +50,15 @@ public class MainInsertAnnounce {
         announce.setDuration(duration);
         announce.setDate_time_end(date_time_end);
         announce.setIs_recurrent(is_recurrent);
+        announce.setSlots_number(slots_number);
+        announce.setSlots_available(slots_available);
+        announce.setPrice(price);
+        announce.setRef_location_id(ref_location_id);
+        ArrayList<Integer> nb = new ArrayList<>();
+        for (int i=1; i<3; i++){
+            nb.add(i);
+        }
+        announce.setAnnounceTags(nb);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -58,23 +70,24 @@ public class MainInsertAnnounce {
         request.setRequestOrder(requestOrder);
         request.setRequestContent(jsonifiedAnnounce);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-        final byte []  requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
-        final InsertAnnouncesClientRequest clientRequest = new InsertAnnouncesClientRequest (
-                                                                    networkConfig,
-                                                                    birthdate++, request, announce, requestBytes);
+        final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
+        final InsertAnnouncesClientRequest clientRequest = new InsertAnnouncesClientRequest(
+                networkConfig,
+                birthdate++, request, announce, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {
             final ClientRequest joinedClientRequest = clientRequests.pop();
             joinedClientRequest.join();
-            final Announce announceG = (Announce)joinedClientRequest.getInfo();
+            final Announce announceG = (Announce) joinedClientRequest.getInfo();
             logger.debug("Thread {} complete : {} {} {} --> {}",
-                                    joinedClientRequest.getThreadName(),
-                                    announceG.getAnnounce_id(), announceG.getRef_author_id(), announceG.getPublication_date(),
-                                    announceG.getStatus(), announceG.getType(), announceG.getTitle(), announceG.getDescription(),
-                                    announceG.getDate_time_start(), announceG.getDuration(), announceG.getDate_time_end(), 
-                                    announceG.getIs_recurrent(),
-                                    joinedClientRequest.getResult());
+                    joinedClientRequest.getThreadName(),
+                    announceG.getAnnounce_id(), announceG.getRef_author_id(), announceG.getPublication_date(),
+                    announceG.getStatus(), announceG.getType(), announceG.getTitle(), announceG.getDescription(),
+                    announceG.getDate_time_start(), announceG.getDuration(), announceG.getDate_time_end(),
+                    announceG.getIs_recurrent(), announceG.getSlots_number(), announceG.getSlots_available(),
+                    announceG.getPrice(), announceG.getRef_location_id(),
+                    joinedClientRequest.getResult());
         }
     }
 }

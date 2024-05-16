@@ -10,22 +10,24 @@ import java.sql.SQLException;
 
 @JsonRootName(value = "student")
 public class Student {
-    private  String name;
-    private  String firstname;
-    private  String group;
-
+    private String name;
+    private String firstname;
+    private String group;
 
     public Student() {
     }
+
     public final Student build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "name", "firstname","group");
+        setFieldsFromResulset(resultSet, "name", "firstname", "group");
         return this;
     }
+
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        return buildPreparedStatement(preparedStatement, name, firstname,group);
+        return buildPreparedStatement(preparedStatement, name, firstname, group);
     }
+
     public Student(String name, String firstname, String group) {
         this.name = name;
         this.firstname = firstname;
@@ -59,17 +61,19 @@ public class Student {
         this.group = group;
     }
 
-    private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
+    private void setFieldsFromResulset(final ResultSet resultSet, final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             final Field field = this.getClass().getDeclaredField(fieldName);
             field.set(this, resultSet.getObject(fieldName));
         }
     }
-    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement, final String ... fieldNames )
+
+    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement,
+            final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         int ix = 0;
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             preparedStatement.setString(++ix, fieldName);
         }
         return preparedStatement;
