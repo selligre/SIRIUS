@@ -5,11 +5,16 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.ScrollPane;
+import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+
+import javax.naming.ldap.SortKey;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,11 +22,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
 import javax.swing.ScrollPaneLayout;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.stringtemplate.v4.compiler.CodeGenerator.primary_return;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +49,7 @@ public class Application {
     private final int FRAME_HEIGHT = 720;
 
     private JFrame frame;
-    private JPanel page;
+    public static JPanel page;
 
     private JButton logoButton;
     private JButton createButton;
@@ -52,9 +61,9 @@ public class Application {
     private JButton materialsButton;
     private JButton servicesButton;
     private JButton aroundMeButton;
-    private JPanel pageContent;
 
     public static Announces requestResult;
+    public static JScrollPane scrollPane;
 
     public static void main(String[] args) {
         new Application();
@@ -80,9 +89,9 @@ public class Application {
     }
 
     public void configHomePage() {
-        this.page = new JPanel();
-        this.page.setLayout(null);
-        this.page.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        Application.page = new JPanel();
+        Application.page.setLayout(null);
+        Application.page.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         // add instances
         this.logoButton = new JButton();
         this.createButton = new JButton();
@@ -94,7 +103,6 @@ public class Application {
         this.materialsButton = new JButton();
         this.servicesButton = new JButton();
         this.aroundMeButton = new JButton();
-        this.pageContent = new JPanel();
         // add texts
         this.logoButton.setText("LOGO");
         this.createButton.setText("(+) Proposer");
@@ -154,8 +162,6 @@ public class Application {
                 JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
             }
         });
-        // add border for content area
-        this.pageContent.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         // set components locations
         this.logoButton.setBounds(25, 25, 125, 50);
         this.createButton.setBounds(175, 25, 125, 50);
@@ -167,7 +173,6 @@ public class Application {
         this.materialsButton.setBounds(375, 100, 250, 50);
         this.servicesButton.setBounds(650, 100, 250, 50);
         this.aroundMeButton.setBounds(925, 100, 250, 50);
-        this.pageContent.setBounds(25, 175, 1220, 490);
         // enable or disable components
         this.logoButton.setEnabled(false);
         this.createButton.setEnabled(true);
@@ -178,105 +183,198 @@ public class Application {
         this.activitiesButton.setEnabled(true);
         this.materialsButton.setEnabled(false);
         this.servicesButton.setEnabled(false);
-        this.aroundMeButton.setEnabled(true);
-        this.pageContent.setEnabled(true);
+        this.aroundMeButton.setEnabled(false);
         // add components
-        this.page.add(this.logoButton);
-        this.page.add(this.createButton);
-        this.page.add(this.logOutButton);
-        this.page.add(this.accountButton);
-        this.page.add(this.searchField);
-        this.page.add(this.searchButton);
-        this.page.add(this.activitiesButton);
-        this.page.add(this.materialsButton);
-        this.page.add(this.servicesButton);
-        this.page.add(this.aroundMeButton);
-        this.page.add(this.pageContent);
+        Application.page.add(this.logoButton);
+        Application.page.add(this.createButton);
+        Application.page.add(this.logOutButton);
+        Application.page.add(this.accountButton);
+        Application.page.add(this.searchField);
+        Application.page.add(this.searchButton);
+        Application.page.add(this.activitiesButton);
+        Application.page.add(this.materialsButton);
+        Application.page.add(this.servicesButton);
+        Application.page.add(this.aroundMeButton);
 
-        this.frame.add(this.page);
+        this.frame.add(Application.page);
     }
 
     public void selectActivities() {
+        this.activitiesButton.setBackground(Color.DARK_GRAY);
+        this.activitiesButton.setEnabled(false);
+
         try {
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             Application.requestResult = client.getAnnounces();
-
-            JPanel activitiesPanel = new JPanel();
-            activitiesPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            activitiesPanel.setBounds(25, 175, 1220, 490);
-            activitiesPanel.setLayout(new BorderLayout());
-
-            JPanel headerPanel = new JPanel();
-            headerPanel.setLayout(new FlowLayout());
-
-            JButton filter_by_tag = new JButton("Filtrer par tag");
-            filter_by_tag.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    // JOptionPane.showMessageDialog(null, "Filtrage par tag.");
-                    // SelectTagView selectTagView = new SelectTagView();
-                    try {
-                        MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID", "1");
-                        Application.requestResult = client.getAnnounces();
-                    } catch (IOException | InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            });
-            headerPanel.add(filter_by_tag);
-            JButton filter_by_location = new JButton("Filtrer par quartier");
-            filter_by_location.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    // JOptionPane.showMessageDialog(null, "Filtrage par quartier.");
-                    try {
-                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
-                                "SELECT_ANNOUNCES_FOR_LOCATION",
-                                "Théâtre");
-                        Application.requestResult = client.getAnnouncesLocation();
-                    } catch (JsonProcessingException e1) {
-                        e1.printStackTrace();
-                    }
-
-                }
-            });
-            headerPanel.add(filter_by_location);
-
-            activitiesPanel.add(headerPanel, BorderLayout.NORTH);
-
-            for (Announce announce : Application.requestResult.getAnnounces()) {
-                System.out.print(announce.getAnounce_id() + " | ");
-                System.out.print(announce.getRef_author_id() + " | ");
-                System.out.print(announce.getPublication_date() + " | ");
-                System.out.print(announce.getStatus() + " | ");
-                System.out.print(announce.getType() + " | ");
-                System.out.print(announce.getTitle() + " | ");
-                System.out.print(announce.getDescription() + " | ");
-                System.out.print(announce.getDate_time_start() + " | ");
-                System.out.print(announce.getDuration() + " | ");
-                System.out.print(announce.getDate_time_end() + " | ");
-                System.out.print(announce.getIs_recurrent() + " | ");
-                System.out.print(announce.getSlots_number() + " | ");
-                System.out.print(announce.getSlots_available() + " | ");
-                System.out.print(announce.getPrice() + " | ");
-                System.out.println(announce.getRef_location_id() + " | ");
-            }
-
-            JScrollPane contentPanel = new JScrollPane();
-            contentPanel.setLayout(new ScrollPaneLayout());
-            contentPanel.setBounds(25, 175, 1220, 490);
-
-            activitiesPanel.add(contentPanel, BorderLayout.CENTER);
-
-            this.page.remove(this.pageContent);
-            this.pageContent = activitiesPanel;
-            this.page.add(activitiesPanel);
-            this.page.validate();
-            this.page.repaint();
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-    }
+        JPanel pagePanel = new JPanel();
+        pagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        pagePanel.setBounds(25, 175, 1220, 490);
+        pagePanel.setLayout(new BorderLayout());
 
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new FlowLayout());
+
+        String tags[] = { "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
+                "Théatre", "Visite", "Adultes", "Chorale", "Enfants", "Jeunes" };
+        String tags_id[] = { "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList = new JComboBox(tags);
+        headerPanel.add(tagList);
+
+        JButton filter_by_tag = new JButton("Filtrer par tag");
+        filter_by_tag.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String selectedTagId = tags_id[tagList.getSelectedIndex()];
+                    MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
+                            selectedTagId);
+                    Application.requestResult = client.getAnnounces();
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                JTable table = new JTable();
+                DefaultTableModel model = new DefaultTableModel(
+                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
+                                "Quartier" },
+                        0);
+                table.setModel(model);
+                table.setEnabled(false);
+                for (Announce announce : Application.requestResult.getAnnounces()) {
+                    String[] rowData = {
+                            announce.getTitle(),
+                            announce.getDate_time_start(),
+                            announce.getDuration(),
+                            announce.getSlots_available().toString(),
+                            announce.getPrice().toString(),
+                            announce.getRef_location_id()
+                    };
+                    model.addRow(rowData);
+                }
+                pagePanel.remove(Application.scrollPane);
+                Application.scrollPane = new JScrollPane(table);
+                pagePanel.add(Application.scrollPane, BorderLayout.CENTER);
+
+                Application.page.add(pagePanel);
+                Application.page.revalidate();
+                Application.page.repaint();
+            }
+        });
+        headerPanel.add(filter_by_tag);
+
+        String locations[] = { "Plaza", "Court", "Pass", "Place", "Park", "Bar St Patricks", "Place de la Mairie",
+                "Parc du chateau", "Salle de fêtes", "Piscine", "Cinéma", "Théâtre", "Mairie" };
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox locationList = new JComboBox(locations);
+        headerPanel.add(locationList);
+
+        JButton filter_by_location = new JButton("Filtrer par quartier");
+        filter_by_location.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String selectedLocation = locationList.getSelectedItem().toString();
+                    MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
+                            "SELECT_ANNOUNCES_FOR_LOCATION",
+                            selectedLocation);
+                    Application.requestResult = client.getAnnouncesLocation();
+                } catch (JsonProcessingException e1) {
+                    e1.printStackTrace();
+                }
+                JTable table = new JTable();
+                DefaultTableModel model = new DefaultTableModel(
+                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
+                                "Quartier" },
+                        0);
+                table.setModel(model);
+                table.setEnabled(false);
+                for (Announce announce : Application.requestResult.getAnnounces()) {
+                    String[] rowData = {
+                            announce.getTitle(),
+                            announce.getDate_time_start(),
+                            announce.getDuration(),
+                            announce.getSlots_available().toString(),
+                            announce.getPrice().toString(),
+                            announce.getRef_location_id()
+                    };
+                    model.addRow(rowData);
+                }
+                pagePanel.remove(Application.scrollPane);
+                Application.scrollPane = new JScrollPane(table);
+                pagePanel.add(scrollPane, BorderLayout.CENTER);
+
+                Application.page.add(pagePanel);
+                Application.page.revalidate();
+                Application.page.repaint();
+            }
+        });
+        headerPanel.add(filter_by_location);
+        pagePanel.add(headerPanel, BorderLayout.NORTH);
+
+        JButton remove_filters = new JButton("Retirer tous les filtres");
+        remove_filters.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+                    Application.requestResult = client.getAnnounces();
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                JTable table = new JTable();
+                DefaultTableModel model = new DefaultTableModel(
+                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
+                                "Quartier" },
+                        0);
+                table.setModel(model);
+                table.setEnabled(false);
+                for (Announce announce : Application.requestResult.getAnnounces()) {
+                    String[] rowData = {
+                            announce.getTitle(),
+                            announce.getDate_time_start(),
+                            announce.getDuration(),
+                            announce.getSlots_available().toString(),
+                            announce.getPrice().toString(),
+                            announce.getRef_location_id()
+                    };
+                    model.addRow(rowData);
+                }
+                pagePanel.remove(Application.scrollPane);
+                Application.scrollPane = new JScrollPane(table);
+                pagePanel.add(scrollPane, BorderLayout.CENTER);
+
+                Application.page.add(pagePanel);
+                Application.page.revalidate();
+                Application.page.repaint();
+            }
+        });
+        headerPanel.add(remove_filters);
+        pagePanel.add(headerPanel, BorderLayout.NORTH);
+
+        JTable table = new JTable();
+        DefaultTableModel model = new DefaultTableModel(
+                new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
+                        "Quartier" },
+                0);
+        table.setModel(model);
+        table.setEnabled(false);
+        for (Announce announce : Application.requestResult.getAnnounces()) {
+            String[] rowData = {
+                    announce.getTitle(),
+                    announce.getDate_time_start(),
+                    announce.getDuration(),
+                    announce.getSlots_available().toString(),
+                    announce.getPrice().toString(),
+                    announce.getRef_location_id()
+            };
+            model.addRow(rowData);
+        }
+        Application.scrollPane = new JScrollPane(table);
+        pagePanel.add(Application.scrollPane, BorderLayout.CENTER);
+
+        Application.page.add(pagePanel);
+        Application.page.revalidate();
+        Application.page.repaint();
+    }
 }
