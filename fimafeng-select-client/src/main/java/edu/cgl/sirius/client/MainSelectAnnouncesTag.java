@@ -40,9 +40,9 @@ public class MainSelectAnnouncesTag {
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         Announce tagId = new Announce();
-        ArrayList<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
+        ArrayList<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
         list.add(null);
         list.add(null);
         list.add(null);

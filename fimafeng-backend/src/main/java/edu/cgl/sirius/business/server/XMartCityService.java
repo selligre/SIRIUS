@@ -124,24 +124,24 @@ public class XMartCityService {
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
                     Announce announceTag = mapper.readValue(request.getRequestBody(), Announce.class);
-                    
+
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
-                    pstmt.setString(1, Integer.toString(announceTag.getAnnounceTags().get(0)));
-                    pstmt.setString(2, Integer.toString(announceTag.getAnnounceTags().get(1)));
-                    pstmt.setString(3, Integer.toString(announceTag.getAnnounceTags().get(2)));
-                    pstmt.setString(4, Integer.toString(announceTag.getAnnounceTags().get(3)));
-                    pstmt.setString(5, Integer.toString(announceTag.getAnnounceTags().get(4)));
+                    pstmt.setString(1, announceTag.getAnnounceTags().get(0));
+                    pstmt.setString(2, announceTag.getAnnounceTags().get(1));
+                    pstmt.setString(3, announceTag.getAnnounceTags().get(2));
+                    pstmt.setString(4, announceTag.getAnnounceTags().get(3));
+                    pstmt.setString(5, announceTag.getAnnounceTags().get(4));
                     pstmt.setString(6, Long.toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
-                    
+
                     res = pstmt.executeQuery();
-                    
+
                     mapper = new ObjectMapper();
                     Announces announces2 = new Announces();
                     while (res.next()) {
                         announce = new Announce().build(res);
                         announces2.add(announce);
                     }
-                
+
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces2));
@@ -172,11 +172,11 @@ public class XMartCityService {
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
                         System.out.println("ID récupéré : " + id);
-                        for (Integer tagId : announce.getAnnounceTags()) {
+                        for (String tagId : announce.getAnnounceTags()) {
                             System.out.println(tagId);
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
                             pstmt.setString(1, id);
-                            pstmt.setString(2, String.valueOf(tagId));
+                            pstmt.setString(2, tagId);
                             pstmt.executeUpdate();
                         }
                     }

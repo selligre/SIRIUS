@@ -94,7 +94,7 @@ public class InsertView extends JPanel {
     private JLabel lbl_annouce_warning;
 
     private HashMap<String, Integer> map_locationsItems;
-    private HashMap<String, Integer> map_tagsItems;
+    private HashMap<String, String> map_tagsItems;
     private HashMap<String, Double> map_durationItems;
 
     private ArrayList<JCheckBox> list_tags_checkBoxs;
@@ -121,19 +121,19 @@ public class InsertView extends JPanel {
                 "Place de la Mairie", "Salle de fêtes", "Théâtre" };
 
         map_tagsItems = new HashMap<>();
-        map_tagsItems.put("Concert", 1);
-        map_tagsItems.put("Chorale", 2);
-        map_tagsItems.put("Festival", 3);
-        map_tagsItems.put("Enfants", 4);
-        map_tagsItems.put("Jeunes", 5);
-        map_tagsItems.put("Adultes", 6);
-        map_tagsItems.put("Séniors", 7);
-        map_tagsItems.put("Couples", 8);
-        map_tagsItems.put("Tout public", 9);
-        map_tagsItems.put("Musée", 10);
-        map_tagsItems.put("Peinture", 11);
-        map_tagsItems.put("Théâtre", 12);
-        map_tagsItems.put("Visites", 13);
+        map_tagsItems.put("Concert", "1");
+        map_tagsItems.put("Chorale", "2");
+        map_tagsItems.put("Festival", "3");
+        map_tagsItems.put("Enfants", "4");
+        map_tagsItems.put("Jeunes", "5");
+        map_tagsItems.put("Adultes", "6");
+        map_tagsItems.put("Séniors", "7");
+        map_tagsItems.put("Couples", "8");
+        map_tagsItems.put("Tout public", "9");
+        map_tagsItems.put("Musée", "10");
+        map_tagsItems.put("Peinture", "11");
+        map_tagsItems.put("Théâtre", "12");
+        map_tagsItems.put("Visites", "13");
 
         list_tags_checkBoxs = new ArrayList<>();
 
@@ -357,7 +357,7 @@ public class InsertView extends JPanel {
             String status = "online";
             String title = checkTitle();
             @SuppressWarnings("unused")
-            ArrayList<Integer> list_tags_id = checkTags();
+            ArrayList<String> list_tags_id = checkTags();
             String description = checkDescription();
             String location_id = String.valueOf(checkLocation());
 
@@ -394,8 +394,8 @@ public class InsertView extends JPanel {
         return title;
     }
 
-    private ArrayList<Integer> checkTags() throws DataFormatException {
-        ArrayList<Integer> selected_tags_id = new ArrayList<>();
+    private ArrayList<String> checkTags() throws DataFormatException {
+        ArrayList<String> selected_tags_id = new ArrayList<>();
         for (JCheckBox jCheckBox : list_tags_checkBoxs) {
             if (jCheckBox.isSelected()) {
                 selected_tags_id.add(map_tagsItems.get(jCheckBox.getText()));
