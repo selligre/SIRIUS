@@ -242,7 +242,23 @@ public class Application {
 
             activitiesPanel.add(headerPanel, BorderLayout.NORTH);
 
-            
+            for (Announce announce : Application.requestResult.getAnnounces()) {
+                System.out.print(announce.getAnounce_id() + " | ");
+                System.out.print(announce.getRef_author_id() + " | ");
+                System.out.print(announce.getPublication_date() + " | ");
+                System.out.print(announce.getStatus() + " | ");
+                System.out.print(announce.getType() + " | ");
+                System.out.print(announce.getTitle() + " | ");
+                System.out.print(announce.getDescription() + " | ");
+                System.out.print(announce.getDate_time_start() + " | ");
+                System.out.print(announce.getDuration() + " | ");
+                System.out.print(announce.getDate_time_end() + " | ");
+                System.out.print(announce.getIs_recurrent() + " | ");
+                System.out.print(announce.getSlots_number() + " | ");
+                System.out.print(announce.getSlots_available() + " | ");
+                System.out.print(announce.getPrice() + " | ");
+                System.out.println(announce.getRef_location_id() + " | ");
+            }
 
             JScrollPane contentPanel = new JScrollPane();
             contentPanel.setLayout(new ScrollPaneLayout());
