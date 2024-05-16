@@ -242,7 +242,7 @@ public class Application {
 
             String requestResult = Application.data;
             // String[] requestResultSplited = requestResult.split("Announces{announces=[");
-            String[] requestResultSplited = requestResult.split("");
+            String[] requestResultSplited = requestResult.split("1324");
             for (String s : requestResultSplited) {
                 System.out.println("stringstringstringstringstring");
                 System.out.println("stringstringstringstringstring");
