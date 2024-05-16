@@ -207,6 +207,9 @@ public class InsertView extends JPanel {
         list_tags_checkBoxs.add(cbtn_visits);
 
         // set components properties
+        aroundMeButton.setEnabled(false);
+        activitiesButton.setEnabled(false);
+        createButton.setEnabled(false);
         rbtn_activity.setSelected(true);
         rbtn_loan.setEnabled(false);
         rbtn_service.setEnabled(false);

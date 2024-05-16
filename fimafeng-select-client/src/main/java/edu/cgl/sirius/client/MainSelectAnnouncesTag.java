@@ -35,19 +35,12 @@ public class MainSelectAnnouncesTag {
         return announces;
     }
 
-    public MainSelectAnnouncesTag(String requestOrder, String ref_tag_id) throws IOException, InterruptedException {
+    public MainSelectAnnouncesTag(String requestOrder, ArrayList<String> ref_tag_id) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
         Announce tagId = new Announce();
-        ArrayList<String> list = new ArrayList<>();
-        list.add("1");
-        list.add("2");
-        list.add(null);
-        list.add(null);
-        list.add(null);
-        tagId.setAnnounceTags(list);
-
+        tagId.setAnnounceTags(ref_tag_id);
 
         int birthdate = 0;
 

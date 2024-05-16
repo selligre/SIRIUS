@@ -10,6 +10,7 @@ import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.naming.ldap.SortKey;
 import javax.swing.BorderFactory;
@@ -218,20 +219,44 @@ public class Application {
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new FlowLayout());
 
-        String tags[] = { "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
+        String tags[] = { "-", "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
                 "Théatre", "Visite", "Adultes", "Chorale", "Enfants", "Jeunes" };
-        String tags_id[] = { "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
+        String tags_id[] = { null, "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        final JComboBox tagList = new JComboBox(tags);
-        headerPanel.add(tagList);
+        final JComboBox tagList1 = new JComboBox(tags);
+        headerPanel.add(tagList1);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList2 = new JComboBox(tags);
+        headerPanel.add(tagList2);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList3 = new JComboBox(tags);
+        headerPanel.add(tagList3);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList4 = new JComboBox(tags);
+        headerPanel.add(tagList4);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList5 = new JComboBox(tags);
+        headerPanel.add(tagList5);
 
-        JButton filter_by_tag = new JButton("Filtrer par tag");
+        JButton filter_by_tag = new JButton("Filtrer par tag(s)");
         filter_by_tag.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String selectedTagId = tags_id[tagList.getSelectedIndex()];
+                    String selectedTagId1 = tags_id[tagList1.getSelectedIndex()];
+                    String selectedTagId2 = tags_id[tagList2.getSelectedIndex()];
+                    String selectedTagId3 = tags_id[tagList3.getSelectedIndex()];
+                    String selectedTagId4 = tags_id[tagList4.getSelectedIndex()];
+                    String selectedTagId5 = tags_id[tagList5.getSelectedIndex()];
+
+                    ArrayList<String> selectedTagIds = new ArrayList<>();
+                    selectedTagIds.add(selectedTagId1);
+                    selectedTagIds.add(selectedTagId2);
+                    selectedTagIds.add(selectedTagId3);
+                    selectedTagIds.add(selectedTagId4);
+                    selectedTagIds.add(selectedTagId5);
+
                     MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
-                            selectedTagId);
+                            selectedTagIds);
                     Application.requestResult = client.getAnnounces();
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();

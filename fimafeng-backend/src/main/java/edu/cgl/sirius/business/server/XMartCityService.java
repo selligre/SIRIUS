@@ -28,7 +28,7 @@ public class XMartCityService {
         SELECT_ANNOUNCES_FOR_LOCATION(
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
-                "SELECT * FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = ?::int;SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -131,7 +131,8 @@ public class XMartCityService {
                     pstmt.setString(3, announceTag.getAnnounceTags().get(2));
                     pstmt.setString(4, announceTag.getAnnounceTags().get(3));
                     pstmt.setString(5, announceTag.getAnnounceTags().get(4));
-                    pstmt.setString(6, Long.toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
+                    pstmt.setString(6, Long
+                            .toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
 
                     res = pstmt.executeQuery();
 
