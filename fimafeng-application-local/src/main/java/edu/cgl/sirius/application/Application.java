@@ -54,7 +54,7 @@ public class Application {
     private JButton aroundMeButton;
     private JPanel pageContent;
 
-    public static String data;
+    public static Announces requestResult;
 
     public static void main(String[] args) {
         new Application();
@@ -199,16 +199,15 @@ public class Application {
     public void selectActivities() {
         try {
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
-            String result = client.getAnnounces().toString();
-            Application.data = result;
+            Application.requestResult = client.getAnnounces();
 
-            JPanel panel = new JPanel();
-            panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            panel.setBounds(25, 175, 1220, 490);
-            panel.setLayout(new BorderLayout());
+            JPanel activitiesPanel = new JPanel();
+            activitiesPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            activitiesPanel.setBounds(25, 175, 1220, 490);
+            activitiesPanel.setLayout(new BorderLayout());
 
-            JPanel header = new JPanel();
-            header.setLayout(new FlowLayout());
+            JPanel headerPanel = new JPanel();
+            headerPanel.setLayout(new FlowLayout());
 
             JButton filter_by_tag = new JButton("Filtrer par tag");
             filter_by_tag.addActionListener(new ActionListener() {
@@ -217,14 +216,13 @@ public class Application {
                     // SelectTagView selectTagView = new SelectTagView();
                     try {
                         MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID", "1");
-                        String result = client.getAnnounces().toString();
-                        Application.data = result;
+                        Application.requestResult = client.getAnnounces();
                     } catch (IOException | InterruptedException e1) {
                         e1.printStackTrace();
                     }
                 }
             });
-            header.add(filter_by_tag);
+            headerPanel.add(filter_by_tag);
             JButton filter_by_location = new JButton("Filtrer par quartier");
             filter_by_location.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -233,46 +231,28 @@ public class Application {
                         MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
                                 "SELECT_ANNOUNCES_FOR_LOCATION",
                                 "Théâtre");
-                        String result = client.getAnnouncesLocation().toString();
-                        Application.data = result;
+                        Application.requestResult = client.getAnnouncesLocation();
                     } catch (JsonProcessingException e1) {
                         e1.printStackTrace();
                     }
 
                 }
             });
-            header.add(filter_by_location);
+            headerPanel.add(filter_by_location);
 
-            panel.add(header, BorderLayout.NORTH);
+            activitiesPanel.add(headerPanel, BorderLayout.NORTH);
 
-            JScrollPane request_result_pane = new JScrollPane();
-            request_result_pane.setLayout(new ScrollPaneLayout());
-            request_result_pane.setBounds(25, 175, 1220, 490);
+            
 
-            // Assuming you have the JSON String in a variable called jsonString
-            String jsonString = Application.data;
-            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
-            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
-            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
-            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
-            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
-            System.out.println(jsonString);
+            JScrollPane contentPanel = new JScrollPane();
+            contentPanel.setLayout(new ScrollPaneLayout());
+            contentPanel.setBounds(25, 175, 1220, 490);
 
-            // Create an ObjectMapper instance
-            // ObjectMapper mapper = new ObjectMapper();
-
-            // Parse the JSON string and store it in an Announce[] array
-            // Announce[] announces = mapper.readValue(jsonString, Announce[].class);
-
-            // for (Announce announce : announces) {
-            // System.out.println(announce);
-            // }
-
-            panel.add(request_result_pane, BorderLayout.CENTER);
+            activitiesPanel.add(contentPanel, BorderLayout.CENTER);
 
             this.page.remove(this.pageContent);
-            this.pageContent = panel;
-            this.page.add(panel);
+            this.pageContent = activitiesPanel;
+            this.page.add(activitiesPanel);
             this.page.validate();
             this.page.repaint();
         } catch (
