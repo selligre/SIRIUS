@@ -2,6 +2,7 @@ package edu.cgl.sirius.client;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.UUID;
 
@@ -34,12 +35,12 @@ public class MainSelectAnnouncesTag {
         return announces;
     }
 
-    public MainSelectAnnouncesTag(String requestOrder, String ref_tag_id) throws IOException, InterruptedException {
+    public MainSelectAnnouncesTag(String requestOrder, ArrayList<String> ref_tag_id) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        AnnounceTag tagId = new AnnounceTag();
-        tagId.setRef_tag_id(ref_tag_id);
+        Announce tagId = new Announce();
+        tagId.setAnnounceTags(ref_tag_id);
 
         int birthdate = 0;
 

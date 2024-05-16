@@ -28,7 +28,7 @@ public class XMartCityService {
         SELECT_ANNOUNCES_FOR_LOCATION(
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
-                "SELECT * FROM announces JOIN announce_tags ON ref_announce_id = announce_id WHERE ref_tag_id = ?::int;"),
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -123,10 +123,17 @@ public class XMartCityService {
 
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
-                    AnnounceTag announceTag = mapper.readValue(request.getRequestBody(), AnnounceTag.class);
+                    Announce announceTag = mapper.readValue(request.getRequestBody(), Announce.class);
 
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
-                    pstmt.setString(1, announceTag.getRef_tag_id());
+                    pstmt.setString(1, announceTag.getAnnounceTags().get(0));
+                    pstmt.setString(2, announceTag.getAnnounceTags().get(1));
+                    pstmt.setString(3, announceTag.getAnnounceTags().get(2));
+                    pstmt.setString(4, announceTag.getAnnounceTags().get(3));
+                    pstmt.setString(5, announceTag.getAnnounceTags().get(4));
+                    pstmt.setString(6, Long
+                            .toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
+
                     res = pstmt.executeQuery();
 
                     mapper = new ObjectMapper();
@@ -166,11 +173,11 @@ public class XMartCityService {
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
                         System.out.println("ID récupéré : " + id);
-                        for (Integer tagId : announce.getAnnounceTags()) {
+                        for (String tagId : announce.getAnnounceTags()) {
                             System.out.println(tagId);
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
                             pstmt.setString(1, id);
-                            pstmt.setString(2, String.valueOf(tagId));
+                            pstmt.setString(2, tagId);
                             pstmt.executeUpdate();
                         }
                     }
