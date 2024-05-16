@@ -375,7 +375,7 @@ public class InsertView extends JPanel {
             new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date,
                     status, "activité", title,
                     description, date_time_start, duration, date_time_end, is_recurrent, null,
-                    null, price, location_id);
+                    null, price, location_id, list_tags_id);
 
         } catch (DataFormatException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Saisie incorrecte", JOptionPane.ERROR_MESSAGE);
