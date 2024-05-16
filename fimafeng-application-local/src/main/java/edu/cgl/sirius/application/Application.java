@@ -24,11 +24,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
+import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
+import edu.cgl.sirius.client.SelectAllAnnouncesClientRequest;
 
 public class Application {
     private final int LABEL_SIZE = 10;
@@ -245,38 +249,24 @@ public class Application {
             request_result_pane.setLayout(new ScrollPaneLayout());
             request_result_pane.setBounds(25, 175, 1220, 490);
 
-            String requestResult = Application.data;
-            // String[] columnNames = { "Titre", "Date", "Places restantes", "Prix",
-            // "Quartier" };
-            // requestResult = requestResult.substring("Announces{announces=[".length());
-            // String[] requestResultSplited = requestResult.split("Announce");
+            // Assuming you have the JSON String in a variable called jsonString
+            String jsonString = Application.data;
+            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
+            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
+            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
+            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
+            System.out.println("jsonStringjsonStringjsonStringjsonStringjsonString");
+            System.out.println(jsonString);
 
-            // for (String s : requestResultSplited) {
-            // System.out.println(s);
+            // Create an ObjectMapper instance
+            // ObjectMapper mapper = new ObjectMapper();
+
+            // Parse the JSON string and store it in an Announce[] array
+            // Announce[] announces = mapper.readValue(jsonString, Announce[].class);
+
+            // for (Announce announce : announces) {
+            // System.out.println(announce);
             // }
-
-            // Remove the unwanted starting part
-            String jsonData = requestResult.substring("Announces{announces=[".length());
-
-            // Parse the JSON data (assuming it's valid JSON)
-            String[][] announceData = parseAnnounceData(jsonData);
-
-            // Create a table model with column names
-            String[] columnNames = { "announce_id", "title", "description", "date_time_start", "duration",
-                    "date_time_end" };
-            DefaultTableModel model = new DefaultTableModel(announceData, columnNames);
-
-            // Create a JTable and set the model
-            JTable table = new JTable(model);
-
-            // Wrap the table in a JScrollPane for scrolling
-            JScrollPane scrollPane = new JScrollPane(table);
-
-            // Create a JFrame and add the scroll pane
-            JFrame frame = new JFrame("Announcements");
-            frame.setSize(800, 400); // Adjust size as needed
-            frame.add(scrollPane);
-            frame.setVisible(true);
 
             panel.add(request_result_pane, BorderLayout.CENTER);
 
@@ -291,34 +281,6 @@ public class Application {
             e.printStackTrace();
         }
 
-    }
-
-    // This method parses the JSON data and extracts relevant announcement
-    // information
-    private static String[][] parseAnnounceData(String jsonData) {
-        // You can use a JSON parsing library like Gson or org.json to parse the data
-        // Here's an example using org.json (replace with your preferred library)
-        System.out.println("jsonDatajsonDatajsonDatajsonDatajsonData");
-        System.out.println("jsonDatajsonDatajsonDatajsonDatajsonData");
-        System.out.println("jsonDatajsonDatajsonDatajsonDatajsonData");
-        System.out.println("jsonDatajsonDatajsonDatajsonDatajsonData");
-        System.out.println("jsonDatajsonDatajsonDatajsonDatajsonData");
-        System.out.println(jsonData);
-        JSONArray announces = new JSONArray("[" + jsonData + "]");
-        String[][] data = new String[announces.length()][]; // Assuming 6 columns (adjust as needed)
-
-        for (int i = 0; i < announces.length(); i++) {
-            JSONObject announce = announces.getJSONObject(i);
-            data[i] = new String[] {
-                    announce.getString("title"),
-                    announce.getString("date_time_start"),
-                    announce.getString("slots_available"),
-                    announce.getString("price"),
-                    announce.getString("ref_location_id")
-            };
-        }
-
-        return data;
     }
 
 }
