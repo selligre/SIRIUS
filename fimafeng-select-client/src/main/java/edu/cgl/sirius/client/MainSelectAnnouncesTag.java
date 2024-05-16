@@ -39,13 +39,14 @@ public class MainSelectAnnouncesTag {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        AnnounceTag tagId = new AnnounceTag();
+        Announce tagId = new Announce();
         ArrayList<Integer> list = new ArrayList<>();
         list.add(1);
         list.add(2);
         list.add(null);
         list.add(null);
         list.add(null);
+        tagId.setAnnounceTags(list);
 
 
         int birthdate = 0;
