@@ -123,19 +123,25 @@ public class XMartCityService {
 
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
-                    AnnounceTag announceTag = mapper.readValue(request.getRequestBody(), AnnounceTag.class);
-
+                    Announce announceTag = mapper.readValue(request.getRequestBody(), Announce.class);
+                    
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
-                    pstmt.setString(1, announceTag.getRef_tag_id());
+                    pstmt.setString(1, Integer.toString(announceTag.getAnnounceTags().get(0)));
+                    pstmt.setString(2, Integer.toString(announceTag.getAnnounceTags().get(1)));
+                    pstmt.setString(3, Integer.toString(announceTag.getAnnounceTags().get(2)));
+                    pstmt.setString(4, Integer.toString(announceTag.getAnnounceTags().get(3)));
+                    pstmt.setString(5, Integer.toString(announceTag.getAnnounceTags().get(4)));
+                    pstmt.setString(6, Long.toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
+                    
                     res = pstmt.executeQuery();
-
+                    
                     mapper = new ObjectMapper();
                     Announces announces2 = new Announces();
                     while (res.next()) {
                         announce = new Announce().build(res);
                         announces2.add(announce);
                     }
-
+                
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces2));
