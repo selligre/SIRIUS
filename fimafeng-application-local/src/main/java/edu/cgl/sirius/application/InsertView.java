@@ -333,15 +333,15 @@ public class InsertView extends JPanel {
         lbl_annouce_warning.setBounds(515, 510, 260, 30);
         // enable or disable components
         this.logoButton.setEnabled(false);
-        this.createButton.setEnabled(true);
+        this.createButton.setEnabled(false);
         this.logOutButton.setEnabled(false);
         this.accountButton.setEnabled(false);
         this.searchField.setEnabled(false);
         this.searchButton.setEnabled(false);
-        this.activitiesButton.setEnabled(true);
+        this.activitiesButton.setEnabled(false);
         this.materialsButton.setEnabled(false);
         this.servicesButton.setEnabled(false);
-        this.aroundMeButton.setEnabled(true);
+        this.aroundMeButton.setEnabled(false);
     }
 
     private void checkInputs() {
