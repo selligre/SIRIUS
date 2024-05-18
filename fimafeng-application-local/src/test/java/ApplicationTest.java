@@ -23,7 +23,7 @@ public class ApplicationTest {
         try {
             app = new Application();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("TEST - ERROR: CLIENT-SIDE CRASH.");
         }
 
         // THEN
@@ -42,7 +42,7 @@ public class ApplicationTest {
         try {
             MainSelectAnnounces mainSelectAnnounces = new MainSelectAnnounces(request);
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("TEST - ERROR: SERVER-SIDE CRASH OR CONNECTION PROBLEM.");
         }
 
         // THEN
@@ -64,7 +64,7 @@ public class ApplicationTest {
             MainSelectAnnouncesLocation mainSelectAnnouncesLocation = new MainSelectAnnouncesLocation(request,
                     requestLocation);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("TEST - ERROR: SERVER-SIDE CRASH OR CONNECTION PROBLEM.");
         }
 
         // THEN
@@ -86,7 +86,7 @@ public class ApplicationTest {
             MainSelectAnnouncesTag mainSelectAnnouncesTag = new MainSelectAnnouncesTag(request,
                     requestTags);
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("TEST - ERROR: SERVER-SIDE CRASH OR CONNECTION PROBLEM.");
         }
 
         // THEN
@@ -108,7 +108,7 @@ public class ApplicationTest {
             MainSelectAnnounces mainSelectAnnounces = new MainSelectAnnounces(request);
             result = mainSelectAnnounces.getAnnounces().toString();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("TEST - ERROR: DATABASE-SIDE ERROR CAUSING EMPTY TABLES.");
         }
 
         // THEN
