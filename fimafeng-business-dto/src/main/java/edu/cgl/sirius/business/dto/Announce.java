@@ -25,7 +25,7 @@ public class Announce {
     private String slots_available;
     private String price;
     private String ref_location_id;
-    private ArrayList<Integer> announceTags;
+    private ArrayList<String> announceTags;
 
     public Announce() {
     }
@@ -122,7 +122,7 @@ public class Announce {
         return price;
     }
 
-    public ArrayList<Integer> getAnnounceTags(){
+    public ArrayList<String> getAnnounceTags(){
         return announceTags;
     }
 
@@ -206,7 +206,7 @@ public class Announce {
     }
 
     @JsonProperty("announceTags")
-    public void setAnnounceTags(ArrayList<Integer> announceTags) {
+    public void setAnnounceTags(ArrayList<String> announceTags) {
         this.announceTags = announceTags;
     }
 

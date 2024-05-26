@@ -14,7 +14,7 @@ import edu.cgl.sirius.commons.Request;
 public class SelectAllAnnouncesTagClientRequest extends ClientRequest<Object, Announces> {
 
     public SelectAllAnnouncesTagClientRequest(
-            NetworkConfig networkConfig, int myBirthDate, Request request, AnnounceTag info, byte[] bytes)
+            NetworkConfig networkConfig, int myBirthDate, Request request, Announce info, byte[] bytes)
             throws IOException {
         super(networkConfig, myBirthDate, request, info, bytes);
     }

@@ -94,7 +94,7 @@ public class InsertView extends JPanel {
     private JLabel lbl_annouce_warning;
 
     private HashMap<String, Integer> map_locationsItems;
-    private HashMap<String, Integer> map_tagsItems;
+    private HashMap<String, String> map_tagsItems;
     private HashMap<String, Double> map_durationItems;
 
     private ArrayList<JCheckBox> list_tags_checkBoxs;
@@ -121,19 +121,19 @@ public class InsertView extends JPanel {
                 "Place de la Mairie", "Salle de fêtes", "Théâtre" };
 
         map_tagsItems = new HashMap<>();
-        map_tagsItems.put("Concert", 1);
-        map_tagsItems.put("Chorale", 2);
-        map_tagsItems.put("Festival", 3);
-        map_tagsItems.put("Enfants", 4);
-        map_tagsItems.put("Jeunes", 5);
-        map_tagsItems.put("Adultes", 6);
-        map_tagsItems.put("Séniors", 7);
-        map_tagsItems.put("Couples", 8);
-        map_tagsItems.put("Tout public", 9);
-        map_tagsItems.put("Musée", 10);
-        map_tagsItems.put("Peinture", 11);
-        map_tagsItems.put("Théâtre", 12);
-        map_tagsItems.put("Visites", 13);
+        map_tagsItems.put("Concert", "1");
+        map_tagsItems.put("Chorale", "2");
+        map_tagsItems.put("Festival", "3");
+        map_tagsItems.put("Enfants", "4");
+        map_tagsItems.put("Jeunes", "5");
+        map_tagsItems.put("Adultes", "6");
+        map_tagsItems.put("Séniors", "7");
+        map_tagsItems.put("Couples", "8");
+        map_tagsItems.put("Tout public", "9");
+        map_tagsItems.put("Musée", "10");
+        map_tagsItems.put("Peinture", "11");
+        map_tagsItems.put("Théâtre", "12");
+        map_tagsItems.put("Visites", "13");
 
         list_tags_checkBoxs = new ArrayList<>();
 
@@ -207,6 +207,9 @@ public class InsertView extends JPanel {
         list_tags_checkBoxs.add(cbtn_visits);
 
         // set components properties
+        aroundMeButton.setEnabled(false);
+        activitiesButton.setEnabled(false);
+        createButton.setEnabled(false);
         rbtn_activity.setSelected(true);
         rbtn_loan.setEnabled(false);
         rbtn_service.setEnabled(false);
@@ -330,15 +333,15 @@ public class InsertView extends JPanel {
         lbl_annouce_warning.setBounds(515, 510, 260, 30);
         // enable or disable components
         this.logoButton.setEnabled(false);
-        this.createButton.setEnabled(true);
+        this.createButton.setEnabled(false);
         this.logOutButton.setEnabled(false);
         this.accountButton.setEnabled(false);
         this.searchField.setEnabled(false);
         this.searchButton.setEnabled(false);
-        this.activitiesButton.setEnabled(true);
+        this.activitiesButton.setEnabled(false);
         this.materialsButton.setEnabled(false);
         this.servicesButton.setEnabled(false);
-        this.aroundMeButton.setEnabled(true);
+        this.aroundMeButton.setEnabled(false);
     }
 
     private void checkInputs() {
@@ -357,7 +360,7 @@ public class InsertView extends JPanel {
             String status = "online";
             String title = checkTitle();
             @SuppressWarnings("unused")
-            ArrayList<Integer> list_tags_id = checkTags();
+            ArrayList<String> list_tags_id = checkTags();
             String description = checkDescription();
             String location_id = String.valueOf(checkLocation());
 
@@ -375,7 +378,7 @@ public class InsertView extends JPanel {
             new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date,
                     status, "activité", title,
                     description, date_time_start, duration, date_time_end, is_recurrent, null,
-                    null, price, location_id);
+                    null, price, location_id, list_tags_id);
 
         } catch (DataFormatException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Saisie incorrecte", JOptionPane.ERROR_MESSAGE);
@@ -394,8 +397,8 @@ public class InsertView extends JPanel {
         return title;
     }
 
-    private ArrayList<Integer> checkTags() throws DataFormatException {
-        ArrayList<Integer> selected_tags_id = new ArrayList<>();
+    private ArrayList<String> checkTags() throws DataFormatException {
+        ArrayList<String> selected_tags_id = new ArrayList<>();
         for (JCheckBox jCheckBox : list_tags_checkBoxs) {
             if (jCheckBox.isSelected()) {
                 selected_tags_id.add(map_tagsItems.get(jCheckBox.getText()));

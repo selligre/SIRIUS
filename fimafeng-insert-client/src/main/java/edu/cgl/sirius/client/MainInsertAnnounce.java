@@ -33,7 +33,7 @@ public class MainInsertAnnounce {
     public MainInsertAnnounce(String requestOrder, String ref_author_id, String publication_date, String status,
             String type, String title, String description, String date_time_start, String duration,
             String date_time_end, String is_recurrent, String slots_number, String slots_available, String price,
-            String ref_location_id) throws IOException, InterruptedException {
+            String ref_location_id, ArrayList<String> tags_ids) throws IOException, InterruptedException {
         final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
@@ -54,11 +54,7 @@ public class MainInsertAnnounce {
         announce.setSlots_available(slots_available);
         announce.setPrice(price);
         announce.setRef_location_id(ref_location_id);
-        ArrayList<Integer> nb = new ArrayList<>();
-        for (int i=1; i<3; i++){
-            nb.add(i);
-        }
-        announce.setAnnounceTags(nb);
+        announce.setAnnounceTags(tags_ids);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
