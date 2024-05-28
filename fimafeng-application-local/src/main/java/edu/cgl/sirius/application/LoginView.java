@@ -40,20 +40,24 @@ public class LoginView {
         JPanel panel = new JPanel();
 
         // construct components
-        JTextField jcomp1 = new JTextField(5);
-        JLabel jcomp2 = new JLabel("Identifiant :");
-        JLabel jcomp3 = new JLabel("Mot de passe :");
-        JPasswordField jcomp4 = new JPasswordField(5);
-        JLabel jcomp5 = new JLabel("VILLE PARTAGEE");
-        JButton jcomp6 = new JButton("SE CONNECTER");
-        jcomp6.addActionListener(new ActionListener() {
+        JTextField idTextField = new JTextField();
+        JLabel idLabel = new JLabel("Identifiant :");
+        JLabel pwdLabel = new JLabel("Mot de passe :");
+        JPasswordField pwdPasswordField = new JPasswordField(5);
+        JLabel titleLabel = new JLabel("VILLE PARTAGEE");
+        JButton connexionButton = new JButton("SE CONNECTER");
+        connexionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Verification des champs et connexion.");
+                System.out.println("connexionButton");
+                // String message = "Identifiant : " + idTextField.getText()
+                // + ", Mot de passe : " + pwdPasswordField.getPassword().toString();
+                // System.out.println(message);
+                // JOptionPane.showMessageDialog(null, message);
             }
         });
-        JButton jcomp7 = new JButton("S'INSCRIRE");
-        jcomp7.addActionListener(new ActionListener() {
+        JButton subscribeButton = new JButton("S'INSCRIRE");
+        subscribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new SubscribeView();
@@ -65,35 +69,35 @@ public class LoginView {
         panel.setLayout(null);
 
         // construct components
-        jcomp1 = new JTextField(5);
-        jcomp2 = new JLabel("Identifiant :");
-        jcomp3 = new JLabel("Mot de passe :");
-        jcomp4 = new JPasswordField(5);
-        jcomp5 = new JLabel("VILLE PARTAGEE - PAGE DE CONNEXION");
-        jcomp6 = new JButton("SE CONNECTER");
-        jcomp7 = new JButton("S'INSCRIRE");
+        idTextField = new JTextField(5);
+        idLabel = new JLabel("Identifiant :");
+        pwdLabel = new JLabel("Mot de passe :");
+        pwdPasswordField = new JPasswordField(5);
+        titleLabel = new JLabel("VILLE PARTAGEE - PAGE DE CONNEXION");
+        connexionButton = new JButton("SE CONNECTER");
+        subscribeButton = new JButton("S'INSCRIRE");
 
         // adjust size and set layout
         panel.setPreferredSize(new Dimension(1280, 720));
         panel.setLayout(null);
 
-        // add components
-        panel.add(jcomp1);
-        panel.add(jcomp2);
-        panel.add(jcomp3);
-        panel.add(jcomp4);
-        panel.add(jcomp5);
-        panel.add(jcomp6);
-        panel.add(jcomp7);
-
         // set component bounds (only needed by Absolute Positioning)
-        jcomp1.setBounds(600, 300, 100, 25);
-        jcomp2.setBounds(500, 300, 100, 25);
-        jcomp3.setBounds(500, 350, 100, 25);
-        jcomp4.setBounds(600, 350, 100, 25);
-        jcomp5.setBounds(480, 150, 300, 25);
-        jcomp6.setBounds(500, 400, 200, 25);
-        jcomp7.setBounds(500, 500, 200, 25);
+        idTextField.setBounds(550, 300, 200, 25);
+        idLabel.setBounds(450, 300, 100, 25);
+        pwdLabel.setBounds(450, 350, 100, 25);
+        pwdPasswordField.setBounds(550, 350, 200, 25);
+        titleLabel.setBounds(480, 150, 300, 25);
+        connexionButton.setBounds(500, 400, 200, 25);
+        subscribeButton.setBounds(500, 500, 200, 25);
+
+        // add components
+        panel.add(idTextField);
+        panel.add(idLabel);
+        panel.add(pwdLabel);
+        panel.add(pwdPasswordField);
+        panel.add(titleLabel);
+        panel.add(connexionButton);
+        panel.add(subscribeButton);
 
         frame.add(panel);
 
