@@ -43,6 +43,7 @@ import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
 import edu.cgl.sirius.client.SelectAllAnnouncesClientRequest;
+import edu.cgl.sirius.commons.AnnounceParser;
 
 public class Application {
     private final int LABEL_SIZE = 10;
@@ -204,6 +205,8 @@ public class Application {
         this.activitiesButton.setBackground(Color.DARK_GRAY);
         this.activitiesButton.setEnabled(false);
 
+        AnnounceParser parser = new AnnounceParser();
+
         try {
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             Application.requestResult = client.getAnnounces();
@@ -271,10 +274,10 @@ public class Application {
                 for (Announce announce : Application.requestResult.getAnnounces()) {
                     String[] rowData = {
                             announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
+                            parser.parseDateTime(announce.getDate_time_start()),
+                            parser.parseDuration(announce.getDuration()),
                             announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
+                            parser.parsePrice(announce.getPrice()),
                             announce.getRef_location_id()
                     };
                     model.addRow(rowData);
@@ -320,10 +323,10 @@ public class Application {
                 for (Announce announce : Application.requestResult.getAnnounces()) {
                     String[] rowData = {
                             announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
+                            parser.parseDateTime(announce.getDate_time_start()),
+                            parser.parseDuration(announce.getDuration()),
                             announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
+                            parser.parsePrice(announce.getPrice()),
                             announce.getRef_location_id()
                     };
                     model.addRow(rowData);
@@ -359,10 +362,10 @@ public class Application {
                 for (Announce announce : Application.requestResult.getAnnounces()) {
                     String[] rowData = {
                             announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
+                            parser.parseDateTime(announce.getDate_time_start()),
+                            parser.parseDuration(announce.getDuration()),
                             announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
+                            parser.parsePrice(announce.getPrice()),
                             announce.getRef_location_id()
                     };
                     model.addRow(rowData);
@@ -389,10 +392,10 @@ public class Application {
         for (Announce announce : Application.requestResult.getAnnounces()) {
             String[] rowData = {
                     announce.getTitle(),
-                    announce.getDate_time_start(),
-                    announce.getDuration(),
+                    parser.parseDateTime(announce.getDate_time_start()),
+                    parser.parseDuration(announce.getDuration()),
                     announce.getSlots_available().toString(),
-                    announce.getPrice().toString(),
+                    parser.parsePrice(announce.getPrice()),
                     announce.getRef_location_id()
             };
             model.addRow(rowData);

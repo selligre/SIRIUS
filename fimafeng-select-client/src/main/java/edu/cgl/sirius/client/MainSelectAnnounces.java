@@ -18,6 +18,7 @@ import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
 import edu.cgl.sirius.client.commons.NetworkConfig;
+import edu.cgl.sirius.commons.AnnounceParser;
 import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.commons.Request;
 
@@ -28,6 +29,7 @@ public class MainSelectAnnounces {
     private static final String requestOrder = "SELECT_ALL_ANNOUNCES";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
     private static Announces announces;
+    private static AnnounceParser parser;
 
     public Announces getAnnounces() {
         return announces;
@@ -51,6 +53,8 @@ public class MainSelectAnnounces {
                 birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
 
+        parser = new AnnounceParser();
+
         while (!clientRequests.isEmpty()) {
             final ClientRequest joinedClientRequest = clientRequests.pop();
             joinedClientRequest.join();
@@ -67,13 +71,13 @@ public class MainSelectAnnounces {
                         announce.getType(),
                         announce.getTitle(),
                         announce.getDescription(),
-                        announce.getDate_time_start(),
-                        announce.getDuration(),
-                        announce.getDate_time_end(),
+                        parser.parseDateTime(announce.getDate_time_start()),
+                        parser.parseDuration(announce.getDuration()),
+                        parser.parseDateTime(announce.getDate_time_end()),
                         announce.getIs_recurrent(),
                         announce.getSlots_number(),
                         announce.getSlots_available(),
-                        announce.getPrice(),
+                        parser.parsePrice(announce.getPrice()),
                         announce.getRef_location_id());
             }
             asciiTable.addRule();
