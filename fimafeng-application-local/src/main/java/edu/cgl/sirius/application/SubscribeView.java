@@ -1,10 +1,13 @@
 package edu.cgl.sirius.application;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -22,50 +25,62 @@ public class SubscribeView {
         JPanel panel = new JPanel();
 
         // construct components
-        JLabel jcomp1 = new JLabel("INSCRIPTION");
-        JLabel jcomp2 = new JLabel("Prénom :");
-        JTextField jcomp3 = new JTextField(5);
-        JLabel jcomp4 = new JLabel("Nom :");
-        JTextField jcomp5 = new JTextField(5);
-        JLabel jcomp6 = new JLabel("Pseudo :");
-        JTextField jcomp7 = new JTextField(5);
-        JLabel jcomp8 = new JLabel("Email :");
-        JTextField jcomp9 = new JTextField(5);
-        JLabel jcomp10 = new JLabel("Mot de passe :");
-        JPasswordField jcomp11 = new JPasswordField(5);
-        JButton jcomp12 = new JButton("S'INSCRIRE");
+        JLabel titleLabel = new JLabel("INSCRIPTION");
+        JLabel firstNameLabel = new JLabel("Prénom :");
+        JTextField firstNameTextField = new JTextField(5);
+        JLabel lastNameLabel = new JLabel("Nom :");
+        JTextField lastNameTextField = new JTextField(5);
+        JLabel pseudoLabel = new JLabel("Pseudo :");
+        JTextField pseudoTextField = new JTextField(5);
+        JLabel emailLabel = new JLabel("Email :");
+        JTextField emailTextField = new JTextField(5);
+        JLabel passwordLabel = new JLabel("Mot de passe :");
+        JPasswordField passwordPasswordField = new JPasswordField(5);
+        JButton subscribeButton = new JButton("S'INSCRIRE");
+        subscribeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("subscribeButton");
+                String message = "Prénom : " + firstNameTextField.getText()
+                        + ", Nom : " + lastNameTextField.getText()
+                        + ", Pseudo : " + pseudoTextField.getText()
+                        + ", Email : " + emailTextField.getText()
+                        + ", Mot de passe : " + new String(passwordPasswordField.getPassword());
+                JOptionPane.showMessageDialog(null, message);
+            }
+        });
 
         // adjust size and set layout
         panel.setPreferredSize(new Dimension(800, 600));
         panel.setLayout(null);
 
         // add components
-        panel.add(jcomp1);
-        panel.add(jcomp2);
-        panel.add(jcomp3);
-        panel.add(jcomp4);
-        panel.add(jcomp5);
-        panel.add(jcomp6);
-        panel.add(jcomp7);
-        panel.add(jcomp8);
-        panel.add(jcomp9);
-        panel.add(jcomp10);
-        panel.add(jcomp11);
-        panel.add(jcomp12);
+        panel.add(titleLabel);
+        panel.add(firstNameLabel);
+        panel.add(firstNameTextField);
+        panel.add(lastNameLabel);
+        panel.add(lastNameTextField);
+        panel.add(pseudoLabel);
+        panel.add(pseudoTextField);
+        panel.add(emailLabel);
+        panel.add(emailTextField);
+        panel.add(passwordLabel);
+        panel.add(passwordPasswordField);
+        panel.add(subscribeButton);
 
         // set component bounds (only needed by Absolute Positioning)
-        jcomp1.setBounds(350, 50, 100, 25);
-        jcomp2.setBounds(300, 150, 100, 25);
-        jcomp3.setBounds(400, 150, 200, 25);
-        jcomp4.setBounds(300, 200, 100, 25);
-        jcomp5.setBounds(400, 200, 200, 25);
-        jcomp6.setBounds(300, 250, 100, 25);
-        jcomp7.setBounds(400, 250, 200, 25);
-        jcomp8.setBounds(300, 300, 100, 25);
-        jcomp9.setBounds(400, 300, 200, 25);
-        jcomp10.setBounds(300, 350, 100, 25);
-        jcomp11.setBounds(400, 350, 200, 25);
-        jcomp12.setBounds(300, 450, 200, 25);
+        titleLabel.setBounds(350, 50, 100, 25);
+        firstNameLabel.setBounds(300, 150, 100, 25);
+        firstNameTextField.setBounds(400, 150, 200, 25);
+        lastNameLabel.setBounds(300, 200, 100, 25);
+        lastNameTextField.setBounds(400, 200, 200, 25);
+        pseudoLabel.setBounds(300, 250, 100, 25);
+        pseudoTextField.setBounds(400, 250, 200, 25);
+        emailLabel.setBounds(300, 300, 100, 25);
+        emailTextField.setBounds(400, 300, 200, 25);
+        passwordLabel.setBounds(300, 350, 100, 25);
+        passwordPasswordField.setBounds(400, 350, 200, 25);
+        subscribeButton.setBounds(300, 450, 200, 25);
 
         frame.add(panel);
 

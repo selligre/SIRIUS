@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>edu.cgl.sirius.application.Application</mainClass>
+                            <mainClass>edu.cgl.sirius.application.LoginView</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

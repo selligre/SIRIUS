@@ -40,8 +40,8 @@ public class LoginView {
         JPanel panel = new JPanel();
 
         // construct components
-        JTextField idTextField = new JTextField();
-        JLabel idLabel = new JLabel("Identifiant :");
+        JTextField idTextField = new JTextField(5);
+        JLabel idLabel = new JLabel("Adresse mail :");
         JLabel pwdLabel = new JLabel("Mot de passe :");
         JPasswordField pwdPasswordField = new JPasswordField(5);
         JLabel titleLabel = new JLabel("VILLE PARTAGEE");
@@ -49,11 +49,9 @@ public class LoginView {
         connexionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("connexionButton");
-                // String message = "Identifiant : " + idTextField.getText()
-                // + ", Mot de passe : " + pwdPasswordField.getPassword().toString();
-                // System.out.println(message);
-                // JOptionPane.showMessageDialog(null, message);
+                String message = "Adresse mail : " + idTextField.getText()
+                        + ", Mot de passe : " + new String(pwdPasswordField.getPassword());
+                JOptionPane.showMessageDialog(null, message);
             }
         });
         JButton subscribeButton = new JButton("S'INSCRIRE");
@@ -64,23 +62,6 @@ public class LoginView {
             }
         });
 
-        // adjust size and set layout
-        panel.setPreferredSize(new Dimension(1280, 720));
-        panel.setLayout(null);
-
-        // construct components
-        idTextField = new JTextField(5);
-        idLabel = new JLabel("Identifiant :");
-        pwdLabel = new JLabel("Mot de passe :");
-        pwdPasswordField = new JPasswordField(5);
-        titleLabel = new JLabel("VILLE PARTAGEE - PAGE DE CONNEXION");
-        connexionButton = new JButton("SE CONNECTER");
-        subscribeButton = new JButton("S'INSCRIRE");
-
-        // adjust size and set layout
-        panel.setPreferredSize(new Dimension(1280, 720));
-        panel.setLayout(null);
-
         // set component bounds (only needed by Absolute Positioning)
         idTextField.setBounds(550, 300, 200, 25);
         idLabel.setBounds(450, 300, 100, 25);
@@ -89,6 +70,10 @@ public class LoginView {
         titleLabel.setBounds(480, 150, 300, 25);
         connexionButton.setBounds(500, 400, 200, 25);
         subscribeButton.setBounds(500, 500, 200, 25);
+
+        // adjust size and set layout
+        panel.setPreferredSize(new Dimension(1280, 720));
+        panel.setLayout(null);
 
         // add components
         panel.add(idTextField);
@@ -101,7 +86,9 @@ public class LoginView {
 
         frame.add(panel);
 
-        frame.pack();
+        // frame.pack();
+        frame.validate();
+        frame.repaint();
         frame.setVisible(true);
     }
 
