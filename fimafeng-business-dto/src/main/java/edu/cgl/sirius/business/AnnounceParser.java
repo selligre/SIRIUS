@@ -1,15 +1,32 @@
-package edu.cgl.sirius.commons;
+package edu.cgl.sirius.business;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
+import edu.cgl.sirius.business.dto.Locations;
 
 public class AnnounceParser {
 
+    private Map<String, String> locations;
+
+    public void updateLocations(Locations loc) {
+        this.locations = loc.getLocationsMap();
+    }
+
+    public String parseLocation(String location) {
+        return locations.get(location);
+    }
+
+    public Map<String, String> getParsedLocations() {
+        return locations;
+    }
+
     public String parseDateTime(String dateTime) {
         if (dateTime.equals(" "))
-            return "N/A";
+            return "Indéfini";
         LocalDateTime ldt = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
         DateTimeFormatter dft = DateTimeFormatter.ofPattern("'Le' dd/MM/yyyy 'à' HH:mm");
         return dft.format(ldt);
@@ -17,7 +34,7 @@ public class AnnounceParser {
 
     public String parseDuration(String duration) {
         if (duration.equals(" "))
-            return "N/A";
+            return "Indéfini";
         double valueDouble = Double.parseDouble(duration);
         valueDouble = valueDouble * 60;
         long valueMinuts = (long) valueDouble;
@@ -37,7 +54,7 @@ public class AnnounceParser {
 
     public String parsePrice(String price) {
         if (price.equals(" ")) {
-            return "N/A";
+            return "Indéfini";
         }
         double amount = Double.valueOf(price);
         if (amount == 0.0) {
