@@ -11,31 +11,34 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.TemporalAmount;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
-import com.github.lgooddatepicker.components.CalendarPanel;
-import com.github.lgooddatepicker.components.DatePicker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 
-import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.client.MainInsertAnnounce;
+import edu.cgl.sirius.client.MainSelectLocations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.DataFormatException;
 
 public class InsertView extends JPanel {
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
+
+    private final static Logger logger = LoggerFactory.getLogger("I n s e r t - V i e w");
 
     private JButton logoButton;
     private JButton createButton;
@@ -93,7 +96,7 @@ public class InsertView extends JPanel {
     private JButton btn_publish;
     private JLabel lbl_annouce_warning;
 
-    private HashMap<String, Integer> map_locationsItems;
+    private HashMap<String, String> map_locationsItems;
     private HashMap<String, String> map_tagsItems;
     private HashMap<String, Double> map_durationItems;
 
@@ -101,24 +104,33 @@ public class InsertView extends JPanel {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public InsertView() {
+        logger.info("Insert view open");
+
+        AnnounceParser parser = new AnnounceParser();
+        try {
+            logger.info("Start querry (locations)");
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        logger.info("Queery ended!");
+
         // construct preComponents
         final String SELECT_ITEM = "<Sélectionner>";
 
         final LocalDate today = LocalDate.now();
 
         map_locationsItems = new HashMap<>();
-        map_locationsItems.put(SELECT_ITEM, 0);
-        map_locationsItems.put("Théâtre", 1);
-        map_locationsItems.put("Piscine", 2);
-        map_locationsItems.put("Cinéma", 3);
-        map_locationsItems.put("Bar St Patricks", 4);
-        map_locationsItems.put("Place de la Mairie", 5);
-        map_locationsItems.put("Parc du chateau", 6);
-        map_locationsItems.put("Salle de fêtes", 7);
-        map_locationsItems.put("Mairie", 8);
+        map_locationsItems.put(SELECT_ITEM, "0");
+        Map<String, String> parsedLocations = parser.getParsedLocations();
+        for (String key : parsedLocations.keySet()) {
+            // logger.debug(key + ": " + parsedLocations.get(key));
+            map_locationsItems.put(parsedLocations.get(key), key);
+        }
 
-        String[] cb_locationsItems = { SELECT_ITEM, "Bar St Patricks", "Cinéma", "Mairie", "Parc du chateau", "Piscine",
-                "Place de la Mairie", "Salle de fêtes", "Théâtre" };
+        String[] cb_locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
+        reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
 
         map_tagsItems = new HashMap<>();
         map_tagsItems.put("Concert", "1");
@@ -345,6 +357,8 @@ public class InsertView extends JPanel {
     }
 
     private void checkInputs() {
+
+        logger.info("Checking inputs");
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date_now = new Date();
@@ -362,7 +376,7 @@ public class InsertView extends JPanel {
             @SuppressWarnings("unused")
             ArrayList<String> list_tags_id = checkTags();
             String description = checkDescription();
-            String location_id = String.valueOf(checkLocation());
+            String location_id = checkLocation();
 
             double vduration = checkDuration();
             String duration = String.valueOf(vduration);
@@ -373,63 +387,90 @@ public class InsertView extends JPanel {
             Date dend = Date.from(ldt_end.atZone(ZoneId.systemDefault()).toInstant());
             String date_time_end = dateFormat.format(dend);
 
+            logger.info("Valid data");
             JOptionPane.showMessageDialog(this, "Donneés valides");
 
+            logger.info("Launching insert querry");
             new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date,
                     status, "activité", title,
                     description, date_time_start, duration, date_time_end, is_recurrent, null,
                     null, price, location_id, list_tags_id);
+            logger.info("Querry ended!");
 
         } catch (DataFormatException e) {
+            logger.info("Error: Invalid data");
             JOptionPane.showMessageDialog(this, e.getMessage(), "Saisie incorrecte", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
+            logger.warn("Error: " + e.getMessage());
+            logger.warn("Error: " + e.getLocalizedMessage());
             // Todo
         }
+
+        logger.info("Insert ended");
 
     }
 
     private String checkTitle() throws DataFormatException {
+        logger.info("Checking Title");
         String title = this.tf_title.getText();
-        if (title.equals(""))
+        if (title.equals("")) {
+            logger.info("Error: No title");
             throw new DataFormatException("Le titre n'est pas renseigné");
-        if (title.length() > 100)
+        }
+        if (title.length() > 100) {
+            logger.info("Error: Title too long");
             throw new DataFormatException("Le titre est trop long (sup. à 100 caractères)");
+        }
         return title;
     }
 
     private ArrayList<String> checkTags() throws DataFormatException {
+        logger.info("Checking tags");
         ArrayList<String> selected_tags_id = new ArrayList<>();
         for (JCheckBox jCheckBox : list_tags_checkBoxs) {
             if (jCheckBox.isSelected()) {
                 selected_tags_id.add(map_tagsItems.get(jCheckBox.getText()));
             }
         }
-        if (selected_tags_id.isEmpty())
+        if (selected_tags_id.isEmpty()) {
+            logger.info("Error: No tag selected");
             throw new DataFormatException("Aucun tag n'a été sélectionné");
-        if (selected_tags_id.size() > 5)
+        }
+        if (selected_tags_id.size() > 5) {
+            logger.info("Error: Too many tags selected");
             throw new DataFormatException("Trop de tags ont été sélectionnés (+ de 5)");
+        }
         return selected_tags_id;
 
     }
 
     private String checkDescription() throws DataFormatException {
+        logger.info("Checking Description");
         String description = this.tfa_description.getText();
-        if (description.length() > 1000)
+        if (description.length() > 1000) {
+            logger.info("Error: Description too long");
             throw new DataFormatException("La description est trop longue (sup. à 1000 caractères)");
+        }
         return description;
     }
 
-    private int checkLocation() throws DataFormatException {
-        int location_id = map_locationsItems.get(cb_locations.getSelectedItem());
-        if (location_id == 0)
+    private String checkLocation() throws DataFormatException {
+        logger.info("Checking location");
+        String location_id = map_locationsItems.get(cb_locations.getSelectedItem());
+        if (location_id.equals("0")) {
+            logger.info("Error: No location selected");
             throw new DataFormatException("Aucun emplacement choisit");
+        }
         return location_id;
     }
 
     private double checkDuration() throws DataFormatException {
+        logger.info("Checking duration");
         double duration = map_durationItems.get(cb_durations.getSelectedItem());
-        if (duration == 0.0)
+        if (duration == 0.0) {
+            logger.info("Error: No duration selected");
             throw new DataFormatException("Aucune durée choisie");
+        }
         return duration;
     }
 
@@ -442,5 +483,13 @@ public class InsertView extends JPanel {
         frame.setLocationRelativeTo(component);
         frame.setVisible(true);
 
+    }
+
+    public void reorderWithDefaultOnTop(String[] array, String target) {
+        ArrayList<String> list = new ArrayList<String>(Arrays.asList(array));
+        int posT = list.indexOf(target);
+        String pos0 = array[0];
+        array[0] = target;
+        array[posT] = pos0;
     }
 }

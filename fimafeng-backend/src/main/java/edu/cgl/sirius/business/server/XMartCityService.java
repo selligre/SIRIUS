@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.AnnounceTag;
 import edu.cgl.sirius.business.dto.Announces;
+import edu.cgl.sirius.business.dto.Location;
+import edu.cgl.sirius.business.dto.Locations;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.commons.Request;
@@ -30,6 +32,7 @@ public class XMartCityService {
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
+        SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -163,6 +166,22 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces2));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_LOCATIONS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_LOCATIONS.query);
+                    Locations locations = new Locations();
+                    while (res.next()) {
+                        Location location = new Location().build(res);
+                        locations.add(location);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(locations));
                     System.out.println(response.getResponseBody());
                     break;
 
