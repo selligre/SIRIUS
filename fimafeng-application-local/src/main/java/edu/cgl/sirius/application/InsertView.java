@@ -27,6 +27,7 @@ import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -124,11 +125,12 @@ public class InsertView extends JPanel {
         map_locationsItems.put(SELECT_ITEM, "0");
         Map<String, String> parsedLocations = parser.getParsedLocations();
         for (String key : parsedLocations.keySet()) {
-            logger.debug(key + ": " + parsedLocations.get(key));
+            // logger.debug(key + ": " + parsedLocations.get(key));
             map_locationsItems.put(parsedLocations.get(key), key);
         }
 
         String[] cb_locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
+        reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
 
         map_tagsItems = new HashMap<>();
         map_tagsItems.put("Concert", "1");
@@ -481,5 +483,13 @@ public class InsertView extends JPanel {
         frame.setLocationRelativeTo(component);
         frame.setVisible(true);
 
+    }
+
+    public void reorderWithDefaultOnTop(String[] array, String target) {
+        ArrayList<String> list = new ArrayList<String>(Arrays.asList(array));
+        int posT = list.indexOf(target);
+        String pos0 = array[0];
+        array[0] = target;
+        array[posT] = pos0;
     }
 }
