@@ -31,17 +31,21 @@ import javax.swing.table.TableModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.compiler.CodeGenerator.primary_return;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
+import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
+import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.SelectAllAnnouncesClientRequest;
 
 public class Application {
@@ -66,11 +70,14 @@ public class Application {
     public static Announces requestResult;
     public static JScrollPane scrollPane;
 
+    private static Logger logger;
+
     public static void main(String[] args) {
         new Application();
     }
 
     public Application() {
+        Application.logger = LoggerFactory.getLogger("A p p l i c a t i o n - L o c a l");
         configFrame();
         configHomePage();
         this.frame.setVisible(true);
@@ -117,49 +124,66 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                logger.info("Logo Button clicked");
                 JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
             }
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
+
+                logger.info("Create Button clicked");
                 changeViewToInsert();
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("LogOut Button clicked");
                 JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
             }
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Account Button clicked");
                 JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Search Button clicked");
                 String content = "Recherche du terme \"" + searchField.getText() + "\" dans les annonces.";
                 JOptionPane.showMessageDialog(null, content);
             }
         });
         this.activitiesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Activites Button clicked");
                 // JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
                 selectActivities();
             }
         });
         this.materialsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Materials Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
             }
         });
         this.servicesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Services Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
             }
         });
         this.aroundMeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("ArroundMe Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
             }
         });
@@ -204,9 +228,16 @@ public class Application {
         this.activitiesButton.setBackground(Color.DARK_GRAY);
         this.activitiesButton.setEnabled(false);
 
+        AnnounceParser parser = new AnnounceParser();
+
         try {
+            logger.info("Launch queries");
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             Application.requestResult = client.getAnnounces();
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            logger.info("Queries ended!");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -271,11 +302,11 @@ public class Application {
                 for (Announce announce : Application.requestResult.getAnnounces()) {
                     String[] rowData = {
                             announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
+                            parser.parseDateTime(announce.getDate_time_start()),
+                            parser.parseDuration(announce.getDuration()),
                             announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
-                            announce.getRef_location_id()
+                            parser.parsePrice(announce.getPrice()),
+                            parser.parseLocation(announce.getRef_location_id())
                     };
                     model.addRow(rowData);
                 }
@@ -320,11 +351,11 @@ public class Application {
                 for (Announce announce : Application.requestResult.getAnnounces()) {
                     String[] rowData = {
                             announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
+                            parser.parseDateTime(announce.getDate_time_start()),
+                            parser.parseDuration(announce.getDuration()),
                             announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
-                            announce.getRef_location_id()
+                            parser.parsePrice(announce.getPrice()),
+                            parser.parseLocation(announce.getRef_location_id())
                     };
                     model.addRow(rowData);
                 }
@@ -359,11 +390,11 @@ public class Application {
                 for (Announce announce : Application.requestResult.getAnnounces()) {
                     String[] rowData = {
                             announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
+                            parser.parseDateTime(announce.getDate_time_start()),
+                            parser.parseDuration(announce.getDuration()),
                             announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
-                            announce.getRef_location_id()
+                            parser.parsePrice(announce.getPrice()),
+                            parser.parseLocation(announce.getRef_location_id())
                     };
                     model.addRow(rowData);
                 }
@@ -389,11 +420,11 @@ public class Application {
         for (Announce announce : Application.requestResult.getAnnounces()) {
             String[] rowData = {
                     announce.getTitle(),
-                    announce.getDate_time_start(),
-                    announce.getDuration(),
+                    parser.parseDateTime(announce.getDate_time_start()),
+                    parser.parseDuration(announce.getDuration()),
                     announce.getSlots_available().toString(),
-                    announce.getPrice().toString(),
-                    announce.getRef_location_id()
+                    parser.parsePrice(announce.getPrice()),
+                    parser.parseLocation(announce.getRef_location_id())
             };
             model.addRow(rowData);
         }
