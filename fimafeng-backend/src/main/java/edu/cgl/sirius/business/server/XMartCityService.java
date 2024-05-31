@@ -24,6 +24,7 @@ public class XMartCityService {
 
         // SELECT Queries
         SELECT_ALL_USERS("SELECT * FROM users;"),
+        SELECT_ALL_USERS_EMAILS("SELECT email FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
         SELECT_ANNOUNCES_FOR_LOCATION(
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
@@ -82,6 +83,22 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(users));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_EMAILS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS.query);
+                    Users usersEmails = new Users();
+                    while (res.next()) {
+                        User user = new User().build(res);
+                        usersEmails.add(user);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(usersEmails));
                     System.out.println(response.getResponseBody());
                     break;
 

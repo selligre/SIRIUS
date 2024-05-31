@@ -3,6 +3,7 @@ package edu.cgl.sirius.application;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,6 +12,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.client.MainSelectUsersEmails;
 
 /*
  * La création d'un profil utilisateur (avec des règles métiers pour vérifier le format de son e-mail, 
@@ -30,9 +34,8 @@ import javax.swing.JTextField;
 public class LoginView {
 
     public LoginView() {
-        JFrame frame = new JFrame("MyPanel");
+        JFrame frame = new JFrame("Ville partagée");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Ville partagée");
         frame.setSize(1280, 720);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
@@ -49,9 +52,27 @@ public class LoginView {
         connexionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String message = "Adresse mail : " + idTextField.getText()
-                        + ", Mot de passe : " + new String(pwdPasswordField.getPassword());
-                JOptionPane.showMessageDialog(null, message);
+                // String message = "Adresse mail : " + idTextField.getText()
+                // + ", Mot de passe : " + new String(pwdPasswordField.getPassword());
+                // JOptionPane.showMessageDialog(null, message);
+                try {
+                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
+                    System.out.println(mainSelectUsersMails.getUsers());
+                    Boolean test = false;
+                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
+                        System.out.println(user.getEmail());
+                        if (user.getEmail().equals(idTextField.getText())) {
+                            Application app = new Application();
+                            app.setUserMail(idTextField.getText());
+                            test = true;
+                        }
+                    }
+                    if (!test)
+                        JOptionPane.showMessageDialog(null, "ERROR: Email not found.");
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+
             }
         });
         JButton subscribeButton = new JButton("S'INSCRIRE");

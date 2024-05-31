@@ -3,48 +3,39 @@ package edu.cgl.sirius.application;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.ScrollPane;
-import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.naming.ldap.SortKey;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.RowSorter;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.stringtemplate.v4.compiler.CodeGenerator.primary_return;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
-import edu.cgl.sirius.client.SelectAllAnnouncesClientRequest;
 
 public class Application {
+    private String userMail;
+
+    public String getUserMail() {
+        return userMail;
+    }
+
+    public void setUserMail(String userMail) {
+        this.userMail = userMail;
+    }
+
     private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
@@ -133,7 +124,7 @@ public class Application {
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
+                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
@@ -178,7 +169,7 @@ public class Application {
         this.logoButton.setEnabled(false);
         this.createButton.setEnabled(true);
         this.logOutButton.setEnabled(false);
-        this.accountButton.setEnabled(false);
+        this.accountButton.setEnabled(true);
         this.searchField.setEnabled(false);
         this.searchButton.setEnabled(false);
         this.activitiesButton.setEnabled(true);

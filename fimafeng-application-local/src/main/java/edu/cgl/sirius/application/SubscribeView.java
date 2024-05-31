@@ -40,7 +40,6 @@ public class SubscribeView {
         subscribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("subscribeButton");
                 String message = "Prénom : " + firstNameTextField.getText()
                         + ", Nom : " + lastNameTextField.getText()
                         + ", Pseudo : " + pseudoTextField.getText()
