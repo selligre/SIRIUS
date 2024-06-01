@@ -3,42 +3,24 @@ package edu.cgl.sirius.application;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.ScrollPane;
-import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.naming.ldap.SortKey;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.RowSorter;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.stringtemplate.v4.compiler.CodeGenerator.primary_return;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
@@ -46,7 +28,6 @@ import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
 import edu.cgl.sirius.client.MainSelectLocations;
-import edu.cgl.sirius.client.SelectAllAnnouncesClientRequest;
 
 public class Application {
     private final int LABEL_SIZE = 10;
@@ -292,31 +273,7 @@ public class Application {
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                JTable table = new JTable();
-                DefaultTableModel model = new DefaultTableModel(
-                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                                "Quartier" },
-                        0);
-                table.setModel(model);
-                table.setEnabled(false);
-                for (Announce announce : Application.requestResult.getAnnounces()) {
-                    String[] rowData = {
-                            announce.getTitle(),
-                            parser.parseDateTime(announce.getDate_time_start()),
-                            parser.parseDuration(announce.getDuration()),
-                            announce.getSlots_available().toString(),
-                            parser.parsePrice(announce.getPrice()),
-                            parser.parseLocation(announce.getRef_location_id())
-                    };
-                    model.addRow(rowData);
-                }
-                pagePanel.remove(Application.scrollPane);
-                Application.scrollPane = new JScrollPane(table);
-                pagePanel.add(Application.scrollPane, BorderLayout.CENTER);
-
-                Application.page.add(pagePanel);
-                Application.page.revalidate();
-                Application.page.repaint();
+                displayResult(pagePanel, requestResult);
             }
         });
         headerPanel.add(filter_by_tag);
@@ -341,31 +298,7 @@ public class Application {
                 } catch (JsonProcessingException e1) {
                     e1.printStackTrace();
                 }
-                JTable table = new JTable();
-                DefaultTableModel model = new DefaultTableModel(
-                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                                "Quartier" },
-                        0);
-                table.setModel(model);
-                table.setEnabled(false);
-                for (Announce announce : Application.requestResult.getAnnounces()) {
-                    String[] rowData = {
-                            announce.getTitle(),
-                            parser.parseDateTime(announce.getDate_time_start()),
-                            parser.parseDuration(announce.getDuration()),
-                            announce.getSlots_available().toString(),
-                            parser.parsePrice(announce.getPrice()),
-                            parser.parseLocation(announce.getRef_location_id())
-                    };
-                    model.addRow(rowData);
-                }
-                pagePanel.remove(Application.scrollPane);
-                Application.scrollPane = new JScrollPane(table);
-                pagePanel.add(scrollPane, BorderLayout.CENTER);
-
-                Application.page.add(pagePanel);
-                Application.page.revalidate();
-                Application.page.repaint();
+                displayResult(pagePanel, requestResult);
             }
         });
         headerPanel.add(filter_by_location);
@@ -380,35 +313,24 @@ public class Application {
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                JTable table = new JTable();
-                DefaultTableModel model = new DefaultTableModel(
-                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                                "Quartier" },
-                        0);
-                table.setModel(model);
-                table.setEnabled(false);
-                for (Announce announce : Application.requestResult.getAnnounces()) {
-                    String[] rowData = {
-                            announce.getTitle(),
-                            parser.parseDateTime(announce.getDate_time_start()),
-                            parser.parseDuration(announce.getDuration()),
-                            announce.getSlots_available().toString(),
-                            parser.parsePrice(announce.getPrice()),
-                            parser.parseLocation(announce.getRef_location_id())
-                    };
-                    model.addRow(rowData);
-                }
-                pagePanel.remove(Application.scrollPane);
-                Application.scrollPane = new JScrollPane(table);
-                pagePanel.add(scrollPane, BorderLayout.CENTER);
-
-                Application.page.add(pagePanel);
-                Application.page.revalidate();
-                Application.page.repaint();
+                displayResult(pagePanel, requestResult);
             }
         });
-        headerPanel.add(remove_filters);
-        pagePanel.add(headerPanel, BorderLayout.NORTH);
+        displayResult(pagePanel, requestResult);
+    }
+
+    private void displayResult(JPanel pagePanel, Announces resultAnnounces) {
+        AnnounceParser parser = new AnnounceParser();
+
+        try {
+            logger.info("Launch querry");
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            logger.info("Query ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         JTable table = new JTable();
         DefaultTableModel model = new DefaultTableModel(
@@ -434,5 +356,6 @@ public class Application {
         Application.page.add(pagePanel);
         Application.page.revalidate();
         Application.page.repaint();
+
     }
 }

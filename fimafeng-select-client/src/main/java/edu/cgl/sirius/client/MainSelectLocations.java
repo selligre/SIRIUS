@@ -62,7 +62,7 @@ public class MainSelectLocations {
                 // Location.getGroup() + "\n");
             }
             asciiTable.addRule();
-            logger.debug("\n{}\n", asciiTable.render());
+            // logger.debug("\n{}\n", asciiTable.render());
             // logger.debug("\n{}\n", sBuilder.toString());
         }
     }
