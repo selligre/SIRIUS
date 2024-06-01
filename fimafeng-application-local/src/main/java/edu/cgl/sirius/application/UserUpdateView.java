@@ -91,34 +91,36 @@ public class UserUpdateView {
                     JOptionPane.showMessageDialog(null, "ERROR: Missing data.");
                     return;
                 }
-                try {
-                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
-                    Boolean testEmail = false;
-                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                        if (user.getEmail().equals(emailTextField.getText())) {
-                            testEmail = true;
-                        }
-                    }
-                    if (testEmail) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
-                    } else {
-                        String message = "Prénom : " + firstNameTextField.getText()
-                                + ", Nom : " + lastNameTextField.getText()
-                                + ", Pseudo : " + pseudoTextField.getText()
-                                + ", Email : " + emailTextField.getText()
-                                + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
-                                + ", Quartier favori : " + locationComboBox.getSelectedItem()
-                                + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
-                        JOptionPane.showMessageDialog(null, message);
-                        // TODO: INSERT request
-                        MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER", firstNameTextField.getText(),
-                                lastNameTextField.getText(), pseudoTextField.getText(), emailTextField.getText(),
-                                new String(passwordPasswordField.getPassword()));
+                // try {
+                // MainSelectUsersEmails mainSelectUsersMails = new
+                // MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
+                // Boolean testEmail = false;
+                // for (User user : mainSelectUsersMails.getUsers().getUsers()) {
+                // if (user.getEmail().equals(emailTextField.getText())) {
+                // testEmail = true;
+                // }
+                // }
+                // if (testEmail) {
+                // JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
+                // } else {
+                String message = "Prénom : " + firstNameTextField.getText()
+                        + ", Nom : " + lastNameTextField.getText()
+                        + ", Pseudo : " + pseudoTextField.getText()
+                        + ", Email : " + emailTextField.getText()
+                        + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
+                        + ", Quartier favori : " + locationComboBox.getSelectedItem()
+                        + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
+                JOptionPane.showMessageDialog(null, message);
+                // MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER",
+                // firstNameTextField.getText(),
+                // lastNameTextField.getText(), pseudoTextField.getText(),
+                // emailTextField.getText(),
+                // new String(passwordPasswordField.getPassword()));
 
-                    }
-                } catch (IOException | InterruptedException e1) {
-                    e1.printStackTrace();
-                }
+                // }
+                // } catch (IOException | InterruptedException e1) {
+                // e1.printStackTrace();
+                // }
             }
         });
 
