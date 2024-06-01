@@ -108,18 +108,25 @@ public class SubscribeView {
                                 + ", Pseudo : " + pseudoTextField.getText()
                                 + ", Email : " + emailTextField.getText()
                                 + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
-                                + ", Quartier favori : " + locationComboBox.getSelectedItem()
-                                + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
+                        // + ", QuartierId favori : " + locationComboBox.getSelectedItem()
+                                + ", QuartierId favori : " + locationComboBox.getSelectedIndex()
+                        // + ", TagId favori : " + tags[tagComboBox.getSelectedIndex()];
+                                + ", TagId favori : " + tagComboBox.getSelectedIndex();
                         JOptionPane.showMessageDialog(null, message);
-                        // TODO: INSERT request
-                        MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER", firstNameTextField.getText(),
-                                lastNameTextField.getText(), pseudoTextField.getText(), emailTextField.getText(),
-                                new String(passwordPasswordField.getPassword()));
-
+                        new MainInsertUser("INSERT_USER",
+                                firstNameTextField.getText(),
+                                lastNameTextField.getText(), pseudoTextField.getText(),
+                                emailTextField.getText(),
+                                new String(passwordPasswordField.getPassword()),
+                                locationComboBox.getSelectedIndex(),
+                                tagComboBox.getSelectedIndex());
                     }
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
+                frame.setVisible(false);
+                frame.setEnabled(false);
+                frame.repaint();
             }
         });
 

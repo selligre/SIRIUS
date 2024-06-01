@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.spec.PBEKeySpec;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -54,7 +53,6 @@ public class Application {
         Application.userMail = userMail;
     }
 
-    private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
@@ -122,7 +120,7 @@ public class Application {
         this.logoButton.setText("LOGO");
         this.createButton.setText("(+) Proposer");
         this.logOutButton.setText("Déconnexion");
-        this.accountButton.setText("Compte");
+        this.accountButton.setText(Application.getUserMail());
         this.searchButton.setText("Rechercher");
         this.activitiesButton.setText("Activités");
         this.materialsButton.setText("Matériels");

@@ -21,7 +21,7 @@ public class MainInsertUser {
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
 
     public MainInsertUser(String requestOrder, String first_name, String last_name, String display_name, String email,
-            String password)
+            String password, int location, int tag)
             throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
@@ -34,6 +34,8 @@ public class MainInsertUser {
         user.setUser_type("user");
         user.setEmail(email);
         user.setPassword(password);
+        user.setLocation(location);
+        user.setTag(tag);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();

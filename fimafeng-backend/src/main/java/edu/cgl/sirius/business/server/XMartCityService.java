@@ -41,7 +41,9 @@ public class XMartCityService {
                 "INSERT INTO announces VALUES(DEFAULT, ?::int, ?::timestamp, ?, ?, ?, ?, ?::timestamp, ?::float ,?::timestamp ,?::boolean, ?::smallint, ?::smallint, ?::float, ?::int) RETURNING announce_id;"),
         INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);"),
         INSERT_USER(
-                "INSERT INTO users VALUES (DEFAULT, ?, ?, ?, 'user', ?, ?) RETURNING user_id;");
+                "INSERT INTO users VALUES (DEFAULT, ?, ?, ?, 'user', ?, ?) RETURNING user_id;"),
+        INSERT_USER_TAG("INSERT INTO users_tags VALUES (DEFAULT, ?::int, ?::int)"),
+        INSERT_USER_LOCATION("INSERT INTO users_locations VALUES (DEFAULT, ?::int, ?::int)");
 
         private final String query;
 
@@ -218,12 +220,12 @@ public class XMartCityService {
                     pstmt.setString(14, announce.getRef_location_id());
                     res = pstmt.executeQuery();
                     if (res.next()) {
-                        String id = String.valueOf(res.getInt("announce_id"));
-                        System.out.println("ID récupéré : " + id);
+                        String userId = String.valueOf(res.getInt("announce_id"));
+                        System.out.println("ID récupéré : " + userId);
                         for (String tagId : announce.getAnnounceTags()) {
                             System.out.println(tagId);
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
-                            pstmt.setString(1, id);
+                            pstmt.setString(1, userId);
                             pstmt.setString(2, tagId);
                             pstmt.executeUpdate();
                         }
@@ -250,17 +252,22 @@ public class XMartCityService {
                     pstmt.setString(4, user.getEmail());
                     pstmt.setString(5, user.getPassword());
                     res = pstmt.executeQuery();
-                    // if (res.next()) {
-                    // String id = String.valueOf(res.getInt("user_id"));
-                    // System.out.println("ID récupéré : " + id);
-                    // for (String tagId : announce.getAnnounceTags()) {
-                    // System.out.println(tagId);
-                    // pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
-                    // pstmt.setString(1, id);
-                    // pstmt.setString(2, tagId);
-                    // pstmt.executeUpdate();
-                    // }
-                    // }
+                    if (res.next()) {
+                        String id = String.valueOf(res.getInt("user_id"));
+                        System.out.println("ID récupéré : " + id);
+
+                        int tagId = user.getTag();
+                        pstmt = connection.prepareStatement(Queries.INSERT_USER_TAG.query);
+                        pstmt.setString(1, id);
+                        pstmt.setInt(2, tagId);
+                        pstmt.executeUpdate();
+
+                        int locationId = user.getLocation();
+                        pstmt = connection.prepareStatement(Queries.INSERT_USER_LOCATION.query);
+                        pstmt.setString(1, id);
+                        pstmt.setInt(2, locationId);
+                        pstmt.executeUpdate();
+                    }
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(user));

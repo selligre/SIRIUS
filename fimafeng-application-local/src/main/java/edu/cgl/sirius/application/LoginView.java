@@ -62,9 +62,9 @@ public class LoginView {
                     for (User user : mainSelectUsersMails.getUsers().getUsers()) {
                         if (user.getEmail().equals(idTextField.getText())) {
                             if (user.getPassword().equals(new String(pwdPasswordField.getPassword()))) {
-                                new Application();
                                 Application.setUserMail(idTextField.getText());
                                 Application.setUserId(user.getUser_id());
+                                new Application();
                                 testPassword = true;
                                 frame.setVisible(false);
                                 frame.setEnabled(false);

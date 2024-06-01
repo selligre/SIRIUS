@@ -3,7 +3,6 @@ package edu.cgl.sirius.application;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,10 +18,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import edu.cgl.sirius.business.AnnounceParser;
-import edu.cgl.sirius.business.dto.User;
-import edu.cgl.sirius.client.MainInsertUser;
 import edu.cgl.sirius.client.MainSelectLocations;
-import edu.cgl.sirius.client.MainSelectUsersEmails;
 
 public class UserUpdateView {
     public UserUpdateView() {
@@ -36,7 +32,7 @@ public class UserUpdateView {
         JPanel panel = new JPanel();
 
         // construct components
-        JLabel titleLabel = new JLabel("UPDATE USER");
+        JLabel titleLabel = new JLabel("UPDATE USER : " + Application.getUserMail());
         JLabel firstNameLabel = new JLabel("Prénom :");
         JTextField firstNameTextField = new JTextField(5);
         JLabel lastNameLabel = new JLabel("Nom :");
@@ -147,7 +143,7 @@ public class UserUpdateView {
         panel.add(tagComboBox);
 
         // set component bounds (only needed by Absolute Positioning)
-        titleLabel.setBounds(350, 50, 100, 25);
+        titleLabel.setBounds(300, 50, 500, 25);
         firstNameLabel.setBounds(100, 150, 100, 25);
         firstNameTextField.setBounds(200, 150, 200, 25);
         lastNameLabel.setBounds(100, 200, 100, 25);
