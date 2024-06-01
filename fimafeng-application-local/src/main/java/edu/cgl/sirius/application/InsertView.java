@@ -25,6 +25,7 @@ import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
+import edu.cgl.sirius.client.MainSelectTags;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,46 +107,46 @@ public class InsertView extends JPanel {
     public InsertView() {
         logger.info("Insert view open");
 
+        // construct preComponents
+        final String SELECT_ITEM = "<Sélectionner>";
+        final LocalDate today = LocalDate.now();
+
+        // Update locations from DB
         AnnounceParser parser = new AnnounceParser();
         try {
             logger.info("Start querry (locations)");
-            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
-            parser.updateLocations(locationClient.getLocations());
+            MainSelectLocations locationsClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationsClient.getLocations());
+            logger.info("Queery ended!");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.info("Queery ended!");
-
-        // construct preComponents
-        final String SELECT_ITEM = "<Sélectionner>";
-
-        final LocalDate today = LocalDate.now();
 
         map_locationsItems = new HashMap<>();
         map_locationsItems.put(SELECT_ITEM, "0");
         Map<String, String> parsedLocations = parser.getParsedLocations();
         for (String key : parsedLocations.keySet()) {
-            // logger.debug(key + ": " + parsedLocations.get(key));
             map_locationsItems.put(parsedLocations.get(key), key);
         }
 
         String[] cb_locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
         reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
 
+        // Update tags from DB
         map_tagsItems = new HashMap<>();
-        map_tagsItems.put("Concert", "1");
-        map_tagsItems.put("Chorale", "2");
-        map_tagsItems.put("Festival", "3");
-        map_tagsItems.put("Enfants", "4");
-        map_tagsItems.put("Jeunes", "5");
-        map_tagsItems.put("Adultes", "6");
-        map_tagsItems.put("Séniors", "7");
-        map_tagsItems.put("Couples", "8");
-        map_tagsItems.put("Tout public", "9");
-        map_tagsItems.put("Musée", "10");
-        map_tagsItems.put("Peinture", "11");
-        map_tagsItems.put("Théâtre", "12");
-        map_tagsItems.put("Visites", "13");
+        map_tagsItems.put(SELECT_ITEM, "0");
+        Map<String, String> tagsMap;
+        try {
+            logger.info("Start querry (tags)");
+            MainSelectTags tagsClient = new MainSelectTags("SELECT_ALL_TAGS");
+            tagsMap = tagsClient.getTags().getTagsMap();
+            for (String key : tagsMap.keySet()) {
+                map_tagsItems.put(tagsMap.get(key), key);
+            }
+            logger.info("Queery ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         list_tags_checkBoxs = new ArrayList<>();
 
@@ -485,7 +486,7 @@ public class InsertView extends JPanel {
 
     }
 
-    public void reorderWithDefaultOnTop(String[] array, String target) {
+    protected static void reorderWithDefaultOnTop(String[] array, String target) {
         ArrayList<String> list = new ArrayList<String>(Arrays.asList(array));
         int posT = list.indexOf(target);
         String pos0 = array[0];
