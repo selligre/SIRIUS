@@ -129,9 +129,12 @@ public class Application {
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                logger.info("LogOut Button clicked");
-                JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+                // logger.info("LogOut Button clicked");
+                // JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+                frame.setVisible(false);
+                frame.setEnabled(false);
+                frame.repaint();
+                new LoginView();
             }
         });
         this.accountButton.addActionListener(new ActionListener() {
@@ -191,7 +194,7 @@ public class Application {
         // enable or disable components
         this.logoButton.setEnabled(false);
         this.createButton.setEnabled(true);
-        this.logOutButton.setEnabled(false);
+        this.logOutButton.setEnabled(true);
         this.accountButton.setEnabled(true);
         this.searchField.setEnabled(false);
         this.searchButton.setEnabled(false);

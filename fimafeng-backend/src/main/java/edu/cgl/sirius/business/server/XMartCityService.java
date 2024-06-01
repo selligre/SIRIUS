@@ -33,6 +33,7 @@ public class XMartCityService {
         SELECT_ANNOUNCES_FOR_TAG_ID(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
+        SELECT_ALL_TAGS("SELECT * FROM tags"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(

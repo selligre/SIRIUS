@@ -58,17 +58,27 @@ public class LoginView {
                 try {
                     MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
                     System.out.println(mainSelectUsersMails.getUsers());
-                    Boolean test = false;
+                    Boolean testEmail = false;
+                    Boolean testPassword = false;
                     for (User user : mainSelectUsersMails.getUsers().getUsers()) {
                         System.out.println(user.getEmail());
                         if (user.getEmail().equals(idTextField.getText())) {
-                            Application app = new Application();
-                            app.setUserMail(idTextField.getText());
-                            test = true;
+                            if (user.getPassword().equals(new String(pwdPasswordField.getPassword()))) {
+                                Application app = new Application();
+                                app.setUserMail(idTextField.getText());
+                                testPassword = true;
+                                frame.setVisible(false);
+                                frame.setEnabled(false);
+                                frame.repaint();
+                            }
+                            testEmail = true;
                         }
                     }
-                    if (!test)
+                    if (!testEmail) {
                         JOptionPane.showMessageDialog(null, "ERROR: Email not found.");
+                    } else if (!testPassword) {
+                        JOptionPane.showMessageDialog(null, "ERROR: Wrong password.");
+                    }
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
