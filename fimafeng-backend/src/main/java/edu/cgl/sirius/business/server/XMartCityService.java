@@ -6,6 +6,8 @@ import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
+import edu.cgl.sirius.business.dto.Tag;
+import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.commons.Request;
@@ -69,11 +71,13 @@ public class XMartCityService {
         Statement stmt;
         ResultSet res;
         ObjectMapper mapper;
-        int rows;
+        int rows; // TODO: pourquoi garder si jamais utiliser ?
         try {
             switch (request.getRequestOrder()) {
                 // Premier essai avec la bdd de test, inutile maintenant mais on garde
                 // temporairement pour l'exemple
+
+                // SELECT QUERRIES
                 case "SELECT_ALL_USERS":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_ALL_USERS.query);
@@ -176,6 +180,23 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ALL_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_TAGS.query);
+                    Tags tags = new Tags();
+                    while (res.next()) {
+                        Tag tag = new Tag().build(res);
+                        tags.add(tag);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(tags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                // INSERT QUERRIES
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
                     Announce announce = mapper.readValue(request.getRequestBody(), Announce.class);

@@ -6,6 +6,8 @@ import de.vandermeer.asciitable.AsciiTable;
 import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
+import edu.cgl.sirius.business.dto.Tag;
+import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
 import edu.cgl.sirius.client.commons.NetworkConfig;
@@ -18,20 +20,20 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
 
-public class MainSelectLocations {
+public class MainSelectTags {
 
     private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
-    private static final String requestOrder = "SELECT_ALL_LOCATIONS";
+    private static final String requestOrder = "SELECT_ALL_TAGS";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
-    private static Locations Locations;
+    private static Tags tags;
 
-    public Locations getLocations() {
-        return Locations;
+    public Tags getTags() {
+        return tags;
     }
 
-    public MainSelectLocations(String requestOrder) throws IOException, InterruptedException {
+    public MainSelectTags(String requestOrder) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
@@ -44,7 +46,7 @@ public class MainSelectLocations {
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-        final SelectAllLocationsClientRequest clientRequest = new SelectAllLocationsClientRequest(
+        final SelectAllTagsClientRequest clientRequest = new SelectAllTagsClientRequest(
                 networkConfig,
                 birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
@@ -53,11 +55,11 @@ public class MainSelectLocations {
             final ClientRequest joinedClientRequest = clientRequests.pop();
             joinedClientRequest.join();
             logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-            Locations = (Locations) joinedClientRequest.getResult();
+            tags = (Tags) joinedClientRequest.getResult();
             final AsciiTable asciiTable = new AsciiTable();
-            for (final Location Location : Locations.getLocations()) {
+            for (final Tag tag : tags.getTags()) {
                 asciiTable.addRule();
-                asciiTable.addRow(Location.getLocation_id(), Location.getName());
+                asciiTable.addRow(tag.getTag_id(), tag.getName(), tag.getCategory());
                 // sBuilder.append(Location.getfirst_name() + "; " + Location.getName() + "; " +
                 // Location.getGroup() + "\n");
             }

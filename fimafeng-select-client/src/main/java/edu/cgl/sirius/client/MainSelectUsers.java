@@ -31,45 +31,6 @@ public class MainSelectUsers {
         return users;
     }
 
-    // public static void main(String[] args) throws IOException,
-    // InterruptedException, SQLException {
-
-    // final NetworkConfig networkConfig =
-    // ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
-    // logger.debug("Load Network config file : {}", networkConfig.toString());
-
-    // int birthdate = 0;
-    // final ObjectMapper objectMapper = new ObjectMapper();
-    // final String requestId = UUID.randomUUID().toString();
-    // final Request request = new Request();
-    // request.setRequestId(requestId);
-    // request.setRequestOrder(requestOrder);
-    // objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-    // final byte[] requestBytes =
-    // objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
-    // LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-    // final SelectAllUsersClientRequest clientRequest = new
-    // SelectAllUsersClientRequest(
-    // networkConfig,
-    // birthdate++, request, null, requestBytes);
-    // clientRequests.push(clientRequest);
-
-    // while (!clientRequests.isEmpty()) {
-    // final ClientRequest joinedClientRequest = clientRequests.pop();
-    // joinedClientRequest.join();
-    // logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-    // Users = (Users) joinedClientRequest.getResult();
-    // final AsciiTable asciiTable = new AsciiTable();
-    // for (final User User : Users.getUsers()) {
-    // asciiTable.addRule();
-    // asciiTable.addRow(User.getfirst_name(), User.getName(),
-    // User.getGroup());
-    // }
-    // asciiTable.addRule();
-    // logger.debug("\n{}\n", asciiTable.render());
-    // }
-    // }
-
     public MainSelectUsers(String requestOrder) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
@@ -96,9 +57,8 @@ public class MainSelectUsers {
             final AsciiTable asciiTable = new AsciiTable();
             for (final User user : users.getUsers()) {
                 asciiTable.addRule();
-                asciiTable.addRow(user.getUser_id(), user.getUser_id(), user.getFirst_name(), user.getLast_name(), user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
-                // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
-                // User.getGroup() + "\n");
+                asciiTable.addRow(user.getUser_id(), user.getUser_id(), user.getFirst_name(), user.getLast_name(),
+                        user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
             }
             asciiTable.addRule();
             logger.debug("\n{}\n", asciiTable.render());
