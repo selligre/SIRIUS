@@ -57,11 +57,9 @@ public class LoginView {
                 // JOptionPane.showMessageDialog(null, message);
                 try {
                     MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
-                    System.out.println(mainSelectUsersMails.getUsers());
                     Boolean testEmail = false;
                     Boolean testPassword = false;
                     for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                        System.out.println(user.getEmail());
                         if (user.getEmail().equals(idTextField.getText())) {
                             if (user.getPassword().equals(new String(pwdPasswordField.getPassword()))) {
                                 Application app = new Application();
