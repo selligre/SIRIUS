@@ -7,6 +7,8 @@ import edu.cgl.sirius.business.dto.AnnounceTag;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
+import edu.cgl.sirius.business.dto.Tag;
+import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.commons.Request;
@@ -32,6 +34,7 @@ public class XMartCityService {
         SELECT_ANNOUNCES_FOR_TAG_ID(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
+        SELECT_ALL_TAGS("SELECT * FROM tags"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -67,11 +70,13 @@ public class XMartCityService {
         Statement stmt;
         ResultSet res;
         ObjectMapper mapper;
-        int rows;
+        int rows; // TODO: pourquoi garder si jamais utiliser ?
         try {
             switch (request.getRequestOrder()) {
                 // Premier essai avec la bdd de test, inutile maintenant mais on garde
                 // temporairement pour l'exemple
+
+                // SELECT QUERRIES
                 case "SELECT_ALL_USERS":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_ALL_USERS.query);
@@ -168,6 +173,23 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ALL_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_TAGS.query);
+                    Tags tags = new Tags();
+                    while (res.next()) {
+                        Tag tag = new Tag().build(res);
+                        tags.add(tag);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(tags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                // INSERT QUERRIES
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
                     announce = mapper.readValue(request.getRequestBody(), Announce.class);
