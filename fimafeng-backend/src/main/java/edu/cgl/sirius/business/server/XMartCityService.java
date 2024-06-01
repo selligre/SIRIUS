@@ -3,7 +3,6 @@ package edu.cgl.sirius.business.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announce;
-import edu.cgl.sirius.business.dto.AnnounceTag;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
@@ -37,8 +36,10 @@ public class XMartCityService {
 
         // INSERT Queries
         INSERT_ANNOUNCE(
-                "INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  ) RETURNING announce_id;"),
-        INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);");
+                "INSERT INTO announces VALUES(DEFAULT, ?::int, ?::timestamp, ?, ?, ?, ?, ?::timestamp, ?::float ,?::timestamp ,?::boolean, ?::smallint, ?::smallint, ?::float, ?::int) RETURNING announce_id;"),
+        INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);"),
+        INSERT_USER(
+                "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;");
 
         private final String query;
 
@@ -63,7 +64,6 @@ public class XMartCityService {
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
         Response response = null;
-        Announce announce;
 
         PreparedStatement pstmt;
         Statement stmt;
@@ -83,7 +83,6 @@ public class XMartCityService {
                         users.add(user);
                     }
                     mapper = new ObjectMapper();
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(users));
@@ -99,7 +98,6 @@ public class XMartCityService {
                         usersEmails.add(user);
                     }
                     mapper = new ObjectMapper();
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(usersEmails));
@@ -111,11 +109,10 @@ public class XMartCityService {
                     res = stmt.executeQuery(Queries.SELECT_ALL_ANNOUNCES.query);
                     Announces announces = new Announces();
                     while (res.next()) {
-                        announce = new Announce().build(res);
+                        Announce announce = new Announce().build(res);
                         announces.add(announce);
                     }
                     mapper = new ObjectMapper();
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces));
@@ -128,14 +125,12 @@ public class XMartCityService {
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
                     pstmt.setString(1, announceL.getRef_location_id());
                     res = pstmt.executeQuery();
-
                     mapper = new ObjectMapper();
                     Announces announcesLocation = new Announces();
                     while (res.next()) {
                         Announce announceLocation = new Announce().build(res);
                         announcesLocation.add(announceLocation);
                     }
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announcesLocation));
@@ -145,7 +140,6 @@ public class XMartCityService {
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
                     Announce announceTag = mapper.readValue(request.getRequestBody(), Announce.class);
-
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
                     pstmt.setString(1, announceTag.getAnnounceTags().get(0));
                     pstmt.setString(2, announceTag.getAnnounceTags().get(1));
@@ -154,16 +148,13 @@ public class XMartCityService {
                     pstmt.setString(5, announceTag.getAnnounceTags().get(4));
                     pstmt.setString(6, Long
                             .toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
-
                     res = pstmt.executeQuery();
-
                     mapper = new ObjectMapper();
                     Announces announces2 = new Announces();
                     while (res.next()) {
-                        announce = new Announce().build(res);
+                        Announce announce = new Announce().build(res);
                         announces2.add(announce);
                     }
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces2));
@@ -179,7 +170,6 @@ public class XMartCityService {
                         locations.add(location);
                     }
                     mapper = new ObjectMapper();
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(locations));
@@ -188,7 +178,7 @@ public class XMartCityService {
 
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
-                    announce = mapper.readValue(request.getRequestBody(), Announce.class);
+                    Announce announce = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE.query);
                     pstmt.setString(1, announce.getRef_author_id());
                     pstmt.setString(2, announce.getPublication_date());
@@ -204,9 +194,7 @@ public class XMartCityService {
                     pstmt.setString(12, announce.getSlots_available());
                     pstmt.setString(13, announce.getPrice());
                     pstmt.setString(14, announce.getRef_location_id());
-
                     res = pstmt.executeQuery();
-
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
                         System.out.println("ID récupéré : " + id);
@@ -218,7 +206,6 @@ public class XMartCityService {
                             pstmt.executeUpdate();
                         }
                     }
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announce));
@@ -226,7 +213,37 @@ public class XMartCityService {
                     break;
 
                 case "INSERT_ANNOUNCE_TAGS":
+                    break;
 
+                case "INSERT_USER":
+                    // INSERT INTO users VALUES
+                    // (default, 'gilles', 'meunier', 'selligre', 'user', 'selligre@gmail.com',
+                    // 'selligre');
+                    mapper = new ObjectMapper();
+                    User user = mapper.readValue(request.getRequestBody(), User.class);
+                    pstmt = connection.prepareStatement(Queries.INSERT_USER.query);
+                    pstmt.setString(1, user.getFirst_name());
+                    pstmt.setString(2, user.getLast_name());
+                    pstmt.setString(3, user.getDisplay_name());
+                    pstmt.setString(4, user.getEmail());
+                    pstmt.setString(5, user.getPassword());
+                    pstmt.executeQuery();
+                    res = pstmt.executeQuery();
+                    // if (res.next()) {
+                    // String id = String.valueOf(res.getInt("user_id"));
+                    // System.out.println("ID récupéré : " + id);
+                    // for (String tagId : announce.getAnnounceTags()) {
+                    // System.out.println(tagId);
+                    // pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
+                    // pstmt.setString(1, id);
+                    // pstmt.setString(2, tagId);
+                    // pstmt.executeUpdate();
+                    // }
+                    // }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(user));
+                    System.out.println(response.getResponseBody());
                     break;
 
                 default:

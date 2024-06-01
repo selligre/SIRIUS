@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.client.MainInsertUser;
 import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectUsersEmails;
 
@@ -84,7 +85,7 @@ public class SubscribeView {
                         || lastNameTextField.getText().equals("")
                         || pseudoTextField.getText().equals("")
                         || emailTextField.getText().equals("")
-                        || emailTextField.getText().contains("@")
+                        || !emailTextField.getText().contains("@")
                         || new String(passwordPasswordField.getPassword()).equals("")
                         || locationComboBox.getSelectedItem().equals(SELECT_ITEM)
                         || lastNameTextField.getText().equals("")) {
@@ -111,6 +112,10 @@ public class SubscribeView {
                                 + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
                         JOptionPane.showMessageDialog(null, message);
                         // TODO: INSERT request
+                        MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER", firstNameTextField.getText(),
+                                lastNameTextField.getText(), pseudoTextField.getText(), emailTextField.getText(),
+                                new String(passwordPasswordField.getPassword()));
+
                     }
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
