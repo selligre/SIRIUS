@@ -23,8 +23,10 @@ import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 
 import edu.cgl.sirius.business.AnnounceParser;
+import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
+import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
@@ -33,7 +35,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.DataFormatException;
 
 public class InsertView extends JPanel {
@@ -96,7 +97,6 @@ public class InsertView extends JPanel {
 
     // Publish btn and warning
     private JButton btn_publish;
-    private JLabel lbl_annouce_warning;
 
     private HashMap<String, String> map_locationsItems;
     private HashMap<String, String> map_tagsItems;
@@ -203,7 +203,6 @@ public class InsertView extends JPanel {
         lbl_duration = new JLabel("Durée :");
         cb_durations = new JComboBox(cb_durationsItems);
         btn_publish = new JButton("Publier l'annonce");
-        lbl_annouce_warning = new JLabel("L'annonce sera publiée avec l'ID de la mairie");
 
         // manage components
         list_tags_checkBoxs.add(cbtn_concert);
@@ -301,7 +300,6 @@ public class InsertView extends JPanel {
         add(cb_durations);
         add(lbl_duration);
         add(btn_publish);
-        add(lbl_annouce_warning);
 
         // set component bounds (only needed by Absolute Positioning)
         logoButton.setBounds(25, 25, 125, 50);
@@ -344,7 +342,6 @@ public class InsertView extends JPanel {
         cb_durations.setBounds(1030, 310, 145, 25);
         lbl_duration.setBounds(935, 310, 100, 25);
         btn_publish.setBounds(560, 460, 165, 45);
-        lbl_annouce_warning.setBounds(515, 510, 260, 30);
         // enable or disable components
         this.logoButton.setEnabled(false);
         this.createButton.setEnabled(false);
@@ -367,7 +364,15 @@ public class InsertView extends JPanel {
             String publication_date = dateFormat.format(date_now);
             String is_recurrent = "f";
             String price = "0.0";
+
             String author_id = "1";
+            MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
+            String userEmail = Application.getUserMail();
+            for (User user : mainSelectUsers.getUsers().getUsers()) {
+                if (user.getEmail().equals(userEmail))
+                    author_id = user.getUser_id();
+
+            }
 
             LocalDateTime ldt_start = dtpicker_panel.getDateTimeStrict();
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());

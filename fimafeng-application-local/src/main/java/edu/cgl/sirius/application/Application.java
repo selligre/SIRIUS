@@ -35,14 +35,14 @@ import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
-    private String userMail;
+    public static String userMail;
 
-    public String getUserMail() {
+    public static String getUserMail() {
         return userMail;
     }
 
-    public void setUserMail(String userMail) {
-        this.userMail = userMail;
+    public static void setUserMail(String userMail) {
+        Application.userMail = userMail;
     }
 
     private final int LABEL_SIZE = 10;
