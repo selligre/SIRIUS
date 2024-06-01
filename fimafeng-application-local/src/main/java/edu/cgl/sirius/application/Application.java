@@ -379,8 +379,13 @@ public class Application {
         JTable table = new JTable();
         DefaultTableModel model = new DefaultTableModel(
                 new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                        "Quartier" },
+                        "Quartier", "Actions" },
                 0);
+        // table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+
+        table.getTableHeader().setResizingAllowed(false);
+        table.getTableHeader().setReorderingAllowed(false);
+
         table.setModel(model);
         table.setEnabled(false);
         for (Announce announce : resultAnnounces.getAnnounces()) {
@@ -394,6 +399,14 @@ public class Application {
             };
             model.addRow(rowData);
         }
+
+        table.getColumnModel().getColumn(0).setPreferredWidth(540);
+        table.getColumnModel().getColumn(1).setPreferredWidth(145);
+        table.getColumnModel().getColumn(2).setPreferredWidth(65);
+        table.getColumnModel().getColumn(3).setPreferredWidth(120);
+        table.getColumnModel().getColumn(4).setPreferredWidth(70);
+        table.getColumnModel().getColumn(5).setPreferredWidth(180);
+        table.getColumnModel().getColumn(6).setPreferredWidth(100);
 
         try {
             pagePanel.remove(Application.scrollPane);
