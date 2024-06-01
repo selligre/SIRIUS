@@ -41,7 +41,7 @@ public class XMartCityService {
                 "INSERT INTO announces VALUES(DEFAULT, ?::int, ?::timestamp, ?, ?, ?, ?, ?::timestamp, ?::float ,?::timestamp ,?::boolean, ?::smallint, ?::smallint, ?::float, ?::int) RETURNING announce_id;"),
         INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);"),
         INSERT_USER(
-                "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;");
+                "INSERT INTO users VALUES (DEFAULT, ?, ?, ?, 'user', ?, ?) RETURNING user_id;");
 
         private final String query;
 
@@ -249,7 +249,6 @@ public class XMartCityService {
                     pstmt.setString(3, user.getDisplay_name());
                     pstmt.setString(4, user.getEmail());
                     pstmt.setString(5, user.getPassword());
-                    pstmt.executeQuery();
                     res = pstmt.executeQuery();
                     // if (res.next()) {
                     // String id = String.valueOf(res.getInt("user_id"));

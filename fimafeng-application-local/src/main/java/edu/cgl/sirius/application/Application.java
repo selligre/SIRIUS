@@ -155,9 +155,9 @@ public class Application {
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                logger.info("Account Button clicked");
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
-
+                // logger.info("Account Button clicked");
+                // JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
+                new UserUpdateView();
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
