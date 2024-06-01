@@ -30,7 +30,7 @@ public class XMartCityService {
         SELECT_ALL_USERS_EMAILS("SELECT email FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
         SELECT_ANNOUNCES_FOR_LOCATION(
-                "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
+                "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE location_id = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
@@ -127,7 +127,8 @@ public class XMartCityService {
                     mapper = new ObjectMapper();
                     Announce announceL = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    pstmt.setString(1, announceL.getRef_location_id());
+                    // pstmt.setString(1, announceL.getRef_location_id());
+                    pstmt.setInt(1, Integer.parseInt(announceL.getRef_location_id()));
                     res = pstmt.executeQuery();
                     mapper = new ObjectMapper();
                     Announces announcesLocation = new Announces();
