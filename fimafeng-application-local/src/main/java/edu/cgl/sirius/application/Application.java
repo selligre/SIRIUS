@@ -36,6 +36,15 @@ import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
     public static String userMail;
+    public static String userId;
+
+    public static String getUserId() {
+        return userId;
+    }
+
+    public static void setUserId(String userId) {
+        Application.userId = userId;
+    }
 
     public static String getUserMail() {
         return userMail;
@@ -148,6 +157,7 @@ public class Application {
             public void actionPerformed(ActionEvent e) {
                 logger.info("Account Button clicked");
                 JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
+
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
