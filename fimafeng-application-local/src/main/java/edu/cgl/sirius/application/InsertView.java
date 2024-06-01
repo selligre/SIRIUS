@@ -26,6 +26,7 @@ import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectTags;
+import edu.cgl.sirius.client.commons.UtilsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,7 +118,7 @@ public class InsertView extends JPanel {
             logger.info("Start querry (locations)");
             MainSelectLocations locationsClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationsClient.getLocations());
-            logger.info("Queery ended!");
+            logger.info("Querry ended!");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,7 +131,7 @@ public class InsertView extends JPanel {
         }
 
         String[] cb_locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
-        reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
+        UtilsManager.reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
 
         // Update tags from DB
         map_tagsItems = new HashMap<>();
@@ -143,7 +144,7 @@ public class InsertView extends JPanel {
             for (String key : tagsMap.keySet()) {
                 map_tagsItems.put(tagsMap.get(key), key);
             }
-            logger.info("Queery ended!");
+            logger.info("Querry ended!");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -486,11 +487,4 @@ public class InsertView extends JPanel {
 
     }
 
-    protected static void reorderWithDefaultOnTop(String[] array, String target) {
-        ArrayList<String> list = new ArrayList<String>(Arrays.asList(array));
-        int posT = list.indexOf(target);
-        String pos0 = array[0];
-        array[0] = target;
-        array[posT] = pos0;
-    }
 }

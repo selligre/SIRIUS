@@ -34,18 +34,18 @@ public class MainSelectAnnouncesLocation {
         return announcesLocation;
     }
 
-    public MainSelectAnnouncesLocation(String requestOrder, String location) throws JsonProcessingException {
+    public MainSelectAnnouncesLocation(String requestOrder, String locationId) throws JsonProcessingException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        Announce announceLocationName = new Announce();
-        announceLocationName.setRef_location_id(location);
+        Announce announceLocationId = new Announce();
+        announceLocationId.setRef_location_id(locationId);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
         final ObjectMapper objectMapper2 = new ObjectMapper();
         final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(announceLocationName);
+                .writeValueAsString(announceLocationId);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
@@ -60,7 +60,7 @@ public class MainSelectAnnouncesLocation {
             SelectAllAnnouncesLocationClientRequest clientRequest;
             clientRequest = new SelectAllAnnouncesLocationClientRequest(
                     networkConfig,
-                    birthdate++, request, announceLocationName, requestBytes);
+                    birthdate++, request, announceLocationId, requestBytes);
 
             clientRequests.push(clientRequest);
 

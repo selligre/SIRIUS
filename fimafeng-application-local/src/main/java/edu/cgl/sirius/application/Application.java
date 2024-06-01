@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.spec.PBEKeySpec;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -31,6 +32,7 @@ import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
 import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectTags;
+import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
     private final int LABEL_SIZE = 10;
@@ -55,6 +57,8 @@ public class Application {
     public static JScrollPane scrollPane;
 
     private static Logger logger;
+
+    private static AnnounceParser parser;
 
     public static void main(String[] args) {
         new Application();
@@ -212,7 +216,7 @@ public class Application {
         this.activitiesButton.setBackground(Color.DARK_GRAY);
         this.activitiesButton.setEnabled(false);
 
-        AnnounceParser parser = new AnnounceParser();
+        parser = new AnnounceParser();
 
         try {
             logger.info("Launch queries");
@@ -251,9 +255,8 @@ public class Application {
         }
 
         String[] tags = (String[]) map_tagsItems.keySet().toArray(new String[0]);
-        InsertView.reorderWithDefaultOnTop(tags, "-");
+        UtilsManager.reorderWithDefaultOnTop(tags, "-");
 
-        String tags_id[] = { null, "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final JComboBox tagList1 = new JComboBox(tags);
         headerPanel.add(tagList1);
@@ -289,7 +292,7 @@ public class Application {
 
                     MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
                             selectedTagIds);
-                    Application.requestResult = client.getAnnounces();
+                    requestResult = client.getAnnounces();
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
@@ -298,22 +301,41 @@ public class Application {
         });
         headerPanel.add(filter_by_tag);
 
-        String locations[] = { "-", "Plaza", "Court", "Pass", "Place", "Park", "Bar St Patricks", "Place de la Mairie",
-                "Parc du chateau", "Salle de fêtes", "Piscine", "Cinéma", "Théâtre", "Mairie" };
+        try {
+            logger.info("Launch querry");
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            logger.info("Query ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        HashMap<String, String> map_locationsItems = new HashMap<>();
+        map_locationsItems.put("-", "0");
+        Map<String, String> parsedLocations = parser.getParsedLocations();
+        for (String key : parsedLocations.keySet()) {
+            map_locationsItems.put(parsedLocations.get(key), key);
+        }
+
+        String[] locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
+        UtilsManager.reorderWithDefaultOnTop(locationsItems, "-");
+
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        final JComboBox locationList = new JComboBox(locations);
+        final JComboBox locationList = new JComboBox(locationsItems);
         headerPanel.add(locationList);
 
         JButton filter_by_location = new JButton("Filtrer par quartier");
         filter_by_location.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                logger.info("Filtering by neighboorhoods");
                 try {
-                    String selectedLocation = locationList.getSelectedItem().toString();
-                    if (!selectedLocation.equals("-")) {
+                    String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
+                    if (!selectedLocation.equals("0")) {
                         MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
                                 "SELECT_ANNOUNCES_FOR_LOCATION",
                                 selectedLocation);
-                        Application.requestResult = client.getAnnouncesLocation();
+                        requestResult = client.getAnnouncesLocation();
                     }
                 } catch (JsonProcessingException e1) {
                     e1.printStackTrace();
@@ -329,18 +351,20 @@ public class Application {
             public void actionPerformed(ActionEvent e) {
                 try {
                     MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
-                    Application.requestResult = client.getAnnounces();
+                    requestResult = client.getAnnounces();
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
                 displayResult(pagePanel, requestResult);
             }
         });
+        headerPanel.add(remove_filters);
+        pagePanel.add(headerPanel, BorderLayout.NORTH);
+
         displayResult(pagePanel, requestResult);
     }
 
     private void displayResult(JPanel pagePanel, Announces resultAnnounces) {
-        AnnounceParser parser = new AnnounceParser();
 
         try {
             logger.info("Launch querry");
@@ -359,7 +383,7 @@ public class Application {
                 0);
         table.setModel(model);
         table.setEnabled(false);
-        for (Announce announce : Application.requestResult.getAnnounces()) {
+        for (Announce announce : resultAnnounces.getAnnounces()) {
             String[] rowData = {
                     announce.getTitle(),
                     parser.parseDateTime(announce.getDate_time_start()),
@@ -369,6 +393,12 @@ public class Application {
                     parser.parseLocation(announce.getRef_location_id())
             };
             model.addRow(rowData);
+        }
+
+        try {
+            pagePanel.remove(Application.scrollPane);
+        } catch (Exception e) {
+            // Do nothing
         }
         Application.scrollPane = new JScrollPane(table);
         pagePanel.add(Application.scrollPane, BorderLayout.CENTER);
