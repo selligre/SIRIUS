@@ -20,9 +20,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
@@ -33,6 +33,16 @@ import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectTags;
 
 public class Application {
+    private String userMail;
+
+    public String getUserMail() {
+        return userMail;
+    }
+
+    public void setUserMail(String userMail) {
+        this.userMail = userMail;
+    }
+
     private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
@@ -122,16 +132,18 @@ public class Application {
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                logger.info("LogOut Button clicked");
-                JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+                // logger.info("LogOut Button clicked");
+                // JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+                frame.setVisible(false);
+                frame.setEnabled(false);
+                frame.repaint();
+                new LoginView();
             }
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Account Button clicked");
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
+                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
@@ -185,8 +197,8 @@ public class Application {
         // enable or disable components
         this.logoButton.setEnabled(false);
         this.createButton.setEnabled(true);
-        this.logOutButton.setEnabled(false);
-        this.accountButton.setEnabled(false);
+        this.logOutButton.setEnabled(true);
+        this.accountButton.setEnabled(true);
         this.searchField.setEnabled(false);
         this.searchButton.setEnabled(false);
         this.activitiesButton.setEnabled(true);
