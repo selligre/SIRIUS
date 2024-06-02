@@ -49,26 +49,66 @@ public class SubscribeView {
         JLabel passwordLabel = new JLabel("Mot de passe :");
         JPasswordField passwordPasswordField = new JPasswordField(5);
 
-        JLabel locationLabel = new JLabel("Quartier favori :");
-        AnnounceParser parser = new AnnounceParser();
-        HashMap<String, String> map_locationsItems = new HashMap<>();
-        try {
-            MainSelectLocations mainSelectLocations = new MainSelectLocations("SELECT_ALL_LOCATIONS");
-            parser.updateLocations(mainSelectLocations.getLocations());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         final String SELECT_ITEM = "<Sélectionner>";
-        map_locationsItems.put(SELECT_ITEM, "0");
-        Map<String, String> parsedLocations = parser.getParsedLocations();
-        for (String key : parsedLocations.keySet()) {
-            map_locationsItems.put(parsedLocations.get(key), key);
-        }
-        String[] cb_locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
-        reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
+
+        JLabel locationLabel = new JLabel("Quartier favori :");
+        String locations[] = {
+                SELECT_ITEM,
+                "Plaza",
+                "Court",
+                "Plaza",
+                "Pass",
+                "Place",
+                "Park",
+                "Bar St Patricks",
+                "Place de la Mairie",
+                "Parc du chateau",
+                "Salle de fêtes",
+                "Piscine",
+                "Cinéma",
+                "Théâtre",
+                "Mairie"
+        };
+        int locations_id[] = {
+                0,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                4,
+                5,
+                6,
+                7,
+                2,
+                3,
+                1,
+                8
+        };
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        JComboBox locationComboBox = new JComboBox(cb_locationsItems);
-        locationComboBox.setSelectedItem(SELECT_ITEM);
+        JComboBox locationComboBox = new JComboBox(locations);
+        // AnnounceParser parser = new AnnounceParser();
+        // HashMap<String, String> map_locationsItems = new HashMap<>();
+        // try {
+        // MainSelectLocations mainSelectLocations = new
+        // MainSelectLocations("SELECT_ALL_LOCATIONS");
+        // parser.updateLocations(mainSelectLocations.getLocations());
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
+
+        // map_locationsItems.put(SELECT_ITEM, "0");
+        // Map<String, String> parsedLocations = parser.getParsedLocations();
+        // for (String key : parsedLocations.keySet()) {
+        // map_locationsItems.put(parsedLocations.get(key), key);
+        // }
+        // String[] cb_locationsItems = (String[])
+        // map_locationsItems.keySet().toArray(new String[0]);
+        // reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
+        // @SuppressWarnings({ "rawtypes", "unchecked" })
+        // JComboBox locationComboBox = new JComboBox(cb_locationsItems);
+        // locationComboBox.setSelectedItem(SELECT_ITEM);
 
         JLabel tagLabel = new JLabel("Tag favori :");
         String tags[] = { SELECT_ITEM, "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
@@ -109,7 +149,7 @@ public class SubscribeView {
                                     lastNameTextField.getText(), pseudoTextField.getText(),
                                     emailTextField.getText(),
                                     new String(passwordPasswordField.getPassword()),
-                                    locationComboBox.getSelectedIndex(),
+                                    locations_id[locationComboBox.getSelectedIndex()],
                                     tags_id[tagComboBox.getSelectedIndex()]);
                             frame.setVisible(false);
                             frame.setEnabled(false);
