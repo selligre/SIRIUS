@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
@@ -28,11 +29,14 @@ import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 
 import edu.cgl.sirius.business.AnnounceParser;
+import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.AnnounceTag;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectTags;
+import edu.cgl.sirius.client.MainSelectTagsOfAnnounce;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
 import java.util.ArrayList;
@@ -41,9 +45,10 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.DataFormatException;
 
-public class InsertView extends JPanel {
+public class FocusView extends JPanel {
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
@@ -106,9 +111,14 @@ public class InsertView extends JPanel {
     private JFormattedTextField tf_price;
     private JLabel lbl_slots;
     private JFormattedTextField tf_slots;
+    private JLabel lbl_nb_register;
+    private JTextField tf_nb_register;
+    private JButton btn_see_registered;
 
     // Publish btn and warning
-    private JButton btn_publish;
+    private JButton btn_update;
+    private JButton btn_register;
+    private JButton btn_edit;
 
     private HashMap<String, String> map_locationsItems;
     private HashMap<String, String> map_tagsItems;
@@ -116,9 +126,12 @@ public class InsertView extends JPanel {
 
     private ArrayList<JCheckBox> list_tags_checkBoxs;
 
+    private Announce announce_focus;
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public InsertView() {
-        logger.info("Insert view open");
+    public FocusView(Announce ann) {
+        announce_focus = ann;
+        logger.info("Focus view open");
 
         // construct preComponents
         final String SELECT_ITEM = "<Sélectionner>";
@@ -147,32 +160,19 @@ public class InsertView extends JPanel {
 
         // Update tags from DB
         map_tagsItems = new HashMap<>();
-        map_tagsItems.put("Concert", "1");
-        map_tagsItems.put("Chorale", "2");
-        map_tagsItems.put("Festival", "3");
-        map_tagsItems.put("Enfants", "4");
-        map_tagsItems.put("Jeunes", "5");
-        map_tagsItems.put("Adultes", "6");
-        map_tagsItems.put("Séniors", "7");
-        map_tagsItems.put("Couples", "8");
-        map_tagsItems.put("Tout public", "9");
-        map_tagsItems.put("Musée", "10");
-        map_tagsItems.put("Peinture", "11");
-        map_tagsItems.put("Théâtre", "12");
-        map_tagsItems.put("Visites", "13");
-        // map_tagsItems.put(SELECT_ITEM, "0");
-        // Map<String, String> tagsMap;
-        // try {
-        // logger.info("Start querry (tags)");
-        // MainSelectTags tagsClient = new MainSelectTags("SELECT_ALL_TAGS");
-        // tagsMap = tagsClient.getTags().getTagsMap();
-        // for (String key : tagsMap.keySet()) {
-        // map_tagsItems.put(tagsMap.get(key), key);
-        // }
-        // logger.info("Querry ended!");
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
+        map_tagsItems.put(SELECT_ITEM, "0");
+        Map<String, String> tagsMap = new HashMap<>();
+        try {
+            logger.info("Start querry (tags)");
+            MainSelectTags tagsClient = new MainSelectTags("SELECT_ALL_TAGS");
+            tagsMap = tagsClient.getTags().getTagsMap();
+            for (String key : tagsMap.keySet()) {
+                map_tagsItems.put(tagsMap.get(key), key);
+            }
+            logger.info("Querry ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         list_tags_checkBoxs = new ArrayList<>();
 
@@ -192,7 +192,7 @@ public class InsertView extends JPanel {
         createButton = new JButton("(+) Proposer");
         logOutButton = new JButton("Deconnexion");
         accountButton = new JButton("Compte");
-        searchField = new JTextField(5);
+        searchField = new JTextField(1);
         searchButton = new JButton("Rechercher");
         activitiesButton = new JButton("Activités");
         materialsButton = new JButton("Matériels");
@@ -206,7 +206,7 @@ public class InsertView extends JPanel {
         lbl_datetimestart = new JLabel("Date et heure de début :");
         cbtn_recurrence = new JCheckBox("Récurrent ?");
         lbl_title = new JLabel("Titre :");
-        tf_title = new JTextField(5);
+        tf_title = new JTextField(1);
         lbl_tags = new JLabel("Tags :");
         cbtn_concert = new JCheckBox("Concert");
         cbtn_choral = new JCheckBox("Chorale");
@@ -229,7 +229,13 @@ public class InsertView extends JPanel {
         cb_durations = new JComboBox(cb_durationsItems);
         lbl_price = new JLabel("Prix en euros :");
         lbl_slots = new JLabel("Nombre de places :");
-        btn_publish = new JButton("Publier l'annonce");
+        lbl_nb_register = new JLabel("Nombre d'inscrit(s) :");
+        tf_nb_register = new JTextField(1);
+
+        btn_see_registered = new JButton("Voir");
+        btn_register = new JButton("S'inscrire");
+        btn_edit = new JButton("Modifier");
+        btn_update = new JButton("Mettre à jour");
 
         // manage components
         list_tags_checkBoxs.add(cbtn_concert);
@@ -270,7 +276,7 @@ public class InsertView extends JPanel {
         timeSettings.initialTime = LocalTime.of(15, 30);
         timeSettings.generatePotentialMenuTimes(TimeIncrement.FifteenMinutes, null, null);
         dtpicker_panel = new DateTimePicker(dateSettings, timeSettings);
-        dateSettings.setDateRangeLimits(today, today.plusYears(1));
+        // dateSettings.setDateRangeLimits(today, today.plusYears(1));
 
         NumberFormat format = new DecimalFormat("#0.00");
         NumberFormatter doubleFormatter = new NumberFormatter(format);
@@ -290,15 +296,69 @@ public class InsertView extends JPanel {
         tf_slots = new JFormattedTextField(intFormatter);
         tf_slots.setColumns(1);
 
+        // Load announce's data to swing objects
+        dtpicker_panel.setDateTimePermissive(
+                LocalDateTime.parse(announce_focus.getDate_time_start(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+        tf_title.setText(announce_focus.getTitle());
+        tfa_description.setText(announce_focus.getDescription());
+        tf_price.setText(parser.parsePrice(announce_focus.getPrice()));
+        tf_slots.setText(parser.parseSlots(announce_focus.getSlots_number()));
+        cb_locations.setSelectedItem(parsedLocations.get(announce_focus.getRef_location_id()));
+        cb_durations.setSelectedItem(parser.parseDuration(announce_focus.getDuration()));
+
+        // Disable components
+        rbtn_activity.setEnabled(false);
+        dtpicker_panel.setEnabled(false);
+        tf_title.setEnabled(false);
+        tf_title.setDisabledTextColor(Color.BLACK);
+        tfa_description.setEnabled(false);
+        tfa_description.setDisabledTextColor(Color.BLACK);
+        tf_price.setEnabled(false);
+        tf_price.setDisabledTextColor(Color.BLACK);
+        tf_slots.setEnabled(false);
+        tf_slots.setDisabledTextColor(Color.BLACK);
+        cb_locations.setEnabled(false);
+        cb_durations.setEnabled(false);
+        tf_nb_register.setEnabled(false);
+        tf_nb_register.setDisabledTextColor(Color.BLACK);
+
+        try {
+            ArrayList<String> annTagsList = new ArrayList<>();
+            logger.info("Start querry (tags)");
+            MainSelectTagsOfAnnounce announceTags = new MainSelectTagsOfAnnounce("SELECT_ALL_TAGS_OF_ANNOUNCE",
+                    announce_focus.getAnnounce_id());
+            Set<AnnounceTag> tagsSet = announceTags.getAnnounceTags().getAnnounces();
+            for (AnnounceTag annTag : tagsSet) {
+                annTagsList.add(annTag.getRef_tag_id());
+            }
+            announce_focus.setAnnounceTags(annTagsList);
+            logger.info("Querry ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!announce_focus.getAnnounceTags().isEmpty()) {
+            for (String tagId : announce_focus.getAnnounceTags()) {
+                String tagName = tagsMap.get(tagId);
+                for (JCheckBox box : list_tags_checkBoxs) {
+                    if (box.getText().equals(tagName)) {
+                        box.setSelected(true);
+                    }
+                    box.setEnabled(false);
+                }
+            }
+        }
+
         // adjust size and set layout
         setPreferredSize(new Dimension(1276, 619));
         setLayout(null);
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
 
         // define fonctionnalities
-        btn_publish.addActionListener(new ActionListener() {
+        btn_update.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                checkInputs();
+                // checkInputs();
             }
         });
 
@@ -346,7 +406,12 @@ public class InsertView extends JPanel {
         add(tf_price);
         add(lbl_slots);
         add(tf_slots);
-        add(btn_publish);
+        add(lbl_nb_register);
+        add(tf_nb_register);
+        add(btn_update);
+        add(btn_register);
+        add(btn_see_registered);
+        add(btn_edit);
 
         // set component bounds (only needed by Absolute Positioning)
         logoButton.setBounds(25, 25, 125, 50);
@@ -366,6 +431,7 @@ public class InsertView extends JPanel {
         lbl_datetimestart.setBounds(480, 180, 150, 25);
         dtpicker_panel.setBounds(630, 180, 200, 25);
         cbtn_recurrence.setBounds(870, 180, 100, 25);
+        // TODO: ajouter combobox statut (en ligne, draft, masqué, etc.)
         lbl_title.setBounds(100, 230, 100, 25);
         tf_title.setBounds(140, 230, 1035, 25);
         lbl_tags.setBounds(100, 280, 100, 25);
@@ -391,19 +457,30 @@ public class InsertView extends JPanel {
         lbl_price.setBounds(100, 470, 100, 25);
         tf_price.setBounds(190, 470, 65, 25);
         lbl_slots.setBounds(280, 470, 150, 25);
-        tf_slots.setBounds(435, 470, 50, 25);
-        btn_publish.setBounds(1015, 470, 165, 45);
+        tf_slots.setBounds(400, 470, 50, 25);
+        lbl_nb_register.setBounds(470, 470, 120, 25);
+        tf_nb_register.setBounds(595, 470, 50, 25);
+        btn_see_registered.setBounds(650, 470, 70, 25);
+
+        btn_update.setBounds(1015, 470, 165, 45);
+        btn_register.setBounds(1015, 470, 165, 45);
+        btn_edit.setBounds(1015, 470, 165, 45);
+
         // enable or disable components
-        this.logoButton.setEnabled(false);
-        this.createButton.setEnabled(false);
-        this.logOutButton.setEnabled(false);
-        this.accountButton.setEnabled(false);
-        this.searchField.setEnabled(false);
-        this.searchButton.setEnabled(false);
-        this.activitiesButton.setEnabled(false);
-        this.materialsButton.setEnabled(false);
-        this.servicesButton.setEnabled(false);
-        this.aroundMeButton.setEnabled(false);
+        logoButton.setEnabled(false);
+        createButton.setEnabled(false);
+        logOutButton.setEnabled(false);
+        accountButton.setEnabled(false);
+        searchField.setEnabled(false);
+        searchButton.setEnabled(false);
+        activitiesButton.setEnabled(false);
+        materialsButton.setEnabled(false);
+        servicesButton.setEnabled(false);
+        aroundMeButton.setEnabled(false);
+
+        // TODO: afficher selon l'id du joueur == / != ref_owner_id
+        btn_update.setVisible(false);
+        btn_edit.setVisible(false);
     }
 
     private void checkInputs() {
@@ -558,11 +635,11 @@ public class InsertView extends JPanel {
         return String.valueOf(slots);
     }
 
-    public static void start(Component component) {
-        JFrame frame = new JFrame("Ville partagée - Insert view");
+    public static void start(Component component, Announce ann) {
+        JFrame frame = new JFrame("Ville partagée - Focus view");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
-        frame.getContentPane().add(new InsertView());
+        frame.getContentPane().add(new FocusView(ann));
         frame.pack();
         frame.setLocationRelativeTo(component);
         frame.setVisible(true);

@@ -17,7 +17,7 @@ public class AnnounceTag {
 
     public final AnnounceTag build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "announce_tags_id", "ref_announce_id", "ref_tag_id");
+        setFieldsFromResulset(resultSet, "announce_tag_id", "ref_announce_id", "ref_tag_id");
         return this;
     }
 
@@ -59,23 +59,23 @@ public class AnnounceTag {
         this.ref_tag_id = ref_tag_id;
     }
 
-    private void setFieldsFromResulset(final ResultSet resultSet, final String ... fieldNames )
+    private void setFieldsFromResulset(final ResultSet resultSet, final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             final Field field = this.getClass().getDeclaredField(fieldName);
-            if (resultSet.getObject(fieldName) == null){
+            if (resultSet.getObject(fieldName) == null) {
                 field.set(this, " ");
-            }
-            else{
+            } else {
                 field.set(this, resultSet.getObject(fieldName).toString());
             }
         }
     }
 
-    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement, final String ... fieldNames )
+    private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement,
+            final String... fieldNames)
             throws NoSuchFieldException, SQLException, IllegalAccessException {
         int ix = 0;
-        for(final String fieldName : fieldNames ) {
+        for (final String fieldName : fieldNames) {
             preparedStatement.setString(++ix, fieldName);
         }
         return preparedStatement;

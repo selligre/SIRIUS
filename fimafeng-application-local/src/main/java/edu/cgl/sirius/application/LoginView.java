@@ -49,6 +49,10 @@ public class LoginView {
         JPasswordField pwdPasswordField = new JPasswordField(5);
         JLabel titleLabel = new JLabel("VILLE PARTAGEE");
         JButton connexionButton = new JButton("SE CONNECTER");
+        // set par défaut des identifiants pour gagner du temps
+        idTextField.setText("villepartagee@mairie.fr");
+        pwdPasswordField.setText("ceci est un mdp");
+
         connexionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

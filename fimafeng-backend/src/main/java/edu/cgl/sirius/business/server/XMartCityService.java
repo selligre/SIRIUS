@@ -3,6 +3,8 @@ package edu.cgl.sirius.business.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announce;
+import edu.cgl.sirius.business.dto.AnnounceTag;
+import edu.cgl.sirius.business.dto.AnnounceTags;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
@@ -35,6 +37,7 @@ public class XMartCityService {
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
         SELECT_ALL_TAGS("SELECT * FROM tags"),
+        SELECT_ALL_TAGS_OF_ANNOUNCE("SELECT * FROM announce_tags WHERE ref_announce_id = ?;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -197,6 +200,24 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ALL_TAGS_OF_ANNOUNCE":
+                    mapper = new ObjectMapper();
+                    Announce announceT = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ALL_TAGS_OF_ANNOUNCE.query);
+                    pstmt.setInt(1, Integer.parseInt(announceT.getAnnounce_id()));
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    AnnounceTags announceTags = new AnnounceTags();
+                    while (res.next()) {
+                        AnnounceTag announceTagForAnnounce = new AnnounceTag().build(res);
+                        announceTags.add(announceTagForAnnounce);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announceTags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
                 // INSERT QUERRIES
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
@@ -219,9 +240,9 @@ public class XMartCityService {
                     res = pstmt.executeQuery();
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
-                        System.out.println("ID récupéré : " + id);
+                        logger.info("Annonunce ID récupéré : " + id);
                         for (String tagId : announce.getAnnounceTags()) {
-                            System.out.println(tagId);
+                            logger.info("TagId traité: " + tagId);
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
                             pstmt.setString(1, id);
                             pstmt.setString(2, tagId);

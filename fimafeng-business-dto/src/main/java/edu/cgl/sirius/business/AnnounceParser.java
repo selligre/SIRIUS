@@ -65,4 +65,16 @@ public class AnnounceParser {
         }
     }
 
+    public String parseSlots(String slots) {
+        if (slots.equals(" ")) {
+            return "Indéfini";
+        }
+        int amount = Integer.valueOf(slots);
+        if (amount == 0) {
+            return "Gratuit";
+        } else {
+            return String.valueOf(amount);
+        }
+    }
+
 }

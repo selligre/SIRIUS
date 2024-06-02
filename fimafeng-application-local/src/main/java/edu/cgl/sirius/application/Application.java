@@ -2,15 +2,17 @@ package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.spec.PBEKeySpec;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,6 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +49,6 @@ public class Application {
         Application.userMail = userMail;
     }
 
-    private final int LABEL_SIZE = 10;
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
@@ -84,7 +87,7 @@ public class Application {
     public void configFrame() {
         this.frame = new JFrame();
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setTitle("Ville partagée");
+        this.frame.setTitle("Ville partagée - Home");
         this.frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         this.frame.setResizable(false);
         this.frame.setLocationRelativeTo(null);
@@ -92,6 +95,10 @@ public class Application {
 
     public void changeViewToInsert() {
         InsertView.start(this.frame);
+    }
+
+    public void changeViewToFocus(Announce ann) {
+        FocusView.start(this.frame, ann);
     }
 
     public void configHomePage() {
@@ -152,7 +159,6 @@ public class Application {
         });
         this.searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Search Button clicked");
                 String content = "Recherche du terme \"" + searchField.getText() + "\" dans les annonces.";
                 JOptionPane.showMessageDialog(null, content);
@@ -234,8 +240,6 @@ public class Application {
             logger.info("Launch queries");
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             Application.requestResult = client.getAnnounces();
-            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
-            parser.updateLocations(locationClient.getLocations());
             logger.info("Queries ended!");
 
         } catch (Exception e) {
@@ -250,12 +254,12 @@ public class Application {
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new FlowLayout());
 
-        // Update tags from DB
+        // Update tags from DB for filters
         HashMap<String, String> map_tagsItems = new HashMap<>();
-        map_tagsItems.put("-", "0");
+        map_tagsItems.put("-", null);
         Map<String, String> tagsMap;
         try {
-            logger.info("Start querry (tags)");
+            logger.info("Start querry (tags for filters)");
             MainSelectTags tagsClient = new MainSelectTags("SELECT_ALL_TAGS");
             tagsMap = tagsClient.getTags().getTagsMap();
             for (String key : tagsMap.keySet()) {
@@ -314,7 +318,7 @@ public class Application {
         headerPanel.add(filter_by_tag);
 
         try {
-            logger.info("Launch querry");
+            logger.info("Launch querry (locations for filters)");
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
             logger.info("Query ended!");
@@ -379,7 +383,7 @@ public class Application {
     private void displayResult(JPanel pagePanel, Announces resultAnnounces) {
 
         try {
-            logger.info("Launch querry");
+            logger.info("Launch querry (display location)");
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
             logger.info("Query ended!");
@@ -393,7 +397,6 @@ public class Application {
                 new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
                         "Quartier", "Actions" },
                 0);
-        // table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
         table.getTableHeader().setResizingAllowed(false);
         table.getTableHeader().setReorderingAllowed(false);
@@ -401,13 +404,21 @@ public class Application {
         table.setModel(model);
         table.setEnabled(false);
         for (Announce announce : resultAnnounces.getAnnounces()) {
-            String[] rowData = {
+            JButton btn = new JButton("Voir");
+            btn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    logger.info("Opening announce view of: " + announce.toString());
+                    changeViewToFocus(announce);
+                }
+            });
+            Object[] rowData = {
                     announce.getTitle(),
                     parser.parseDateTime(announce.getDate_time_start()),
                     parser.parseDuration(announce.getDuration()),
                     announce.getSlots_available().toString(),
                     parser.parsePrice(announce.getPrice()),
-                    parser.parseLocation(announce.getRef_location_id())
+                    parser.parseLocation(announce.getRef_location_id()),
+                    btn,
             };
             model.addRow(rowData);
         }
@@ -419,6 +430,11 @@ public class Application {
         table.getColumnModel().getColumn(4).setPreferredWidth(70);
         table.getColumnModel().getColumn(5).setPreferredWidth(180);
         table.getColumnModel().getColumn(6).setPreferredWidth(100);
+
+        TableCellRenderer btnRenderer = new JTableButtonRenderer();
+        table.getColumnModel().getColumn(6).setCellRenderer(btnRenderer);
+
+        table.addMouseListener(new JTableButtonMouseListener(table));
 
         try {
             pagePanel.remove(Application.scrollPane);
@@ -432,5 +448,37 @@ public class Application {
         Application.page.revalidate();
         Application.page.repaint();
 
+    }
+
+}
+
+class JTableButtonMouseListener extends MouseAdapter {
+    private final JTable table;
+
+    public JTableButtonMouseListener(JTable table) {
+        this.table = table;
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        int column = table.getColumnModel().getColumnIndexAtX(e.getX()); // get the coloum of the button
+        int row = e.getY() / table.getRowHeight(); // get the row of the button
+
+        // *Checking the row or column is valid or not
+        if (row < table.getRowCount() && row >= 0 && column < table.getColumnCount() && column >= 0) {
+            Object value = table.getValueAt(row, column);
+            if (value instanceof JButton) {
+                // perform a click event
+                ((JButton) value).doClick();
+            }
+        }
+    }
+}
+
+class JTableButtonRenderer implements TableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
+        JButton button = (JButton) value;
+        return button;
     }
 }
