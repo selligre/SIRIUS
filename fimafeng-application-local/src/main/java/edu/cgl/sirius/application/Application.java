@@ -412,9 +412,6 @@ public class Application {
 
         try {
             logger.info("Launch queries");
-            // TODO: Change SELECT_ALL_ANNOUNCES to
-            // SELECT_ALL_ANNOUNCES_FOR_TAG_AND_LOCATION
-
             ArrayList<String> ref_tag_id = new ArrayList<>();
             ref_tag_id.add(userTagId);
             ref_tag_id.add(null);
@@ -423,20 +420,15 @@ public class Application {
             ref_tag_id.add(null);
             MainSelectAnnouncesTag mainSelectAnnouncesTag = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
                     ref_tag_id);
-
-            // ArrayList announcesWithUserLocationAndUserTag = new ArrayList<>();
             Announces announcesWithUserLocationAndUserTag = new Announces();
             for (Announce announce : mainSelectAnnouncesTag.getAnnounces().getAnnounces()) {
                 if (announce.getRef_location_id().equals(userLocationId))
                     announcesWithUserLocationAndUserTag.add(announce);
             }
-
-            // System.out.println(announcesWithUserLocationAndUserTag);
-
-            // MainSelectAnnounces mainSelectAnnounces = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+            // MainSelectAnnounces mainSelectAnnounces = new
+            // MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             // Application.requestResult = mainSelectAnnounces.getAnnounces();
             Application.requestResult = announcesWithUserLocationAndUserTag;
-
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
             logger.info("Queries ended!");
