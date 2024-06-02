@@ -72,7 +72,7 @@ public class UserUpdateView {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         JComboBox tagComboBox = new JComboBox(tags);
 
-        JButton subscribeButton = new JButton("S'INSCRIRE");
+        JButton subscribeButton = new JButton("UPDATE");
         subscribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

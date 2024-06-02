@@ -14,7 +14,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.business.dto.UserLocation;
+import edu.cgl.sirius.business.dto.UserTag;
 import edu.cgl.sirius.client.MainSelectUsersEmails;
+import edu.cgl.sirius.client.MainSelectUsersLocations;
+import edu.cgl.sirius.client.MainSelectUsersTags;
 
 /*
  * La création d'un profil utilisateur (avec des règles métiers pour vérifier le format de son e-mail, 
@@ -64,6 +68,21 @@ public class LoginView {
                             if (user.getPassword().equals(new String(pwdPasswordField.getPassword()))) {
                                 Application.setUserMail(idTextField.getText());
                                 Application.setUserId(user.getUser_id());
+                                MainSelectUsersTags mainSelectUsersTags = new MainSelectUsersTags(
+                                        "SELECT_ALL_USERS_TAGS");
+                                for (UserTag userTag : mainSelectUsersTags.getUserTags().getUserTags()) {
+                                    if (userTag.getRef_user_id().equals(user.getUser_id())) {
+                                        Application.setUserTagId(userTag.getRef_tag_id());
+                                    }
+                                }
+                                MainSelectUsersLocations mainSelectUsersLocations = new MainSelectUsersLocations(
+                                        "SELECT_ALL_USERS_LOCATIONS");
+                                for (UserLocation userLocation : mainSelectUsersLocations.getUserLocations()
+                                        .getUserLocations()) {
+                                    if (userLocation.getRef_user_id().equals(user.getUser_id())) {
+                                        Application.setUserLocationId(userLocation.getRef_location_id());
+                                    }
+                                }
                                 new Application();
                                 testPassword = true;
                                 frame.setVisible(false);
