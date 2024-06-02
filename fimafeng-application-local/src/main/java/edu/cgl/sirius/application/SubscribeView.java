@@ -73,7 +73,7 @@ public class SubscribeView {
         JLabel tagLabel = new JLabel("Tag favori :");
         String tags[] = { SELECT_ITEM, "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
                 "Théatre", "Visite", "Adultes", "Chorale", "Enfants", "Jeunes" };
-        String tags_id[] = { null, "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
+        int tags_id[] = { 0, 1, 3, 7, 8, 9, 10, 11, 12, 13, 6, 2, 4, 5 };
         @SuppressWarnings({ "rawtypes", "unchecked" })
         JComboBox tagComboBox = new JComboBox(tags);
 
@@ -110,7 +110,7 @@ public class SubscribeView {
                                     emailTextField.getText(),
                                     new String(passwordPasswordField.getPassword()),
                                     locationComboBox.getSelectedIndex(),
-                                    tagComboBox.getSelectedIndex());
+                                    tags_id[tagComboBox.getSelectedIndex()]);
                             frame.setVisible(false);
                             frame.setEnabled(false);
                             frame.repaint();
