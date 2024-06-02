@@ -148,7 +148,7 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                selectSuggestions();
+                // selectSuggestions();
             }
         });
         this.createButton.addActionListener(new ActionListener() {
@@ -211,7 +211,7 @@ public class Application {
         this.servicesButton.setBounds(650, 100, 250, 50);
         this.aroundMeButton.setBounds(925, 100, 250, 50);
         // enable or disable components
-        this.logoButton.setEnabled(true);
+        this.logoButton.setEnabled(false);
         this.createButton.setEnabled(true);
         this.logOutButton.setEnabled(true);
         this.accountButton.setEnabled(true);
