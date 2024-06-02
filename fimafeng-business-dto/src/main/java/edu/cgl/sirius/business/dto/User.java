@@ -16,8 +16,30 @@ public class User {
     private String user_type;
     private String email;
     private String password;
+    private int location;
+    private int tag;
+
+    public void setLocation(int location) {
+        this.location = location;
+    }
+
+    public void setTag(int tag) {
+        this.tag = tag;
+    }
 
     public User() {
+    }
+
+    public void setDisplay_name(String display_name) {
+        this.display_name = display_name;
+    }
+
+    public int getLocation() {
+        return location;
+    }
+
+    public int getTag() {
+        return tag;
     }
 
     public final User build(final ResultSet resultSet)
@@ -141,4 +163,5 @@ public class User {
                 ", password='" + password + '\'' +
                 '}';
     }
+
 }

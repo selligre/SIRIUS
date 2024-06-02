@@ -40,6 +40,33 @@ import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
     public static String userMail;
+    public static String userId;
+    public static String userLocationId;
+    public static String userTagId;
+
+    public static String getUserLocationId() {
+        return userLocationId;
+    }
+
+    public static void setUserLocationId(String userLocation) {
+        Application.userLocationId = userLocation;
+    }
+
+    public static String getUserTagId() {
+        return userTagId;
+    }
+
+    public static void setUserTagId(String userTag) {
+        Application.userTagId = userTag;
+    }
+
+    public static String getUserId() {
+        return userId;
+    }
+
+    public static void setUserId(String userId) {
+        Application.userId = userId;
+    }
 
     public static String getUserMail() {
         return userMail;
@@ -81,6 +108,7 @@ public class Application {
         Application.logger = LoggerFactory.getLogger("A p p l i c a t i o n - L o c a l");
         configFrame();
         configHomePage();
+        selectSuggestions();
         this.frame.setVisible(true);
     }
 
@@ -120,7 +148,7 @@ public class Application {
         this.logoButton.setText("LOGO");
         this.createButton.setText("(+) Proposer");
         this.logOutButton.setText("Déconnexion");
-        this.accountButton.setText("Compte");
+        this.accountButton.setText(Application.getUserMail());
         this.searchButton.setText("Rechercher");
         this.activitiesButton.setText("Activités");
         this.materialsButton.setText("Matériels");
@@ -129,22 +157,16 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                logger.info("Logo Button clicked");
-                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+                // selectSuggestions();
             }
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
-
-                logger.info("Create Button clicked");
                 changeViewToInsert();
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // logger.info("LogOut Button clicked");
-                // JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
                 frame.setVisible(false);
                 frame.setEnabled(false);
                 frame.repaint();
@@ -153,8 +175,7 @@ public class Application {
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                logger.info("Account Button clicked");
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
+                new UserUpdateView();
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
@@ -166,29 +187,23 @@ public class Application {
         });
         this.activitiesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                logger.info("Activites Button clicked");
-                // JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
                 selectActivities();
             }
         });
         this.materialsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Materials Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
             }
         });
         this.servicesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Services Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
             }
         });
         this.aroundMeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("ArroundMe Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
             }
@@ -380,7 +395,171 @@ public class Application {
         displayResult(pagePanel, requestResult);
     }
 
+    public void selectSuggestions() {
+        this.activitiesButton.setBackground(Color.DARK_GRAY);
+        this.activitiesButton.setEnabled(false);
+
+        parser = new AnnounceParser();
+
+        try {
+            logger.info("Launch queries");
+            ArrayList<String> ref_tag_id = new ArrayList<>();
+            ref_tag_id.add(userTagId);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            MainSelectAnnouncesTag mainSelectAnnouncesTag = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
+                    ref_tag_id);
+            Announces announcesWithUserLocationAndUserTag = new Announces();
+            for (Announce announce : mainSelectAnnouncesTag.getAnnounces().getAnnounces()) {
+                if (announce.getRef_location_id().equals(userLocationId))
+                    announcesWithUserLocationAndUserTag.add(announce);
+            }
+            // MainSelectAnnounces mainSelectAnnounces = new
+            // MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+            // Application.requestResult = mainSelectAnnounces.getAnnounces();
+            requestResult = announcesWithUserLocationAndUserTag;
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            logger.info("Queries ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JPanel pagePanel = new JPanel();
+        pagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        pagePanel.setBounds(25, 175, 1220, 490);
+        pagePanel.setLayout(new BorderLayout());
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new FlowLayout());
+
+        // Update tags from DB
+        HashMap<String, String> map_tagsItems = new HashMap<>();
+        map_tagsItems.put("-", "0");
+        Map<String, String> tagsMap;
+        try {
+            logger.info("Start querry (tags)");
+            MainSelectTags tagsClient = new MainSelectTags("SELECT_ALL_TAGS");
+            tagsMap = tagsClient.getTags().getTagsMap();
+            for (String key : tagsMap.keySet()) {
+                map_tagsItems.put(tagsMap.get(key), key);
+            }
+            logger.info("Queery ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] tags = (String[]) map_tagsItems.keySet().toArray(new String[0]);
+        UtilsManager.reorderWithDefaultOnTop(tags, "-");
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList1 = new JComboBox(tags);
+        headerPanel.add(tagList1);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList2 = new JComboBox(tags);
+        headerPanel.add(tagList2);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList3 = new JComboBox(tags);
+        headerPanel.add(tagList3);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList4 = new JComboBox(tags);
+        headerPanel.add(tagList4);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox tagList5 = new JComboBox(tags);
+        headerPanel.add(tagList5);
+
+        JButton filter_by_tag = new JButton("Filtrer par tag(s)");
+        filter_by_tag.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String selectedTagId1 = map_tagsItems.get(tagList1.getSelectedItem());
+                    String selectedTagId2 = map_tagsItems.get(tagList2.getSelectedItem());
+                    String selectedTagId3 = map_tagsItems.get(tagList3.getSelectedItem());
+                    String selectedTagId4 = map_tagsItems.get(tagList4.getSelectedItem());
+                    String selectedTagId5 = map_tagsItems.get(tagList5.getSelectedItem());
+
+                    ArrayList<String> selectedTagIds = new ArrayList<>();
+                    selectedTagIds.add(selectedTagId1);
+                    selectedTagIds.add(selectedTagId2);
+                    selectedTagIds.add(selectedTagId3);
+                    selectedTagIds.add(selectedTagId4);
+                    selectedTagIds.add(selectedTagId5);
+
+                    MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
+                            selectedTagIds);
+                    requestResult = client.getAnnounces();
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                displayResult(pagePanel, requestResult);
+            }
+        });
+        headerPanel.add(filter_by_tag);
+
+        try {
+            logger.info("Launch querry");
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            logger.info("Query ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        HashMap<String, String> map_locationsItems = new HashMap<>();
+        map_locationsItems.put("-", "0");
+        Map<String, String> parsedLocations = parser.getParsedLocations();
+        for (String key : parsedLocations.keySet()) {
+            map_locationsItems.put(parsedLocations.get(key), key);
+        }
+        String[] locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
+        UtilsManager.reorderWithDefaultOnTop(locationsItems, "-");
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final JComboBox locationList = new JComboBox(locationsItems);
+        headerPanel.add(locationList);
+
+        JButton filter_by_location = new JButton("Filtrer par quartier");
+        filter_by_location.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logger.info("Filtering by neighboorhoods");
+                try {
+                    String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
+                    if (!selectedLocation.equals("0")) {
+                        MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
+                                "SELECT_ANNOUNCES_FOR_LOCATION",
+                                selectedLocation);
+                        requestResult = client.getAnnouncesLocation();
+                    }
+                } catch (JsonProcessingException e1) {
+                    e1.printStackTrace();
+                }
+                displayResult(pagePanel, requestResult);
+            }
+        });
+        headerPanel.add(filter_by_location);
+        pagePanel.add(headerPanel, BorderLayout.NORTH);
+
+        JButton remove_filters = new JButton("Retirer tous les filtres");
+        remove_filters.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+                    requestResult = client.getAnnounces();
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                displayResult(pagePanel, requestResult);
+            }
+        });
+        headerPanel.add(remove_filters);
+        pagePanel.add(headerPanel, BorderLayout.NORTH);
+
+        displayResult(pagePanel, requestResult);
+    }
+
     private void displayResult(JPanel pagePanel, Announces resultAnnounces) {
+        Application.page.remove(pagePanel);
 
         try {
             logger.info("Launch querry (display location)");
