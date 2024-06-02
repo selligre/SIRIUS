@@ -91,42 +91,45 @@ public class SubscribeView {
                         || lastNameTextField.getText().equals("")) {
                     JOptionPane.showMessageDialog(null, "ERROR: Missing data.");
                     return;
-                }
-                try {
-                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
-                    Boolean testEmail = false;
-                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                        if (user.getEmail().equals(emailTextField.getText())) {
-                            testEmail = true;
+                } else {
+                    try {
+                        MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails(
+                                "SELECT_ALL_USERS_EMAILS");
+                        Boolean testEmail = false;
+                        for (User user : mainSelectUsersMails.getUsers().getUsers()) {
+                            if (user.getEmail().equals(emailTextField.getText())) {
+                                testEmail = true;
+                            }
                         }
+                        if (testEmail) {
+                            JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
+                        } else {
+                            String message = "Prénom : " + firstNameTextField.getText()
+                                    + ", Nom : " + lastNameTextField.getText()
+                                    + ", Pseudo : " + pseudoTextField.getText()
+                                    + ", Email : " + emailTextField.getText()
+                                    + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
+                            // + ", QuartierId favori : " + locationComboBox.getSelectedItem()
+                                    + ", QuartierId favori : " + locationComboBox.getSelectedIndex()
+                            // + ", TagId favori : " + tags[tagComboBox.getSelectedIndex()];
+                                    + ", TagId favori : " + tagComboBox.getSelectedIndex();
+                            JOptionPane.showMessageDialog(null, message);
+                            new MainInsertUser("INSERT_USER",
+                                    firstNameTextField.getText(),
+                                    lastNameTextField.getText(), pseudoTextField.getText(),
+                                    emailTextField.getText(),
+                                    new String(passwordPasswordField.getPassword()),
+                                    locationComboBox.getSelectedIndex(),
+                                    tagComboBox.getSelectedIndex());
+                        }
+                    } catch (IOException | InterruptedException e1) {
+                        e1.printStackTrace();
                     }
-                    if (testEmail) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
-                    } else {
-                        String message = "Prénom : " + firstNameTextField.getText()
-                                + ", Nom : " + lastNameTextField.getText()
-                                + ", Pseudo : " + pseudoTextField.getText()
-                                + ", Email : " + emailTextField.getText()
-                                + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
-                        // + ", QuartierId favori : " + locationComboBox.getSelectedItem()
-                                + ", QuartierId favori : " + locationComboBox.getSelectedIndex()
-                        // + ", TagId favori : " + tags[tagComboBox.getSelectedIndex()];
-                                + ", TagId favori : " + tagComboBox.getSelectedIndex();
-                        JOptionPane.showMessageDialog(null, message);
-                        new MainInsertUser("INSERT_USER",
-                                firstNameTextField.getText(),
-                                lastNameTextField.getText(), pseudoTextField.getText(),
-                                emailTextField.getText(),
-                                new String(passwordPasswordField.getPassword()),
-                                locationComboBox.getSelectedIndex(),
-                                tagComboBox.getSelectedIndex());
-                    }
-                } catch (IOException | InterruptedException e1) {
-                    e1.printStackTrace();
+                    frame.setVisible(false);
+                    frame.setEnabled(false);
+                    frame.repaint();
                 }
-                frame.setVisible(false);
-                frame.setEnabled(false);
-                frame.repaint();
+
             }
         });
 
