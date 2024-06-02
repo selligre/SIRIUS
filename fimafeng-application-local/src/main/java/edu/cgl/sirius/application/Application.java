@@ -148,22 +148,16 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                logger.info("Logo Button clicked");
-                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+                selectSuggestions();
             }
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
-
-                logger.info("Create Button clicked");
                 changeViewToInsert();
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // logger.info("LogOut Button clicked");
-                // JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
                 frame.setVisible(false);
                 frame.setEnabled(false);
                 frame.repaint();
@@ -172,15 +166,11 @@ public class Application {
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // logger.info("Account Button clicked");
-                // JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " +
-                // getUserMail());
                 new UserUpdateView();
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Search Button clicked");
                 String content = "Recherche du terme \"" + searchField.getText() + "\" dans les annonces.";
                 JOptionPane.showMessageDialog(null, content);
@@ -188,29 +178,23 @@ public class Application {
         });
         this.activitiesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                logger.info("Activites Button clicked");
-                // JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
                 selectActivities();
             }
         });
         this.materialsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Materials Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
             }
         });
         this.servicesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Services Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
             }
         });
         this.aroundMeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("ArroundMe Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
             }
@@ -227,7 +211,7 @@ public class Application {
         this.servicesButton.setBounds(650, 100, 250, 50);
         this.aroundMeButton.setBounds(925, 100, 250, 50);
         // enable or disable components
-        this.logoButton.setEnabled(false);
+        this.logoButton.setEnabled(true);
         this.createButton.setEnabled(true);
         this.logOutButton.setEnabled(true);
         this.accountButton.setEnabled(true);
@@ -428,7 +412,7 @@ public class Application {
             // MainSelectAnnounces mainSelectAnnounces = new
             // MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             // Application.requestResult = mainSelectAnnounces.getAnnounces();
-            Application.requestResult = announcesWithUserLocationAndUserTag;
+            requestResult = announcesWithUserLocationAndUserTag;
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
             logger.info("Queries ended!");
@@ -568,6 +552,7 @@ public class Application {
     }
 
     private void displayResult(JPanel pagePanel, Announces resultAnnounces) {
+        Application.page.remove(pagePanel);
 
         try {
             logger.info("Launch querry");
