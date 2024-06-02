@@ -104,16 +104,6 @@ public class SubscribeView {
                         if (testEmail) {
                             JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
                         } else {
-                            String message = "Prénom : " + firstNameTextField.getText()
-                                    + ", Nom : " + lastNameTextField.getText()
-                                    + ", Pseudo : " + pseudoTextField.getText()
-                                    + ", Email : " + emailTextField.getText()
-                                    + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
-                            // + ", QuartierId favori : " + locationComboBox.getSelectedItem()
-                                    + ", QuartierId favori : " + locationComboBox.getSelectedIndex()
-                            // + ", TagId favori : " + tags[tagComboBox.getSelectedIndex()];
-                                    + ", TagId favori : " + tagComboBox.getSelectedIndex();
-                            JOptionPane.showMessageDialog(null, message);
                             new MainInsertUser("INSERT_USER",
                                     firstNameTextField.getText(),
                                     lastNameTextField.getText(), pseudoTextField.getText(),
@@ -121,13 +111,14 @@ public class SubscribeView {
                                     new String(passwordPasswordField.getPassword()),
                                     locationComboBox.getSelectedIndex(),
                                     tagComboBox.getSelectedIndex());
+                            frame.setVisible(false);
+                            frame.setEnabled(false);
+                            frame.repaint();
                         }
                     } catch (IOException | InterruptedException e1) {
                         e1.printStackTrace();
                     }
-                    frame.setVisible(false);
-                    frame.setEnabled(false);
-                    frame.repaint();
+
                 }
 
             }
