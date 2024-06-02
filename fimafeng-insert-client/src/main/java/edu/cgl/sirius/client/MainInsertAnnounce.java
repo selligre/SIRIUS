@@ -4,37 +4,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import edu.cgl.sirius.business.dto.Announce;
-import edu.cgl.sirius.business.dto.Student;
-import edu.cgl.sirius.business.dto.Students;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
 import edu.cgl.sirius.client.commons.NetworkConfig;
 import edu.cgl.sirius.commons.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.*;
 
 public class MainInsertAnnounce {
 
     private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
-    private final static String studentsToBeInserted = "students-to-be-inserted.yaml";
     private final static String networkConfigFile = "network.yaml";
-    private static final String threadName = "inserter-client";
-    private static final String requestOrder = "INSERT_STUDENT";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
 
     public MainInsertAnnounce(String requestOrder, String ref_author_id, String publication_date, String status,
             String type, String title, String description, String date_time_start, String duration,
             String date_time_end, String is_recurrent, String slots_number, String slots_available, String price,
             String ref_location_id, ArrayList<String> tags_ids) throws IOException, InterruptedException {
-        final Students guys = ConfigLoader.loadConfig(Students.class, studentsToBeInserted);
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 

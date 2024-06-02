@@ -3,7 +3,6 @@ package edu.cgl.sirius.application;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,14 +18,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import edu.cgl.sirius.business.AnnounceParser;
-import edu.cgl.sirius.business.dto.User;
-import edu.cgl.sirius.client.MainInsertUser;
 import edu.cgl.sirius.client.MainSelectLocations;
-import edu.cgl.sirius.client.MainSelectUsersEmails;
 
-public class SubscribeView {
-
-    public SubscribeView() {
+public class UserUpdateView {
+    public UserUpdateView() {
         JFrame frame = new JFrame("MyPanel");
         // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Ville partagée");
@@ -37,7 +32,7 @@ public class SubscribeView {
         JPanel panel = new JPanel();
 
         // construct components
-        JLabel titleLabel = new JLabel("INSCRIPTION");
+        JLabel titleLabel = new JLabel("UPDATE USER : " + Application.getUserMail());
         JLabel firstNameLabel = new JLabel("Prénom :");
         JTextField firstNameTextField = new JTextField(5);
         JLabel lastNameLabel = new JLabel("Nom :");
@@ -92,41 +87,36 @@ public class SubscribeView {
                     JOptionPane.showMessageDialog(null, "ERROR: Missing data.");
                     return;
                 }
-                try {
-                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
-                    Boolean testEmail = false;
-                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                        if (user.getEmail().equals(emailTextField.getText())) {
-                            testEmail = true;
-                        }
-                    }
-                    if (testEmail) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
-                    } else {
-                        String message = "Prénom : " + firstNameTextField.getText()
-                                + ", Nom : " + lastNameTextField.getText()
-                                + ", Pseudo : " + pseudoTextField.getText()
-                                + ", Email : " + emailTextField.getText()
-                                + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
-                        // + ", QuartierId favori : " + locationComboBox.getSelectedItem()
-                                + ", QuartierId favori : " + locationComboBox.getSelectedIndex()
-                        // + ", TagId favori : " + tags[tagComboBox.getSelectedIndex()];
-                                + ", TagId favori : " + tagComboBox.getSelectedIndex();
-                        JOptionPane.showMessageDialog(null, message);
-                        new MainInsertUser("INSERT_USER",
-                                firstNameTextField.getText(),
-                                lastNameTextField.getText(), pseudoTextField.getText(),
-                                emailTextField.getText(),
-                                new String(passwordPasswordField.getPassword()),
-                                locationComboBox.getSelectedIndex(),
-                                tagComboBox.getSelectedIndex());
-                    }
-                } catch (IOException | InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                frame.setVisible(false);
-                frame.setEnabled(false);
-                frame.repaint();
+                // try {
+                // MainSelectUsersEmails mainSelectUsersMails = new
+                // MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
+                // Boolean testEmail = false;
+                // for (User user : mainSelectUsersMails.getUsers().getUsers()) {
+                // if (user.getEmail().equals(emailTextField.getText())) {
+                // testEmail = true;
+                // }
+                // }
+                // if (testEmail) {
+                // JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
+                // } else {
+                String message = "Prénom : " + firstNameTextField.getText()
+                        + ", Nom : " + lastNameTextField.getText()
+                        + ", Pseudo : " + pseudoTextField.getText()
+                        + ", Email : " + emailTextField.getText()
+                        + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
+                        + ", Quartier favori : " + locationComboBox.getSelectedItem()
+                        + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
+                JOptionPane.showMessageDialog(null, message);
+                // MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER",
+                // firstNameTextField.getText(),
+                // lastNameTextField.getText(), pseudoTextField.getText(),
+                // emailTextField.getText(),
+                // new String(passwordPasswordField.getPassword()));
+
+                // }
+                // } catch (IOException | InterruptedException e1) {
+                // e1.printStackTrace();
+                // }
             }
         });
 
@@ -153,7 +143,7 @@ public class SubscribeView {
         panel.add(tagComboBox);
 
         // set component bounds (only needed by Absolute Positioning)
-        titleLabel.setBounds(350, 50, 100, 25);
+        titleLabel.setBounds(300, 50, 500, 25);
         firstNameLabel.setBounds(100, 150, 100, 25);
         firstNameTextField.setBounds(200, 150, 200, 25);
         lastNameLabel.setBounds(100, 200, 100, 25);

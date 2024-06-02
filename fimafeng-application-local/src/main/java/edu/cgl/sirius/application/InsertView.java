@@ -23,15 +23,12 @@ import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 
 import edu.cgl.sirius.business.AnnounceParser;
-import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
-import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -364,16 +361,7 @@ public class InsertView extends JPanel {
             String publication_date = dateFormat.format(date_now);
             String is_recurrent = "f";
             String price = "0.0";
-
-            String author_id = "1";
-            MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
-            String userEmail = Application.getUserMail();
-            for (User user : mainSelectUsers.getUsers().getUsers()) {
-                if (user.getEmail().equals(userEmail))
-                    author_id = user.getUser_id();
-
-            }
-
+            String author_id = Application.getUserId();
             LocalDateTime ldt_start = dtpicker_panel.getDateTimeStrict();
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());
             String date_time_start = dateFormat.format(dstart);
