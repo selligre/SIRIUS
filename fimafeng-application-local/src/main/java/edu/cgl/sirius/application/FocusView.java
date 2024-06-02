@@ -479,6 +479,7 @@ public class FocusView extends JPanel {
         aroundMeButton.setEnabled(false);
 
         // TODO: afficher selon l'id du joueur == / != ref_owner_id
+        // TODO: ras
         btn_update.setVisible(false);
         btn_edit.setVisible(false);
     }
