@@ -32,12 +32,9 @@ import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectUsers;
-import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
