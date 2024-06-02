@@ -16,16 +16,10 @@ import edu.cgl.sirius.business.dto.UserTag;
 import edu.cgl.sirius.business.dto.UserTags;
 import edu.cgl.sirius.commons.Request;
 import edu.cgl.sirius.commons.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 
 public class XMartCityService {
-
-    private final static String LoggingLabel = "B u s i n e s s - S e r v e r";
-    private final Logger logger = LoggerFactory.getLogger(LoggingLabel);
 
     private enum Queries {
 
@@ -79,7 +73,6 @@ public class XMartCityService {
         Statement stmt;
         ResultSet res;
         ObjectMapper mapper;
-        int rows; // TODO: pourquoi garder si jamais utiliser ?
         try {
             switch (request.getRequestOrder()) {
                 // Premier essai avec la bdd de test, inutile maintenant mais on garde

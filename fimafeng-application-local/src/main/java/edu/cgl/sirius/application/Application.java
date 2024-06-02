@@ -36,23 +36,23 @@ import edu.cgl.sirius.client.commons.UtilsManager;
 public class Application {
     public static String userMail;
     public static String userId;
-    public static String userLocation;
-    public static String userTag;
+    public static String userLocationId;
+    public static String userTagId;
 
-    public static String getUserLocation() {
-        return userLocation;
+    public static String getUserLocationId() {
+        return userLocationId;
     }
 
-    public static void setUserLocation(String userLocation) {
-        Application.userLocation = userLocation;
+    public static void setUserLocationId(String userLocation) {
+        Application.userLocationId = userLocation;
     }
 
-    public static String getUserTag() {
-        return userTag;
+    public static String getUserTagId() {
+        return userTagId;
     }
 
-    public static void setUserTag(String userTag) {
-        Application.userTag = userTag;
+    public static void setUserTagId(String userTag) {
+        Application.userTagId = userTag;
     }
 
     public static String getUserId() {
@@ -412,8 +412,31 @@ public class Application {
 
         try {
             logger.info("Launch queries");
-            MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
-            Application.requestResult = client.getAnnounces();
+            // TODO: Change SELECT_ALL_ANNOUNCES to
+            // SELECT_ALL_ANNOUNCES_FOR_TAG_AND_LOCATION
+
+            ArrayList<String> ref_tag_id = new ArrayList<>();
+            ref_tag_id.add(userTagId);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            MainSelectAnnouncesTag mainSelectAnnouncesTag = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
+                    ref_tag_id);
+
+            // ArrayList announcesWithUserLocationAndUserTag = new ArrayList<>();
+            Announces announcesWithUserLocationAndUserTag = new Announces();
+            for (Announce announce : mainSelectAnnouncesTag.getAnnounces().getAnnounces()) {
+                if (announce.getRef_location_id().equals(userLocationId))
+                    announcesWithUserLocationAndUserTag.add(announce);
+            }
+
+            // System.out.println(announcesWithUserLocationAndUserTag);
+
+            // MainSelectAnnounces mainSelectAnnounces = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+            // Application.requestResult = mainSelectAnnounces.getAnnounces();
+            Application.requestResult = announcesWithUserLocationAndUserTag;
+
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
             logger.info("Queries ended!");
@@ -444,7 +467,6 @@ public class Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         String[] tags = (String[]) map_tagsItems.keySet().toArray(new String[0]);
         UtilsManager.reorderWithDefaultOnTop(tags, "-");
 
@@ -497,7 +519,6 @@ public class Application {
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
             logger.info("Query ended!");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -508,7 +529,6 @@ public class Application {
         for (String key : parsedLocations.keySet()) {
             map_locationsItems.put(parsedLocations.get(key), key);
         }
-
         String[] locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
         UtilsManager.reorderWithDefaultOnTop(locationsItems, "-");
 

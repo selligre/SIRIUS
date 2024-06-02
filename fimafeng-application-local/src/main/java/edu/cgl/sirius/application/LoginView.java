@@ -72,7 +72,7 @@ public class LoginView {
                                         "SELECT_ALL_USERS_TAGS");
                                 for (UserTag userTag : mainSelectUsersTags.getUserTags().getUserTags()) {
                                     if (userTag.getRef_user_id().equals(user.getUser_id())) {
-                                        Application.setUserTag(userTag.getRef_tag_id());
+                                        Application.setUserTagId(userTag.getRef_tag_id());
                                     }
                                 }
                                 MainSelectUsersLocations mainSelectUsersLocations = new MainSelectUsersLocations(
@@ -80,7 +80,7 @@ public class LoginView {
                                 for (UserLocation userLocation : mainSelectUsersLocations.getUserLocations()
                                         .getUserLocations()) {
                                     if (userLocation.getRef_user_id().equals(user.getUser_id())) {
-                                        Application.setUserLocation(userLocation.getRef_location_id());
+                                        Application.setUserLocationId(userLocation.getRef_location_id());
                                     }
                                 }
                                 new Application();
