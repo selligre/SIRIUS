@@ -9,7 +9,11 @@ import edu.cgl.sirius.business.dto.Locations;
 import edu.cgl.sirius.business.dto.Tag;
 import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.business.dto.UserLocation;
+import edu.cgl.sirius.business.dto.UserLocations;
 import edu.cgl.sirius.business.dto.Users;
+import edu.cgl.sirius.business.dto.UserTag;
+import edu.cgl.sirius.business.dto.UserTags;
 import edu.cgl.sirius.commons.Request;
 import edu.cgl.sirius.commons.Response;
 import org.slf4j.Logger;
@@ -35,6 +39,8 @@ public class XMartCityService {
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
         SELECT_ALL_TAGS("SELECT * FROM tags"),
+        SELECT_ALL_USERS_TAGS("SELECT * FROM users_tags;"),
+        SELECT_ALL_USERS_LOCATIONS("SELECT * FROM users_locations;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -196,6 +202,38 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(tags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS_TAGS.query);
+                    UserTags userTags = new UserTags();
+                    while (res.next()) {
+                        UserTag userTag = new UserTag().build(res);
+                        userTags.add(userTag);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(userTags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_LOCATIONS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS_LOCATIONS.query);
+                    UserLocations userLocations = new UserLocations();
+                    while (res.next()) {
+                        UserLocation userLocation = new UserLocation().build(res);
+                        userLocations.add(userLocation);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(userLocations));
                     System.out.println(response.getResponseBody());
                     break;
 
