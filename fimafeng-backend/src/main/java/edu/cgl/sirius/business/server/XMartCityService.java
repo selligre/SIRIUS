@@ -40,6 +40,7 @@ public class XMartCityService {
         SELECT_ALL_TAGS_OF_ANNOUNCE("SELECT * FROM announce_tags WHERE ref_announce_id = ?;"),
         SELECT_USER_TO_LOGIN(
                 "SELECT * FROM users u WHERE (email = ? and password = ?);"),
+        SELECT_ALL_MATCHING_ANNOUNCES("SELECT FROM * WHERE title LIKE '%?%' OR description LIKE '%?%'"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -47,6 +48,9 @@ public class XMartCityService {
         INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);"),
         INSERT_USER(
                 "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;");
+
+        // UPDATE Queries
+        // TODO
 
         private final String query;
 
@@ -182,14 +186,33 @@ public class XMartCityService {
                             .toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
                     res = pstmt.executeQuery();
                     mapper = new ObjectMapper();
-                    Announces announces2 = new Announces();
+                    Announces announcesForTag = new Announces();
                     while (res.next()) {
                         Announce announce = new Announce().build(res);
-                        announces2.add(announce);
+                        announcesForTag.add(announce);
                     }
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody(mapper.writeValueAsString(announces2));
+                    response.setResponseBody(mapper.writeValueAsString(announcesForTag));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_MATCHING_ANNOUNCES":
+                    mapper = new ObjectMapper();
+                    Announce announceMatch = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ALL_MATCHING_ANNOUNCES.query);
+                    pstmt.setString(1, announceMatch.getTitle());
+                    pstmt.setString(2, announceMatch.getDescription());
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    Announces announcesMatching = new Announces();
+                    while (res.next()) {
+                        Announce announce = new Announce().build(res);
+                        announcesMatching.add(announce);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announcesMatching));
                     System.out.println(response.getResponseBody());
                     break;
 

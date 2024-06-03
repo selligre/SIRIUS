@@ -23,13 +23,12 @@ import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.commons.Request;
 
 public class MainSelectAnnounces {
-    private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
+    private final static String LoggingLabel = "S e l e c t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
     private static final String requestOrder = "SELECT_ALL_ANNOUNCES";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
     private static Announces announces;
-    private static AnnounceParser parser;
 
     public Announces getAnnounces() {
         return announces;
@@ -53,7 +52,60 @@ public class MainSelectAnnounces {
                 birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
 
-        parser = new AnnounceParser();
+        while (!clientRequests.isEmpty()) {
+            final ClientRequest joinedClientRequest = clientRequests.pop();
+            joinedClientRequest.join();
+            logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
+            announces = (Announces) joinedClientRequest.getResult();
+            final AsciiTable asciiTable = new AsciiTable();
+            for (final Announce announce : announces.getAnnounces()) {
+                asciiTable.addRule();
+                asciiTable.addRow(
+                        announce.getAnnounce_id(),
+                        announce.getRef_author_id(),
+                        announce.getPublication_date(),
+                        announce.getStatus(),
+                        announce.getType(),
+                        announce.getTitle(),
+                        announce.getDescription(),
+                        announce.getDate_time_start(),
+                        announce.getDuration(),
+                        announce.getDate_time_end(),
+                        announce.getIs_recurrent(),
+                        announce.getSlots_number(),
+                        announce.getSlots_available(),
+                        announce.getPrice(),
+                        announce.getRef_location_id());
+            }
+            asciiTable.addRule();
+            // logger.debug("\n{}\n", asciiTable.render());
+        }
+    }
+
+    public MainSelectAnnounces(String requestOrder, String pattern) throws IOException, InterruptedException {
+        final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
+        logger.debug("Load Network config file : {}", networkConfig.toString());
+
+        Announce announceM = new Announce();
+        announceM.setTitle(pattern);
+        announceM.setDescription(pattern);
+
+        int birthdate = 0;
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final String jsonifiedAnnounceM = objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(announceM);
+        final String requestId = UUID.randomUUID().toString();
+        final Request request = new Request();
+        request.setRequestId(requestId);
+        request.setRequestOrder(requestOrder);
+        request.setRequestContent(jsonifiedAnnounceM);
+        objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+        final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
+        LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
+        final SelectAllAnnouncesClientRequest clientRequest = new SelectAllAnnouncesClientRequest(
+                networkConfig,
+                birthdate++, request, pattern, requestBytes);
+        clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {
             final ClientRequest joinedClientRequest = clientRequests.pop();

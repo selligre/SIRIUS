@@ -19,8 +19,7 @@ import java.util.Deque;
 import java.util.UUID;
 
 public class MainSelectLocations {
-
-    private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
+    private final static String LoggingLabel = "S e l e c t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
     private static final String requestOrder = "SELECT_ALL_LOCATIONS";

@@ -70,6 +70,7 @@ public class Application {
 
     public static Announces requestResult;
     public static JScrollPane scrollPane;
+    private JPanel pagePanel;
 
     private static Logger logger;
 
@@ -163,6 +164,15 @@ public class Application {
             public void actionPerformed(ActionEvent e) {
                 logger.info("Search Button clicked");
                 String content = "Recherche du terme \"" + searchField.getText() + "\" dans les annonces.";
+                // TODO : inserer ici la requete
+                try {
+                    MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_MATCHING_ANNOUNCES",
+                            searchField.getText());
+                    requestResult = client.getAnnounces();
+                    displayResult(pagePanel, requestResult);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 JOptionPane.showMessageDialog(null, content);
             }
         });
@@ -211,8 +221,8 @@ public class Application {
         this.createButton.setEnabled(true);
         this.logOutButton.setEnabled(true);
         this.accountButton.setEnabled(true);
-        this.searchField.setEnabled(false);
-        this.searchButton.setEnabled(false);
+        this.searchField.setEnabled(true);
+        this.searchButton.setEnabled(true);
         this.activitiesButton.setEnabled(true);
         this.materialsButton.setEnabled(false);
         this.servicesButton.setEnabled(false);
@@ -248,7 +258,7 @@ public class Application {
             e.printStackTrace();
         }
 
-        JPanel pagePanel = new JPanel();
+        pagePanel = new JPanel();
         pagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         pagePanel.setBounds(25, 175, 1220, 490);
         pagePanel.setLayout(new BorderLayout());
