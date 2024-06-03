@@ -338,18 +338,6 @@ public class FocusView extends JPanel {
             e.printStackTrace();
         }
 
-        // if (!announce_focus.getAnnounceTags().isEmpty()) {
-        // for (String tagId : announce_focus.getAnnounceTags()) {
-        // String tagName = tagsMap.get(tagId);
-        // for (JCheckBox box : list_tags_checkBoxs) {
-        // if (box.getText().equals(tagName)) {
-        // box.setSelected(true);
-        // }
-        // box.setEnabled(false);
-        // }
-        // }
-        // }
-
         for (JCheckBox box : list_tags_checkBoxs) {
             if (!announce_focus.getAnnounceTags().isEmpty()) {
                 for (String tagId : announce_focus.getAnnounceTags()) {
@@ -511,13 +499,6 @@ public class FocusView extends JPanel {
             String is_recurrent = "f";
 
             String author_id = Application.connectedUser.getUser_id();
-            // MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
-            // String userEmail = Application.getUserMail(); // TODO: changer pour avoir
-            // l'id du user connecté
-            // for (User user : mainSelectUsers.getUsers().getUsers()) {
-            // if (user.getEmail().equals(userEmail))
-            // author_id = user.getUser_id();
-            // }
 
             LocalDateTime ldt_start = dtpicker_panel.getDateTimeStrict();
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());
