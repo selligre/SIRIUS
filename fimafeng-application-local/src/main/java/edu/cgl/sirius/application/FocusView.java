@@ -52,7 +52,7 @@ public class FocusView extends JPanel {
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
-    private final static Logger logger = LoggerFactory.getLogger("I n s e r t - V i e w");
+    private final static Logger logger = LoggerFactory.getLogger("F o c u s - V i e w");
 
     private JButton logoButton;
     private JButton createButton;
@@ -338,16 +338,28 @@ public class FocusView extends JPanel {
             e.printStackTrace();
         }
 
-        if (!announce_focus.getAnnounceTags().isEmpty()) {
-            for (String tagId : announce_focus.getAnnounceTags()) {
-                String tagName = tagsMap.get(tagId);
-                for (JCheckBox box : list_tags_checkBoxs) {
+        // if (!announce_focus.getAnnounceTags().isEmpty()) {
+        // for (String tagId : announce_focus.getAnnounceTags()) {
+        // String tagName = tagsMap.get(tagId);
+        // for (JCheckBox box : list_tags_checkBoxs) {
+        // if (box.getText().equals(tagName)) {
+        // box.setSelected(true);
+        // }
+        // box.setEnabled(false);
+        // }
+        // }
+        // }
+
+        for (JCheckBox box : list_tags_checkBoxs) {
+            if (!announce_focus.getAnnounceTags().isEmpty()) {
+                for (String tagId : announce_focus.getAnnounceTags()) {
+                    String tagName = tagsMap.get(tagId);
                     if (box.getText().equals(tagName)) {
                         box.setSelected(true);
                     }
-                    box.setEnabled(false);
                 }
             }
+            box.setEnabled(false);
         }
 
         // adjust size and set layout
@@ -478,10 +490,15 @@ public class FocusView extends JPanel {
         servicesButton.setEnabled(false);
         aroundMeButton.setEnabled(false);
 
-        // TODO: afficher selon l'id du joueur == / != ref_owner_id
-        // TODO: ras
-        btn_update.setVisible(false);
-        btn_edit.setVisible(false);
+        // Display what should be displayed if connectedUser.Id == ref_owner_id or not
+        if (!announce_focus.getRef_author_id().equals(Application.connectedUser.getUser_id())) {
+            btn_update.setVisible(false);
+            btn_edit.setVisible(false);
+            btn_see_registered.setVisible(false);
+        } else {
+            btn_register.setVisible(false);
+        }
+
     }
 
     private void checkInputs() {
@@ -493,13 +510,14 @@ public class FocusView extends JPanel {
             String publication_date = dateFormat.format(date_now);
             String is_recurrent = "f";
 
-            String author_id = "1";
-            MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
-            String userEmail = Application.getUserMail(); // TODO: changer pour avoir l'id du user connecté
-            for (User user : mainSelectUsers.getUsers().getUsers()) {
-                if (user.getEmail().equals(userEmail))
-                    author_id = user.getUser_id();
-            }
+            String author_id = Application.connectedUser.getUser_id();
+            // MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
+            // String userEmail = Application.getUserMail(); // TODO: changer pour avoir
+            // l'id du user connecté
+            // for (User user : mainSelectUsers.getUsers().getUsers()) {
+            // if (user.getEmail().equals(userEmail))
+            // author_id = user.getUser_id();
+            // }
 
             LocalDateTime ldt_start = dtpicker_panel.getDateTimeStrict();
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());

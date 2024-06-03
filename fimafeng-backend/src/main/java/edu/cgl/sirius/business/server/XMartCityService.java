@@ -38,6 +38,8 @@ public class XMartCityService {
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
         SELECT_ALL_TAGS("SELECT * FROM tags"),
         SELECT_ALL_TAGS_OF_ANNOUNCE("SELECT * FROM announce_tags WHERE ref_announce_id = ?;"),
+        SELECT_USER_TO_LOGIN(
+                "SELECT * FROM users u WHERE (email = ? and password = ?);"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -108,6 +110,28 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(usersEmails));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_USER_TO_LOGIN":
+                    mapper = new ObjectMapper();
+                    User uLogin = mapper.readValue(request.getRequestBody(), User.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_USER_TO_LOGIN.query);
+                    // pstmt.setString(1, announceL.getRef_location_id());
+                    System.out.println(uLogin.getEmail());
+                    System.out.println(uLogin.getPassword());
+                    pstmt.setString(1, uLogin.getEmail());
+                    pstmt.setString(2, uLogin.getPassword());
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    Users usersLogin = new Users();
+                    while (res.next()) {
+                        User user = new User().build(res);
+                        usersLogin.add(user);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(usersLogin));
                     System.out.println(response.getResponseBody());
                     break;
 

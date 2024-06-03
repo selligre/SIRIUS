@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,7 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectUsersEmails;
 
 /*
@@ -32,6 +37,8 @@ import edu.cgl.sirius.client.MainSelectUsersEmails;
  */
 
 public class LoginView {
+
+    private final static Logger logger = LoggerFactory.getLogger("L o g i n - V i e w");
 
     public LoginView() {
         JFrame frame = new JFrame("Ville partagée");
@@ -60,26 +67,24 @@ public class LoginView {
                 // + ", Mot de passe : " + new String(pwdPasswordField.getPassword());
                 // JOptionPane.showMessageDialog(null, message);
                 try {
-                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
-                    Boolean testEmail = false;
-                    Boolean testPassword = false;
-                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                        if (user.getEmail().equals(idTextField.getText())) {
-                            if (user.getPassword().equals(new String(pwdPasswordField.getPassword()))) {
-                                Application app = new Application();
-                                app.setUserMail(idTextField.getText());
-                                testPassword = true;
-                                frame.setVisible(false);
-                                frame.setEnabled(false);
-                                frame.repaint();
-                            }
-                            testEmail = true;
-                        }
-                    }
-                    if (!testEmail) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Email not found.");
-                    } else if (!testPassword) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Wrong password.");
+                    logger.info("Launch querry (user login)");
+                    MainSelectUsers selectCredentialsUsers = new MainSelectUsers("SELECT_USER_TO_LOGIN",
+                            idTextField.getText(), new String(pwdPasswordField.getPassword()));
+                    logger.info("Querry ended!");
+                    if (!selectCredentialsUsers.getUsers().getUsers().isEmpty()) {
+                        logger.info("User exist, login in!");
+                        new Application();
+                        ArrayList<User> userList = new ArrayList<>(selectCredentialsUsers.getUsers().getUsers());
+                        Application.connectedUser = userList.get(0);
+                        frame.setVisible(false);
+                        frame.setEnabled(false);
+                        frame.repaint();
+                    } else if (selectCredentialsUsers.getUsers().getUsers().isEmpty()) {
+                        logger.info("User mail x pswd doesn't exist");
+                        JOptionPane.showMessageDialog(null, "Compte inexistant ou mauvais indentifants");
+                    } else {
+                        logger.warn("THAT SHOULD NOT HAPPEN, WHAT'S GOING ON HERE?!");
+                        JOptionPane.showMessageDialog(null, "ERREUR TECHNIQUE");
                     }
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
@@ -91,6 +96,7 @@ public class LoginView {
         subscribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                logger.info("Opening register view");
                 new SubscribeView();
             }
         });

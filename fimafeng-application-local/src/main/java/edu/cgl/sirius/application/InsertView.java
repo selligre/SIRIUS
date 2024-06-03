@@ -7,8 +7,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -412,13 +410,14 @@ public class InsertView extends JPanel {
             String publication_date = dateFormat.format(date_now);
             String is_recurrent = "f";
 
-            String author_id = "1";
-            MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
-            String userEmail = Application.getUserMail(); // TODO: changer pour avoir l'id du user connecté
-            for (User user : mainSelectUsers.getUsers().getUsers()) {
-                if (user.getEmail().equals(userEmail))
-                    author_id = user.getUser_id();
-            }
+            String author_id = Application.connectedUser.getUser_id();
+            // MainSelectUsers mainSelectUsers = new MainSelectUsers("SELECT_ALL_USERS");
+            // String userEmail = Application.getUserMail(); // TODO: changer pour avoir
+            // l'id du user connecté
+            // for (User user : mainSelectUsers.getUsers().getUsers()) {
+            // if (user.getEmail().equals(userEmail))
+            // author_id = user.getUser_id();
+            // }
 
             LocalDateTime ldt_start = dtpicker_panel.getDateTimeStrict();
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());

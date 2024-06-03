@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
+import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
@@ -40,6 +41,7 @@ import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
     public static String userMail;
+    protected static User connectedUser;
 
     public static String getUserMail() {
         return userMail;
@@ -237,10 +239,10 @@ public class Application {
         parser = new AnnounceParser();
 
         try {
-            logger.info("Launch queries");
+            logger.info("Launch querry (all anounces)");
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             Application.requestResult = client.getAnnounces();
-            logger.info("Queries ended!");
+            logger.info("Querry ended!");
 
         } catch (Exception e) {
             e.printStackTrace();
