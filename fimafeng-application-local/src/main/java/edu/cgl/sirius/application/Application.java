@@ -76,6 +76,13 @@ public class Application {
 
     private static AnnounceParser parser;
 
+    int online;
+    int offline;
+
+    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline};
+    final JComboBox<String> statusCombox = new JComboBox<>(status);
+
+
     public static void main(String[] args) {
         new Application();
     }
@@ -283,6 +290,8 @@ public class Application {
         final JComboBox tagList5 = new JComboBox(tags);
         headerPanel.add(tagList5);
 
+        headerPanel.add(statusCombox);
+
         JButton filter_by_tag = new JButton("Filtrer par tag(s)");
         filter_by_tag.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -421,7 +430,17 @@ public class Application {
 
         table.setModel(model);
         table.setEnabled(false);
+        online = 0;
+        offline = 0;
         for (Announce announce : resultAnnounces.getAnnounces()) {
+            switch(announce.getStatus()){
+                case "online":
+                online += 1;
+                break;
+                case "offline":
+                offline += 1;
+                break;
+            }
             JButton btn = new JButton("Voir");
             btn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -440,6 +459,11 @@ public class Application {
             };
             model.addRow(rowData);
         }
+
+        statusCombox.removeAllItems();
+        statusCombox.addItem("Statut");
+        statusCombox.addItem("En ligne : " + online);
+        statusCombox.addItem("Hors ligne : " + offline);
 
         table.getColumnModel().getColumn(0).setPreferredWidth(540);
         table.getColumnModel().getColumn(1).setPreferredWidth(145);
