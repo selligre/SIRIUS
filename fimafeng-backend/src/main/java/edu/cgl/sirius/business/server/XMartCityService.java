@@ -40,7 +40,8 @@ public class XMartCityService {
         SELECT_ALL_TAGS_OF_ANNOUNCE("SELECT * FROM announce_tags WHERE ref_announce_id = ?;"),
         SELECT_USER_TO_LOGIN(
                 "SELECT * FROM users u WHERE (email = ? and password = ?);"),
-        SELECT_ALL_MATCHING_ANNOUNCES("SELECT FROM * WHERE title LIKE '%?%' OR description LIKE '%?%'"),
+        SELECT_ALL_MATCHING_ANNOUNCES(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces WHERE title ~* ? OR description ~* ?;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
