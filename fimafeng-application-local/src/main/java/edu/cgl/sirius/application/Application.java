@@ -36,6 +36,7 @@ import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
 import edu.cgl.sirius.client.MainSelectLocations;
+import edu.cgl.sirius.client.MainSelectNumberCount;
 import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
@@ -324,6 +325,8 @@ public class Application {
             logger.info("Launch querry (locations for filters)");
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
+            MainSelectNumberCount count = new MainSelectNumberCount("SELECT_NB_USERS");
+            System.out.println(count);
             logger.info("Query ended!");
 
         } catch (Exception e) {
