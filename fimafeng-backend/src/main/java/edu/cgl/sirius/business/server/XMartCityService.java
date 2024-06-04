@@ -8,6 +8,8 @@ import edu.cgl.sirius.business.dto.AnnounceTags;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
+import edu.cgl.sirius.business.dto.NumberCount;
+import edu.cgl.sirius.business.dto.NumberCounts;
 import edu.cgl.sirius.business.dto.Tag;
 import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
@@ -39,6 +41,8 @@ public class XMartCityService {
                 "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE location_id = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
+        SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE (ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) AND ref_location_id = ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
         SELECT_ALL_TAGS("SELECT * FROM tags"),
         SELECT_ALL_USERS_TAGS("SELECT * FROM users_tags;"),
@@ -48,6 +52,7 @@ public class XMartCityService {
                 "SELECT * FROM users u WHERE (email = ? and password = ?);"),
         SELECT_ALL_MATCHING_ANNOUNCES(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces WHERE title ~* ? OR description ~* ?;"),
+        SELECT_NB_USERS("SELECT COUNT(user_id) FROM users;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -206,6 +211,32 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION":
+                    mapper = new ObjectMapper();
+                    Announce announceTagLoc = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION.query);
+                    pstmt.setString(1, announceTagLoc.getAnnounceTags().get(0));
+                    pstmt.setString(2, announceTagLoc.getAnnounceTags().get(1));
+                    pstmt.setString(3, announceTagLoc.getAnnounceTags().get(2));
+                    pstmt.setString(4, announceTagLoc.getAnnounceTags().get(3));
+                    pstmt.setString(5, announceTagLoc.getAnnounceTags().get(4));
+                    pstmt.setString(6, announceTagLoc.getRef_location_id());
+                    pstmt.setString(7, Long
+                            .toString(
+                                    announceTagLoc.getAnnounceTags().stream().filter(value -> value != null).count()));
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    Announces announcesForTagLoc = new Announces();
+                    while (res.next()) {
+                        Announce announce = new Announce().build(res);
+                        announcesForTagLoc.add(announce);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announcesForTagLoc));
+                    System.out.println(response.getResponseBody());
+                    break;
+
                 case "SELECT_ALL_MATCHING_ANNOUNCES":
                     mapper = new ObjectMapper();
                     Announce announceMatch = mapper.readValue(request.getRequestBody(), Announce.class);
@@ -303,7 +334,21 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(userLocations));
-                    System.out.println(response.getResponseBody());
+                    break;
+                
+                case "SELECT_NB_USERS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_NB_USERS.query);
+                    NumberCounts numberCounts = new NumberCounts();
+                    if (res.next()) {
+                        NumberCount numberCount = new NumberCount(null).build(res);
+                        numberCounts.add(numberCount);
+                    }
+
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(numberCounts));
                     break;
 
                 // INSERT QUERRIES

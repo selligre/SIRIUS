@@ -35,7 +35,9 @@ import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
+import edu.cgl.sirius.client.MainSelectAnnouncesTagLocation;
 import edu.cgl.sirius.client.MainSelectLocations;
+import edu.cgl.sirius.client.MainSelectNumberCount;
 import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
@@ -74,6 +76,13 @@ public class Application {
     private static Logger logger;
 
     private static AnnounceParser parser;
+
+    int online;
+    int offline;
+
+    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline};
+    final JComboBox<String> statusCombox = new JComboBox<>(status);
+
 
     public static void main(String[] args) {
         new Application();
@@ -283,6 +292,8 @@ public class Application {
         final JComboBox tagList5 = new JComboBox(tags);
         headerPanel.add(tagList5);
 
+        headerPanel.add(statusCombox);
+
         JButton filter_by_tag = new JButton("Filtrer par tag(s)");
         filter_by_tag.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -315,6 +326,8 @@ public class Application {
             logger.info("Launch querry (locations for filters)");
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
+            MainSelectNumberCount count = new MainSelectNumberCount("SELECT_NB_USERS");
+            System.out.println(count);
             logger.info("Query ended!");
 
         } catch (Exception e) {
@@ -335,7 +348,7 @@ public class Application {
         final JComboBox locationList = new JComboBox(locationsItems);
         headerPanel.add(locationList);
 
-        JButton filter_by_location = new JButton("Filtrer par quartier");
+        JButton filter_by_location = new JButton("Filtrer par lieu");
         filter_by_location.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logger.info("Filtering by neighboorhoods");
@@ -354,7 +367,62 @@ public class Application {
             }
         });
         headerPanel.add(filter_by_location);
-        pagePanel.add(headerPanel, BorderLayout.NORTH);
+
+        JButton cross_filter = new JButton("Filtrer par tag(s) et lieu");
+        cross_filter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                try {
+                    String selectedTagId1 = map_tagsItems.get(tagList1.getSelectedItem());
+                    String selectedTagId2 = map_tagsItems.get(tagList2.getSelectedItem());
+                    String selectedTagId3 = map_tagsItems.get(tagList3.getSelectedItem());
+                    String selectedTagId4 = map_tagsItems.get(tagList4.getSelectedItem());
+                    String selectedTagId5 = map_tagsItems.get(tagList5.getSelectedItem());
+
+                    ArrayList<String> selectedTagIds = new ArrayList<>();
+                    selectedTagIds.add(selectedTagId1);
+                    selectedTagIds.add(selectedTagId2);
+                    selectedTagIds.add(selectedTagId3);
+                    selectedTagIds.add(selectedTagId4);
+                    selectedTagIds.add(selectedTagId5);
+
+                    String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
+
+                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                    logger.debug(selectedLocation);
+
+                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                    if (selectedLocation.equals("0")) {
+                        System.out.println("#################################################################");
+                        System.out.println();
+                        System.out.println("#################################################################");
+                        System.out.println("#################################################################");
+
+                        filter_by_location.doClick();
+                    } else {
+
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        MainSelectAnnouncesTagLocation client = new MainSelectAnnouncesTagLocation(
+                                "SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION",
+                                selectedTagIds, selectedLocation);
+                        requestResult = client.getAnnounces();
+                        displayResult(pagePanel, requestResult);
+                    }
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        headerPanel.add(cross_filter);
 
         JButton remove_filters = new JButton("Retirer tous les filtres");
         remove_filters.addActionListener(new ActionListener() {
@@ -365,6 +433,13 @@ public class Application {
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
+                tagList1.setSelectedIndex(0);
+                tagList2.setSelectedIndex(0);
+                tagList3.setSelectedIndex(0);
+                tagList4.setSelectedIndex(0);
+                tagList5.setSelectedIndex(0);
+                locationList.setSelectedIndex(0);
+
                 displayResult(pagePanel, requestResult);
             }
         });
@@ -454,7 +529,17 @@ public class Application {
 
         table.setModel(model);
         table.setEnabled(false);
+        online = 0;
+        offline = 0;
         for (Announce announce : resultAnnounces.getAnnounces()) {
+            switch(announce.getStatus()){
+                case "online":
+                online += 1;
+                break;
+                case "offline":
+                offline += 1;
+                break;
+            }
             JButton btn = new JButton("Voir");
             btn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -473,6 +558,11 @@ public class Application {
             };
             model.addRow(rowData);
         }
+
+        statusCombox.removeAllItems();
+        statusCombox.addItem("Statut");
+        statusCombox.addItem("En ligne : " + online);
+        statusCombox.addItem("Hors ligne : " + offline);
 
         table.getColumnModel().getColumn(0).setPreferredWidth(540);
         table.getColumnModel().getColumn(1).setPreferredWidth(145);
