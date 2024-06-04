@@ -1,6 +1,7 @@
 package edu.cgl.sirius.application;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -12,7 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +26,6 @@ import edu.cgl.sirius.business.dto.UserTag;
 import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectUsersLocations;
 import edu.cgl.sirius.client.MainSelectUsersTags;
-
-/*
- * La création d'un profil utilisateur (avec des règles métiers pour vérifier le format de son e-mail, 
- * l'unicité de son e-mail, etc.) ainsi que la modification de son profil (notamment pour modifier les tags). 
- * La home page de l'utilisateur devra remonter des suggestions d'activités (peut être mettre en place une 
- * règle pour éviter de se retrouver avec 5000 suggestions) et de pouvoir s'y inscrire.
- * 
- * par rapport à ma proposition de UC, je te propose de simplifier au maximum les informations d'un profil utilisateur 
- * (prénom, adresse email) + des tags + proposition d'activités en fonction de son profil 
- * + un bouton inscription (à faire en dernier temps)
- * 
- * 1) avoir une gestion des utilisateurs (donc création, insertion dans la BDD, ainsi que identification/connexion au client local)
- * 2) la suggestion d'activités en fonction de l'utilisateur connecté
- * 3) un moyen pour un utilisateur de s'inscrire à une activité (en lien avec le UC de Clément)
- */
 
 public class LoginView {
 
@@ -58,6 +46,7 @@ public class LoginView {
         JLabel pwdLabel = new JLabel("Mot de passe :");
         JPasswordField pwdPasswordField = new JPasswordField(5);
         JLabel titleLabel = new JLabel("VILLE PARTAGEE");
+        titleLabel.setFont(new Font("Calibri", Font.ROMAN_BASELINE, 60));
         JButton connexionButton = new JButton("SE CONNECTER");
         // set par défaut des identifiants pour gagner du temps
         idTextField.setText("villepartagee@mairie.fr");
@@ -121,14 +110,27 @@ public class LoginView {
             }
         });
 
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setBounds(300, 250, 700, 25);
+        panel.add(separator);
+        JSeparator separator2 = new JSeparator(SwingConstants.HORIZONTAL);
+        separator2.setBounds(300, 485, 700, 25);
+        panel.add(separator2);
+        JSeparator separator3 = new JSeparator(SwingConstants.VERTICAL);
+        separator3.setBounds(300, 250, 25, 235);
+        panel.add(separator3);
+        JSeparator separator4 = new JSeparator(SwingConstants.VERTICAL);
+        separator4.setBounds(1000, 250, 25, 235);
+        panel.add(separator4);
+
         // set component bounds (only needed by Absolute Positioning)
-        idTextField.setBounds(550, 300, 200, 25);
-        idLabel.setBounds(450, 300, 100, 25);
-        pwdLabel.setBounds(450, 350, 100, 25);
-        pwdPasswordField.setBounds(550, 350, 200, 25);
-        titleLabel.setBounds(480, 150, 300, 25);
-        connexionButton.setBounds(500, 400, 200, 25);
-        subscribeButton.setBounds(500, 500, 200, 25);
+        idTextField.setBounds(600, 300, 200, 25);
+        idLabel.setBounds(500, 300, 100, 25);
+        pwdLabel.setBounds(500, 350, 100, 25);
+        pwdPasswordField.setBounds(600, 350, 200, 25);
+        titleLabel.setBounds(450, 150, 600, 100);
+        connexionButton.setBounds(550, 425, 200, 25);
+        subscribeButton.setBounds(550, 525, 200, 25);
 
         // adjust size and set layout
         panel.setPreferredSize(new Dimension(1280, 720));
