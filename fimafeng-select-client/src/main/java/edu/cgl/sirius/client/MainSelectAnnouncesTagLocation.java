@@ -23,11 +23,12 @@ import edu.cgl.sirius.client.commons.NetworkConfig;
 import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.commons.Request;
 
-public class MainSelectAnnouncesTag {
+public class MainSelectAnnouncesTagLocation {
     private final static String LoggingLabel = "S e l e c t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
-    // private static final String requestOrder = "SELECT_ALL_ANNOUNCES";
+    // private static final String requestOrder =
+    // "SELECT_ALL_ANNOUNCES_TAG_LOCATION";
     private static final Deque<ClientRequest> clientRequests = new ArrayDeque<ClientRequest>();
     private static Announces announces;
 
@@ -35,20 +36,21 @@ public class MainSelectAnnouncesTag {
         return announces;
     }
 
-    public MainSelectAnnouncesTag(String requestOrder, ArrayList<String> ref_tag_id)
+    public MainSelectAnnouncesTagLocation(String requestOrder, ArrayList<String> ref_tag_id, String locationId)
             throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        Announce tagId = new Announce();
-        tagId.setAnnounceTags(ref_tag_id);
+        Announce annIdLoc = new Announce();
+        annIdLoc.setAnnounceTags(ref_tag_id);
+        annIdLoc.setRef_location_id(locationId);
 
         int birthdate = 0;
 
         final ObjectMapper objectMapper = new ObjectMapper();
         final ObjectMapper objectMapper2 = new ObjectMapper();
         final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(tagId);
+                .writeValueAsString(annIdLoc);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
@@ -59,7 +61,7 @@ public class MainSelectAnnouncesTag {
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
         final SelectAllAnnouncesTagClientRequest clientRequest = new SelectAllAnnouncesTagClientRequest(
                 networkConfig,
-                birthdate++, request, tagId, requestBytes);
+                birthdate++, request, annIdLoc, requestBytes);
         clientRequests.push(clientRequest);
 
         while (!clientRequests.isEmpty()) {
@@ -82,5 +84,4 @@ public class MainSelectAnnouncesTag {
             // logger.debug("\n{}\n", asciiTable.render());
         }
     }
-
 }

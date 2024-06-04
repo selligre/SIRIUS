@@ -7,67 +7,67 @@ import java.sql.SQLException;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Tag {
+public class UserLocation {
 
-    private String tag_id;
-    private String name;
-    private String category;
+    private String user_location_id;
+    private String ref_user_id;
+    private String ref_location_id;
 
-    public Tag() {
+    public UserLocation() {
     }
 
-    public Tag(String name, String cat) {
-        this.name = name;
-        this.category = cat;
+    public UserLocation(String ref_user_id, String ref_location_id) {
+        this.ref_user_id = ref_user_id;
+        this.ref_location_id = ref_location_id;
     }
 
-    public Tag(String id, String name, String cat) {
-        this.tag_id = id;
-        this.name = name;
-        this.category = cat;
+    public UserLocation(String user_location_id, String ref_user_id, String ref_location_id) {
+        this.user_location_id = user_location_id;
+        this.ref_user_id = ref_user_id;
+        this.ref_location_id = ref_location_id;
     }
 
-    public String getTag_id() {
-        return this.tag_id;
+    public String getUser_location_id() {
+        return this.user_location_id;
     }
 
-    @JsonProperty("tag_id")
-    public void setTag_id(String tag_id) {
-        this.tag_id = tag_id;
+    @JsonProperty("user_location_id")
+    public void setUser_location_id(String location_id) {
+        this.user_location_id = location_id;
     }
 
-    public String getName() {
-        return this.name;
+    public String getRef_user_id() {
+        return this.ref_user_id;
     }
 
-    @JsonProperty("name")
-    public void setName(String name) {
-        this.name = name;
+    @JsonProperty("ref_user_id")
+    public void setRef_user_id(String name) {
+        this.ref_user_id = name;
     }
 
-    public String getCategory() {
-        return this.category;
+    public String getRef_location_id() {
+        return this.ref_location_id;
     }
 
-    @JsonProperty("category")
-    public void setCategory(String categorie) {
-        this.category = categorie;
+    @JsonProperty("ref_location_id")
+    public void setRef_location_id(String categorie) {
+        this.ref_location_id = categorie;
     }
 
     @Override
     public String toString() {
-        return "N: " + this.name + ", c: " + this.category;
+        return "N: " + this.ref_user_id + ", c: " + this.ref_location_id;
     }
 
-    public final Tag build(final ResultSet resultSet)
+    public final UserLocation build(final ResultSet resultSet)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        setFieldsFromResulset(resultSet, "tag_id", "name", "category");
+        setFieldsFromResulset(resultSet, "user_location_id", "ref_user_id", "ref_location_id");
         return this;
     }
 
     public final PreparedStatement build(PreparedStatement preparedStatement)
             throws SQLException, NoSuchFieldException, IllegalAccessException {
-        return buildPreparedStatement(preparedStatement, tag_id, name, category);
+        return buildPreparedStatement(preparedStatement, user_location_id, ref_user_id, ref_location_id);
     }
 
     private final PreparedStatement buildPreparedStatement(PreparedStatement preparedStatement,

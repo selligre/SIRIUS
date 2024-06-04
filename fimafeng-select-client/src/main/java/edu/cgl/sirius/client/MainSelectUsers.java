@@ -19,8 +19,7 @@ import java.util.Deque;
 import java.util.UUID;
 
 public class MainSelectUsers {
-
-    private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
+    private final static String LoggingLabel = "S e l e c t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
     private static final String requestOrder = "SELECT_ALL_USERS";
@@ -30,45 +29,6 @@ public class MainSelectUsers {
     public Users getUsers() {
         return users;
     }
-
-    // public static void main(String[] args) throws IOException,
-    // InterruptedException, SQLException {
-
-    // final NetworkConfig networkConfig =
-    // ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
-    // logger.debug("Load Network config file : {}", networkConfig.toString());
-
-    // int birthdate = 0;
-    // final ObjectMapper objectMapper = new ObjectMapper();
-    // final String requestId = UUID.randomUUID().toString();
-    // final Request request = new Request();
-    // request.setRequestId(requestId);
-    // request.setRequestOrder(requestOrder);
-    // objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-    // final byte[] requestBytes =
-    // objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
-    // LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
-    // final SelectAllUsersClientRequest clientRequest = new
-    // SelectAllUsersClientRequest(
-    // networkConfig,
-    // birthdate++, request, null, requestBytes);
-    // clientRequests.push(clientRequest);
-
-    // while (!clientRequests.isEmpty()) {
-    // final ClientRequest joinedClientRequest = clientRequests.pop();
-    // joinedClientRequest.join();
-    // logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-    // Users = (Users) joinedClientRequest.getResult();
-    // final AsciiTable asciiTable = new AsciiTable();
-    // for (final User User : Users.getUsers()) {
-    // asciiTable.addRule();
-    // asciiTable.addRow(User.getfirst_name(), User.getName(),
-    // User.getGroup());
-    // }
-    // asciiTable.addRule();
-    // logger.debug("\n{}\n", asciiTable.render());
-    // }
-    // }
 
     public MainSelectUsers(String requestOrder) throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
@@ -96,12 +56,54 @@ public class MainSelectUsers {
             final AsciiTable asciiTable = new AsciiTable();
             for (final User user : users.getUsers()) {
                 asciiTable.addRule();
-                asciiTable.addRow(user.getUser_id(), user.getUser_id(), user.getFirst_name(), user.getLast_name(), user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
-                // sBuilder.append(User.getfirst_name() + "; " + User.getName() + "; " +
-                // User.getGroup() + "\n");
+                asciiTable.addRow(user.getUser_id(), user.getUser_id(), user.getFirst_name(), user.getLast_name(),
+                        user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
             }
             asciiTable.addRule();
-            logger.debug("\n{}\n", asciiTable.render());
+            // logger.debug("\n{}\n", asciiTable.render());
+            // logger.debug("\n{}\n", sBuilder.toString());
+        }
+    }
+
+    public MainSelectUsers(String requestOrder, String mail, String pswd) throws IOException, InterruptedException {
+        final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
+        logger.debug("Load Network config file : {}", networkConfig.toString());
+
+        User uLogin = new User();
+        uLogin.setEmail(mail);
+        uLogin.setPassword(pswd);
+
+        int birthdate = 0;
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final String jsonifiedUser = objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(uLogin);
+
+        final String requestId = UUID.randomUUID().toString();
+        final Request request = new Request();
+        request.setRequestId(requestId);
+        request.setRequestOrder(requestOrder);
+        request.setRequestContent(jsonifiedUser);
+        objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+        final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
+        LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
+        final SelectAllUsersClientRequest clientRequest = new SelectAllUsersClientRequest(
+                networkConfig,
+                birthdate++, request, uLogin, requestBytes);
+        clientRequests.push(clientRequest);
+
+        while (!clientRequests.isEmpty()) {
+            final ClientRequest joinedClientRequest = clientRequests.pop();
+            joinedClientRequest.join();
+            logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
+            users = (Users) joinedClientRequest.getResult();
+            final AsciiTable asciiTable = new AsciiTable();
+            for (final User user : users.getUsers()) {
+                asciiTable.addRule();
+                asciiTable.addRow(user.getUser_id(), user.getUser_id(), user.getFirst_name(), user.getLast_name(),
+                        user.getDisplay_name(), user.getUser_type(), user.getEmail(), user.getPassword());
+            }
+            asciiTable.addRule();
+            // logger.debug("\n{}\n", asciiTable.render());
             // logger.debug("\n{}\n", sBuilder.toString());
         }
     }

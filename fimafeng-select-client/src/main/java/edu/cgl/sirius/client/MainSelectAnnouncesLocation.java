@@ -23,7 +23,7 @@ import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.commons.Request;
 
 public class MainSelectAnnouncesLocation {
-    private final static String LoggingLabel = "I n s e r t e r - C l i e n t";
+    private final static String LoggingLabel = "S e l e c t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
     private static final String requestOrder = "SELECT_ALL_ANNOUNCES";
@@ -34,18 +34,18 @@ public class MainSelectAnnouncesLocation {
         return announcesLocation;
     }
 
-    public MainSelectAnnouncesLocation(String requestOrder, String location) throws JsonProcessingException {
+    public MainSelectAnnouncesLocation(String requestOrder, String locationId) throws JsonProcessingException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
 
-        Announce announceLocationName = new Announce();
-        announceLocationName.setRef_location_id(location);
+        Announce announceLocationId = new Announce();
+        announceLocationId.setRef_location_id(locationId);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
         final ObjectMapper objectMapper2 = new ObjectMapper();
         final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(announceLocationName);
+                .writeValueAsString(announceLocationId);
         final String requestId = UUID.randomUUID().toString();
         final Request request = new Request();
         request.setRequestId(requestId);
@@ -60,7 +60,7 @@ public class MainSelectAnnouncesLocation {
             SelectAllAnnouncesLocationClientRequest clientRequest;
             clientRequest = new SelectAllAnnouncesLocationClientRequest(
                     networkConfig,
-                    birthdate++, request, announceLocationName, requestBytes);
+                    birthdate++, request, announceLocationId, requestBytes);
 
             clientRequests.push(clientRequest);
 
