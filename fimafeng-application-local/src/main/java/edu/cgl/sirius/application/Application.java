@@ -2,50 +2,56 @@ package edu.cgl.sirius.application;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.ScrollPane;
-import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.naming.ldap.SortKey;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.RowSorter;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.stringtemplate.v4.compiler.CodeGenerator.primary_return;
+import javax.swing.table.TableCellRenderer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
+import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
 import edu.cgl.sirius.client.MainSelectAnnouncesTag;
-import edu.cgl.sirius.client.SelectAllAnnouncesClientRequest;
+import edu.cgl.sirius.client.MainSelectAnnouncesTagLocation;
+import edu.cgl.sirius.client.MainSelectLocations;
+import edu.cgl.sirius.client.MainSelectNumberCount;
+import edu.cgl.sirius.client.MainSelectTags;
+import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
-    private final int LABEL_SIZE = 10;
+    protected static User connectedUser;
+
+    public static User getConnectedUser() {
+        return connectedUser;
+    }
+
+    public static void setConnectedUser(User connectedUser) {
+        Application.connectedUser = connectedUser;
+    }
+
     private final int FRAME_WIDTH = 1280;
     private final int FRAME_HEIGHT = 720;
 
@@ -65,12 +71,25 @@ public class Application {
 
     public static Announces requestResult;
     public static JScrollPane scrollPane;
+    private JPanel pagePanel;
+
+    private static Logger logger;
+
+    private static AnnounceParser parser;
+
+    int online;
+    int offline;
+
+    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline};
+    final JComboBox<String> statusCombox = new JComboBox<>(status);
+
 
     public static void main(String[] args) {
         new Application();
     }
 
     public Application() {
+        Application.logger = LoggerFactory.getLogger("A p p l i c a t i o n - L o c a l");
         configFrame();
         configHomePage();
         this.frame.setVisible(true);
@@ -79,7 +98,7 @@ public class Application {
     public void configFrame() {
         this.frame = new JFrame();
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setTitle("Ville partagée");
+        this.frame.setTitle("Ville partagée - Home");
         this.frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         this.frame.setResizable(false);
         this.frame.setLocationRelativeTo(null);
@@ -87,6 +106,10 @@ public class Application {
 
     public void changeViewToInsert() {
         InsertView.start(this.frame);
+    }
+
+    public void changeViewToFocus(Announce ann) {
+        FocusView.start(this.frame, ann);
     }
 
     public void configHomePage() {
@@ -117,49 +140,74 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+                // logger.info("Logo Button clicked");
+                // JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+                selectSuggestions();
             }
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
+
+                logger.info("Create Button clicked");
                 changeViewToInsert();
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+                // logger.info("LogOut Button clicked");
+                // JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
+                frame.setVisible(false);
+                frame.setEnabled(false);
+                frame.repaint();
+                new LoginView();
             }
         });
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur.");
+                logger.info("Account Button clicked");
+                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + connectedUser.getEmail());
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String content = "Recherche du terme \"" + searchField.getText() + "\" dans les annonces.";
-                JOptionPane.showMessageDialog(null, content);
+                logger.info("Search Button clicked");
+                try {
+                    MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_MATCHING_ANNOUNCES",
+                            searchField.getText());
+                    requestResult = client.getAnnounces();
+                    displayResult(pagePanel, requestResult);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         this.activitiesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Activites Button clicked");
                 // JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
                 selectActivities();
             }
         });
         this.materialsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Materials Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
             }
         });
         this.servicesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("Services Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
             }
         });
         this.aroundMeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                logger.info("ArroundMe Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
             }
         });
@@ -175,12 +223,12 @@ public class Application {
         this.servicesButton.setBounds(650, 100, 250, 50);
         this.aroundMeButton.setBounds(925, 100, 250, 50);
         // enable or disable components
-        this.logoButton.setEnabled(false);
+        this.logoButton.setEnabled(true);
         this.createButton.setEnabled(true);
-        this.logOutButton.setEnabled(false);
-        this.accountButton.setEnabled(false);
-        this.searchField.setEnabled(false);
-        this.searchButton.setEnabled(false);
+        this.logOutButton.setEnabled(true);
+        this.accountButton.setEnabled(true);
+        this.searchField.setEnabled(true);
+        this.searchButton.setEnabled(true);
         this.activitiesButton.setEnabled(true);
         this.materialsButton.setEnabled(false);
         this.servicesButton.setEnabled(false);
@@ -198,30 +246,38 @@ public class Application {
         Application.page.add(this.aroundMeButton);
 
         this.frame.add(Application.page);
-    }
 
-    public void selectActivities() {
-        this.activitiesButton.setBackground(Color.DARK_GRAY);
-        this.activitiesButton.setEnabled(false);
-
-        try {
-            MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
-            Application.requestResult = client.getAnnounces();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        JPanel pagePanel = new JPanel();
+        pagePanel = new JPanel();
         pagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         pagePanel.setBounds(25, 175, 1220, 490);
         pagePanel.setLayout(new BorderLayout());
 
+        parser = new AnnounceParser();
+
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new FlowLayout());
 
-        String tags[] = { "-", "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
-                "Théatre", "Visite", "Adultes", "Chorale", "Enfants", "Jeunes" };
-        String tags_id[] = { null, "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
+        // Update tags from DB for filters
+        HashMap<String, String> map_tagsItems = new HashMap<>();
+        map_tagsItems.put("-", null);
+        Map<String, String> tagsMap;
+        try {
+            logger.info("Start querry (tags for filters)");
+            MainSelectTags tagsClient = new MainSelectTags("SELECT_ALL_TAGS");
+            tagsMap = tagsClient.getTags().getTagsMap();
+            for (String key : tagsMap.keySet()) {
+                map_tagsItems.put(tagsMap.get(key), key);
+            }
+            logger.info("Queery ended!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        headerPanel.add(statusCombox);
+
+        String[] tags = (String[]) map_tagsItems.keySet().toArray(new String[0]);
+        UtilsManager.reorderWithDefaultOnTop(tags, "-");
+
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final JComboBox tagList1 = new JComboBox(tags);
         headerPanel.add(tagList1);
@@ -242,11 +298,11 @@ public class Application {
         filter_by_tag.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String selectedTagId1 = tags_id[tagList1.getSelectedIndex()];
-                    String selectedTagId2 = tags_id[tagList2.getSelectedIndex()];
-                    String selectedTagId3 = tags_id[tagList3.getSelectedIndex()];
-                    String selectedTagId4 = tags_id[tagList4.getSelectedIndex()];
-                    String selectedTagId5 = tags_id[tagList5.getSelectedIndex()];
+                    String selectedTagId1 = map_tagsItems.get(tagList1.getSelectedItem());
+                    String selectedTagId2 = map_tagsItems.get(tagList2.getSelectedItem());
+                    String selectedTagId3 = map_tagsItems.get(tagList3.getSelectedItem());
+                    String selectedTagId4 = map_tagsItems.get(tagList4.getSelectedItem());
+                    String selectedTagId5 = map_tagsItems.get(tagList5.getSelectedItem());
 
                     ArrayList<String> selectedTagIds = new ArrayList<>();
                     selectedTagIds.add(selectedTagId1);
@@ -257,145 +313,274 @@ public class Application {
 
                     MainSelectAnnouncesTag client = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
                             selectedTagIds);
-                    Application.requestResult = client.getAnnounces();
+                    requestResult = client.getAnnounces();
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                JTable table = new JTable();
-                DefaultTableModel model = new DefaultTableModel(
-                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                                "Quartier" },
-                        0);
-                table.setModel(model);
-                table.setEnabled(false);
-                for (Announce announce : Application.requestResult.getAnnounces()) {
-                    String[] rowData = {
-                            announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
-                            announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
-                            announce.getRef_location_id()
-                    };
-                    model.addRow(rowData);
-                }
-                pagePanel.remove(Application.scrollPane);
-                Application.scrollPane = new JScrollPane(table);
-                pagePanel.add(Application.scrollPane, BorderLayout.CENTER);
-
-                Application.page.add(pagePanel);
-                Application.page.revalidate();
-                Application.page.repaint();
+                displayResult(pagePanel, requestResult);
             }
         });
         headerPanel.add(filter_by_tag);
 
-        String locations[] = { "-", "Plaza", "Court", "Pass", "Place", "Park", "Bar St Patricks", "Place de la Mairie",
-                "Parc du chateau", "Salle de fêtes", "Piscine", "Cinéma", "Théâtre", "Mairie" };
+        try {
+            logger.info("Launch querry (locations for filters)");
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            MainSelectNumberCount count = new MainSelectNumberCount("SELECT_NB_USERS");
+            System.out.println(count);
+            logger.info("Query ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        HashMap<String, String> map_locationsItems = new HashMap<>();
+        map_locationsItems.put("-", "0");
+        Map<String, String> parsedLocations = parser.getParsedLocations();
+        for (String key : parsedLocations.keySet()) {
+            map_locationsItems.put(parsedLocations.get(key), key);
+        }
+
+        String[] locationsItems = (String[]) map_locationsItems.keySet().toArray(new String[0]);
+        UtilsManager.reorderWithDefaultOnTop(locationsItems, "-");
+
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        final JComboBox locationList = new JComboBox(locations);
+        final JComboBox locationList = new JComboBox(locationsItems);
         headerPanel.add(locationList);
 
-        JButton filter_by_location = new JButton("Filtrer par quartier");
+        JButton filter_by_location = new JButton("Filtrer par lieu");
         filter_by_location.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                logger.info("Filtering by neighboorhoods");
                 try {
-                    String selectedLocation = locationList.getSelectedItem().toString();
-                    if (!selectedLocation.equals("-")) {
+                    String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
+                    if (!selectedLocation.equals("0")) {
                         MainSelectAnnouncesLocation client = new MainSelectAnnouncesLocation(
                                 "SELECT_ANNOUNCES_FOR_LOCATION",
                                 selectedLocation);
-                        Application.requestResult = client.getAnnouncesLocation();
+                        requestResult = client.getAnnouncesLocation();
                     }
                 } catch (JsonProcessingException e1) {
                     e1.printStackTrace();
                 }
-                JTable table = new JTable();
-                DefaultTableModel model = new DefaultTableModel(
-                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                                "Quartier" },
-                        0);
-                table.setModel(model);
-                table.setEnabled(false);
-                for (Announce announce : Application.requestResult.getAnnounces()) {
-                    String[] rowData = {
-                            announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
-                            announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
-                            announce.getRef_location_id()
-                    };
-                    model.addRow(rowData);
-                }
-                pagePanel.remove(Application.scrollPane);
-                Application.scrollPane = new JScrollPane(table);
-                pagePanel.add(scrollPane, BorderLayout.CENTER);
-
-                Application.page.add(pagePanel);
-                Application.page.revalidate();
-                Application.page.repaint();
+                displayResult(pagePanel, requestResult);
             }
         });
         headerPanel.add(filter_by_location);
-        pagePanel.add(headerPanel, BorderLayout.NORTH);
 
-        JButton remove_filters = new JButton("Retirer tous les filtres");
+        JButton cross_filter = new JButton("Filtrer par tag(s) et lieu");
+        cross_filter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                try {
+                    String selectedTagId1 = map_tagsItems.get(tagList1.getSelectedItem());
+                    String selectedTagId2 = map_tagsItems.get(tagList2.getSelectedItem());
+                    String selectedTagId3 = map_tagsItems.get(tagList3.getSelectedItem());
+                    String selectedTagId4 = map_tagsItems.get(tagList4.getSelectedItem());
+                    String selectedTagId5 = map_tagsItems.get(tagList5.getSelectedItem());
+
+                    ArrayList<String> selectedTagIds = new ArrayList<>();
+                    selectedTagIds.add(selectedTagId1);
+                    selectedTagIds.add(selectedTagId2);
+                    selectedTagIds.add(selectedTagId3);
+                    selectedTagIds.add(selectedTagId4);
+                    selectedTagIds.add(selectedTagId5);
+
+                    String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
+
+                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                    logger.debug(selectedLocation);
+
+                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
+                    if (selectedLocation.equals("0")) {
+                        System.out.println("#################################################################");
+                        System.out.println();
+                        System.out.println("#################################################################");
+                        System.out.println("#################################################################");
+
+                        filter_by_location.doClick();
+                    } else {
+
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
+                        MainSelectAnnouncesTagLocation client = new MainSelectAnnouncesTagLocation(
+                                "SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION",
+                                selectedTagIds, selectedLocation);
+                        requestResult = client.getAnnounces();
+                        displayResult(pagePanel, requestResult);
+                    }
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        headerPanel.add(cross_filter);
+
+        JButton remove_filters = new JButton("RESET");
         remove_filters.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
                     MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
-                    Application.requestResult = client.getAnnounces();
+                    requestResult = client.getAnnounces();
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                JTable table = new JTable();
-                DefaultTableModel model = new DefaultTableModel(
-                        new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                                "Quartier" },
-                        0);
-                table.setModel(model);
-                table.setEnabled(false);
-                for (Announce announce : Application.requestResult.getAnnounces()) {
-                    String[] rowData = {
-                            announce.getTitle(),
-                            announce.getDate_time_start(),
-                            announce.getDuration(),
-                            announce.getSlots_available().toString(),
-                            announce.getPrice().toString(),
-                            announce.getRef_location_id()
-                    };
-                    model.addRow(rowData);
-                }
-                pagePanel.remove(Application.scrollPane);
-                Application.scrollPane = new JScrollPane(table);
-                pagePanel.add(scrollPane, BorderLayout.CENTER);
+                tagList1.setSelectedIndex(0);
+                tagList2.setSelectedIndex(0);
+                tagList3.setSelectedIndex(0);
+                tagList4.setSelectedIndex(0);
+                tagList5.setSelectedIndex(0);
+                locationList.setSelectedIndex(0);
 
-                Application.page.add(pagePanel);
-                Application.page.revalidate();
-                Application.page.repaint();
+                displayResult(pagePanel, requestResult);
             }
         });
         headerPanel.add(remove_filters);
         pagePanel.add(headerPanel, BorderLayout.NORTH);
+        pagePanel.setVisible(false);
+    }
+
+    public void selectActivities() {
+        // this.activitiesButton.setBackground(Color.LIGHT_GRAY);
+        // this.activitiesButton.setEnabled(false);
+
+        parser = new AnnounceParser();
+
+        try {
+            logger.info("Launch querry (all anounces)");
+            MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+            Application.requestResult = client.getAnnounces();
+            logger.info("Querry ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        displayResult(pagePanel, requestResult);
+    }
+
+    public void selectSuggestions() {
+        // this.activitiesButton.setBackground(Color.LIGHT_GRAY);
+        // this.activitiesButton.setEnabled(false);
+
+        parser = new AnnounceParser();
+
+        try {
+            logger.info("Launch querry (all anounces)");
+            // MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+            // Application.requestResult = client.getAnnounces();
+            ArrayList<String> ref_tag_id = new ArrayList<>();
+            ref_tag_id.add(Integer.toString(Application.connectedUser.getTag()));
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            MainSelectAnnouncesTag mainSelectAnnouncesTag = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
+                    ref_tag_id);
+            Announces announcesWithUserLocationAndUserTag = new Announces();
+            for (Announce announce : mainSelectAnnouncesTag.getAnnounces().getAnnounces()) {
+                if (announce.getRef_location_id().equals(Integer.toString(Application.connectedUser.getLocation())))
+                    announcesWithUserLocationAndUserTag.add(announce);
+            }
+            requestResult = announcesWithUserLocationAndUserTag;
+            logger.info("Querry ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        displayResult(pagePanel, requestResult);
+    }
+
+    private void displayResult(JPanel pagePanel, Announces resultAnnounces) {
+
+        pagePanel.setVisible(true);
+
+        if (parser == null) {
+            parser = new AnnounceParser();
+        }
+
+        try {
+            logger.info("Launch querry (display location)");
+            MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
+            parser.updateLocations(locationClient.getLocations());
+            logger.info("Query ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         JTable table = new JTable();
         DefaultTableModel model = new DefaultTableModel(
                 new String[] { "Titre", "Date et Heure", "Durée", "Places restantes", "Prix",
-                        "Quartier" },
+                        "Quartier", "Actions" },
                 0);
+
+        table.getTableHeader().setResizingAllowed(false);
+        table.getTableHeader().setReorderingAllowed(false);
+
         table.setModel(model);
         table.setEnabled(false);
-        for (Announce announce : Application.requestResult.getAnnounces()) {
-            String[] rowData = {
+        online = 0;
+        offline = 0;
+        for (Announce announce : resultAnnounces.getAnnounces()) {
+            switch(announce.getStatus()){
+                case "online":
+                online += 1;
+                break;
+                case "offline":
+                offline += 1;
+                break;
+            }
+            JButton btn = new JButton("Voir");
+            btn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    logger.info("Opening announce view of: " + announce.toString());
+                    changeViewToFocus(announce);
+                }
+            });
+            Object[] rowData = {
                     announce.getTitle(),
-                    announce.getDate_time_start(),
-                    announce.getDuration(),
+                    parser.parseDateTime(announce.getDate_time_start()),
+                    parser.parseDuration(announce.getDuration()),
                     announce.getSlots_available().toString(),
-                    announce.getPrice().toString(),
-                    announce.getRef_location_id()
+                    parser.parsePrice(announce.getPrice()),
+                    parser.parseLocation(announce.getRef_location_id()),
+                    btn,
             };
             model.addRow(rowData);
+        }
+
+        statusCombox.removeAllItems();
+        statusCombox.addItem("Statut");
+        statusCombox.addItem("En ligne : " + online);
+        statusCombox.addItem("Hors ligne : " + offline);
+
+        table.getColumnModel().getColumn(0).setPreferredWidth(540);
+        table.getColumnModel().getColumn(1).setPreferredWidth(145);
+        table.getColumnModel().getColumn(2).setPreferredWidth(65);
+        table.getColumnModel().getColumn(3).setPreferredWidth(120);
+        table.getColumnModel().getColumn(4).setPreferredWidth(70);
+        table.getColumnModel().getColumn(5).setPreferredWidth(180);
+        table.getColumnModel().getColumn(6).setPreferredWidth(100);
+
+        TableCellRenderer btnRenderer = new JTableButtonRenderer();
+        table.getColumnModel().getColumn(6).setCellRenderer(btnRenderer);
+
+        table.addMouseListener(new JTableButtonMouseListener(table));
+
+        try {
+            pagePanel.remove(Application.scrollPane);
+        } catch (Exception e) {
+            // Do nothing
         }
         Application.scrollPane = new JScrollPane(table);
         pagePanel.add(Application.scrollPane, BorderLayout.CENTER);
@@ -403,5 +588,38 @@ public class Application {
         Application.page.add(pagePanel);
         Application.page.revalidate();
         Application.page.repaint();
+
+    }
+
+}
+
+class JTableButtonMouseListener extends MouseAdapter {
+    private final JTable table;
+
+    public JTableButtonMouseListener(JTable table) {
+        this.table = table;
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        int column = table.getColumnModel().getColumnIndexAtX(e.getX()); // get the coloum of the button
+        int row = e.getY() / table.getRowHeight(); // get the row of the button
+
+        // *Checking the row or column is valid or not
+        if (row < table.getRowCount() && row >= 0 && column < table.getColumnCount() && column >= 0) {
+            Object value = table.getValueAt(row, column);
+            if (value instanceof JButton) {
+                // perform a click event
+                ((JButton) value).doClick();
+            }
+        }
+    }
+}
+
+class JTableButtonRenderer implements TableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
+        JButton button = (JButton) value;
+        return button;
     }
 }

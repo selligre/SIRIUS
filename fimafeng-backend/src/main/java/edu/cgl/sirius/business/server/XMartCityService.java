@@ -4,8 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.AnnounceTag;
+import edu.cgl.sirius.business.dto.AnnounceTags;
 import edu.cgl.sirius.business.dto.Announces;
+import edu.cgl.sirius.business.dto.Location;
+import edu.cgl.sirius.business.dto.Locations;
+import edu.cgl.sirius.business.dto.NumberCount;
+import edu.cgl.sirius.business.dto.NumberCounts;
+import edu.cgl.sirius.business.dto.Tag;
+import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.business.dto.UserLocation;
+import edu.cgl.sirius.business.dto.UserLocations;
+import edu.cgl.sirius.business.dto.UserTag;
+import edu.cgl.sirius.business.dto.UserTags;
 import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.commons.Request;
 import edu.cgl.sirius.commons.Response;
@@ -24,16 +35,36 @@ public class XMartCityService {
 
         // SELECT Queries
         SELECT_ALL_USERS("SELECT * FROM users;"),
+        SELECT_ALL_USERS_EMAILS("SELECT email FROM users;"),
         SELECT_ALL_ANNOUNCES("SELECT * FROM announces;"),
         SELECT_ANNOUNCES_FOR_LOCATION(
-                "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE name = ?;"),
+                "SELECT * FROM announces JOIN locations ON ref_location_id = location_id WHERE location_id = ?;"),
         SELECT_ANNOUNCES_FOR_TAG_ID(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
+        SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE (ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) AND ref_location_id = ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
+        SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
+        SELECT_ALL_TAGS("SELECT * FROM tags"),
+        SELECT_ALL_USERS_TAGS("SELECT * FROM users_tags;"),
+        SELECT_ALL_USERS_LOCATIONS("SELECT * FROM users_locations;"),
+        SELECT_ALL_TAGS_OF_ANNOUNCE("SELECT * FROM announce_tags WHERE ref_announce_id = ?;"),
+        SELECT_USER_TO_LOGIN(
+                "SELECT * FROM users u WHERE (email = ? and password = ?);"),
+        SELECT_ALL_MATCHING_ANNOUNCES(
+                "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces WHERE title ~* ? OR description ~* ?;"),
+        SELECT_NB_USERS("SELECT COUNT(user_id) FROM users;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
-                "INSERT INTO announces VALUES(DEFAULT,?::int,?::timestamp,?,?,?,?,?::timestamp,?::float,?::timestamp,?::boolean,?::smallint,?::smallint,?::float,?::int  ) RETURNING announce_id;"),
-        INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);");
+                "INSERT INTO announces VALUES(DEFAULT, ?::int, ?::timestamp, ?, ?, ?, ?, ?::timestamp, ?::float ,?::timestamp ,?::boolean, ?::smallint, ?::smallint, ?::float, ?::int) RETURNING announce_id;"),
+        INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);"),
+        INSERT_USER(
+                "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;"),
+        INSERT_USER_TAG("INSERT INTO users_tags VALUES (DEFAULT, ?::int, ?::int)"),
+        INSERT_USER_LOCATION("INSERT INTO users_locations VALUES (DEFAULT, ?::int, ?::int)");
+
+        // UPDATE Queries
+        // TODO
 
         private final String query;
 
@@ -58,17 +89,18 @@ public class XMartCityService {
     public final Response dispatch(final Request request, final Connection connection)
             throws InvocationTargetException, IllegalAccessException {
         Response response = null;
-        Announce announce;
 
         PreparedStatement pstmt;
         Statement stmt;
         ResultSet res;
         ObjectMapper mapper;
-        int rows;
+        int rows; // TODO: pourquoi garder si jamais utiliser ?
         try {
             switch (request.getRequestOrder()) {
                 // Premier essai avec la bdd de test, inutile maintenant mais on garde
                 // temporairement pour l'exemple
+
+                // SELECT QUERRIES
                 case "SELECT_ALL_USERS":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_ALL_USERS.query);
@@ -78,10 +110,46 @@ public class XMartCityService {
                         users.add(user);
                     }
                     mapper = new ObjectMapper();
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(users));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_EMAILS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS.query);
+                    Users usersEmails = new Users();
+                    while (res.next()) {
+                        User user = new User().build(res);
+                        usersEmails.add(user);
+                    }
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(usersEmails));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_USER_TO_LOGIN":
+                    mapper = new ObjectMapper();
+                    User uLogin = mapper.readValue(request.getRequestBody(), User.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_USER_TO_LOGIN.query);
+                    // pstmt.setString(1, announceL.getRef_location_id());
+                    System.out.println(uLogin.getEmail());
+                    System.out.println(uLogin.getPassword());
+                    pstmt.setString(1, uLogin.getEmail());
+                    pstmt.setString(2, uLogin.getPassword());
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    Users usersLogin = new Users();
+                    while (res.next()) {
+                        User user = new User().build(res);
+                        usersLogin.add(user);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(usersLogin));
                     System.out.println(response.getResponseBody());
                     break;
 
@@ -90,11 +158,10 @@ public class XMartCityService {
                     res = stmt.executeQuery(Queries.SELECT_ALL_ANNOUNCES.query);
                     Announces announces = new Announces();
                     while (res.next()) {
-                        announce = new Announce().build(res);
+                        Announce announce = new Announce().build(res);
                         announces.add(announce);
                     }
                     mapper = new ObjectMapper();
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announces));
@@ -105,16 +172,15 @@ public class XMartCityService {
                     mapper = new ObjectMapper();
                     Announce announceL = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    pstmt.setString(1, announceL.getRef_location_id());
+                    // pstmt.setString(1, announceL.getRef_location_id());
+                    pstmt.setInt(1, Integer.parseInt(announceL.getRef_location_id()));
                     res = pstmt.executeQuery();
-
                     mapper = new ObjectMapper();
                     Announces announcesLocation = new Announces();
                     while (res.next()) {
                         Announce announceLocation = new Announce().build(res);
                         announcesLocation.add(announceLocation);
                     }
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announcesLocation));
@@ -124,7 +190,6 @@ public class XMartCityService {
                 case "SELECT_ANNOUNCES_FOR_TAG_ID":
                     mapper = new ObjectMapper();
                     Announce announceTag = mapper.readValue(request.getRequestBody(), Announce.class);
-
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_ID.query);
                     pstmt.setString(1, announceTag.getAnnounceTags().get(0));
                     pstmt.setString(2, announceTag.getAnnounceTags().get(1));
@@ -133,25 +198,163 @@ public class XMartCityService {
                     pstmt.setString(5, announceTag.getAnnounceTags().get(4));
                     pstmt.setString(6, Long
                             .toString(announceTag.getAnnounceTags().stream().filter(value -> value != null).count()));
-
                     res = pstmt.executeQuery();
-
                     mapper = new ObjectMapper();
-                    Announces announces2 = new Announces();
+                    Announces announcesForTag = new Announces();
                     while (res.next()) {
-                        announce = new Announce().build(res);
-                        announces2.add(announce);
+                        Announce announce = new Announce().build(res);
+                        announcesForTag.add(announce);
                     }
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody(mapper.writeValueAsString(announces2));
+                    response.setResponseBody(mapper.writeValueAsString(announcesForTag));
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION":
+                    mapper = new ObjectMapper();
+                    Announce announceTagLoc = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION.query);
+                    pstmt.setString(1, announceTagLoc.getAnnounceTags().get(0));
+                    pstmt.setString(2, announceTagLoc.getAnnounceTags().get(1));
+                    pstmt.setString(3, announceTagLoc.getAnnounceTags().get(2));
+                    pstmt.setString(4, announceTagLoc.getAnnounceTags().get(3));
+                    pstmt.setString(5, announceTagLoc.getAnnounceTags().get(4));
+                    pstmt.setString(6, announceTagLoc.getRef_location_id());
+                    pstmt.setString(7, Long
+                            .toString(
+                                    announceTagLoc.getAnnounceTags().stream().filter(value -> value != null).count()));
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    Announces announcesForTagLoc = new Announces();
+                    while (res.next()) {
+                        Announce announce = new Announce().build(res);
+                        announcesForTagLoc.add(announce);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announcesForTagLoc));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_MATCHING_ANNOUNCES":
+                    mapper = new ObjectMapper();
+                    Announce announceMatch = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ALL_MATCHING_ANNOUNCES.query);
+                    pstmt.setString(1, announceMatch.getTitle());
+                    pstmt.setString(2, announceMatch.getDescription());
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    Announces announcesMatching = new Announces();
+                    while (res.next()) {
+                        Announce announce = new Announce().build(res);
+                        announcesMatching.add(announce);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announcesMatching));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_LOCATIONS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_LOCATIONS.query);
+                    Locations locations = new Locations();
+                    while (res.next()) {
+                        Location location = new Location().build(res);
+                        locations.add(location);
+                    }
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(locations));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_TAGS.query);
+                    Tags tags = new Tags();
+                    while (res.next()) {
+                        Tag tag = new Tag().build(res);
+                        tags.add(tag);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(tags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_TAGS_OF_ANNOUNCE":
+                    mapper = new ObjectMapper();
+                    Announce announceT = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_ALL_TAGS_OF_ANNOUNCE.query);
+                    pstmt.setInt(1, Integer.parseInt(announceT.getAnnounce_id()));
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    AnnounceTags announceTags = new AnnounceTags();
+                    while (res.next()) {
+                        AnnounceTag announceTagForAnnounce = new AnnounceTag().build(res);
+                        announceTags.add(announceTagForAnnounce);
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announceTags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS_TAGS.query);
+                    UserTags userTags = new UserTags();
+                    while (res.next()) {
+                        UserTag userTag = new UserTag().build(res);
+                        userTags.add(userTag);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(userTags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_LOCATIONS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS_LOCATIONS.query);
+                    UserLocations userLocations = new UserLocations();
+                    while (res.next()) {
+                        UserLocation userLocation = new UserLocation().build(res);
+                        userLocations.add(userLocation);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(userLocations));
+                    break;
+                
+                case "SELECT_NB_USERS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_NB_USERS.query);
+                    NumberCounts numberCounts = new NumberCounts();
+                    if (res.next()) {
+                        NumberCount numberCount = new NumberCount(null).build(res);
+                        numberCounts.add(numberCount);
+                    }
+
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(numberCounts));
+                    break;
+
+                // INSERT QUERRIES
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
-                    announce = mapper.readValue(request.getRequestBody(), Announce.class);
+                    Announce announce = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE.query);
                     pstmt.setString(1, announce.getRef_author_id());
                     pstmt.setString(2, announce.getPublication_date());
@@ -167,21 +370,18 @@ public class XMartCityService {
                     pstmt.setString(12, announce.getSlots_available());
                     pstmt.setString(13, announce.getPrice());
                     pstmt.setString(14, announce.getRef_location_id());
-
                     res = pstmt.executeQuery();
-
                     if (res.next()) {
                         String id = String.valueOf(res.getInt("announce_id"));
-                        System.out.println("ID récupéré : " + id);
+                        logger.info("Annonunce ID récupéré : " + id);
                         for (String tagId : announce.getAnnounceTags()) {
-                            System.out.println(tagId);
+                            logger.info("TagId traité: " + tagId);
                             pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
                             pstmt.setString(1, id);
                             pstmt.setString(2, tagId);
                             pstmt.executeUpdate();
                         }
                     }
-
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announce));
@@ -189,7 +389,42 @@ public class XMartCityService {
                     break;
 
                 case "INSERT_ANNOUNCE_TAGS":
+                    break;
 
+                case "INSERT_USER":
+                    // INSERT INTO users VALUES
+                    // (default, 'gilles', 'meunier', 'selligre', 'user', 'selligre@gmail.com',
+                    // 'selligre');
+                    mapper = new ObjectMapper();
+                    User user = mapper.readValue(request.getRequestBody(), User.class);
+                    pstmt = connection.prepareStatement(Queries.INSERT_USER.query);
+                    pstmt.setString(1, user.getFirst_name());
+                    pstmt.setString(2, user.getLast_name());
+                    pstmt.setString(3, user.getDisplay_name());
+                    pstmt.setString(4, user.getEmail());
+                    pstmt.setString(5, user.getPassword());
+                    // pstmt.executeQuery();
+                    res = pstmt.executeQuery();
+                    if (res.next()) {
+                        String id = String.valueOf(res.getInt("user_id"));
+                        System.out.println("ID récupéré : " + id);
+
+                        int tagId = user.getTag();
+                        pstmt = connection.prepareStatement(Queries.INSERT_USER_TAG.query);
+                        pstmt.setString(1, id);
+                        pstmt.setInt(2, tagId);
+                        pstmt.executeUpdate();
+
+                        int locationId = user.getLocation();
+                        pstmt = connection.prepareStatement(Queries.INSERT_USER_LOCATION.query);
+                        pstmt.setString(1, id);
+                        pstmt.setInt(2, locationId);
+                        pstmt.executeUpdate();
+                    }
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(user));
+                    System.out.println(response.getResponseBody());
                     break;
 
                 default:
