@@ -8,6 +8,8 @@ import edu.cgl.sirius.business.dto.AnnounceTags;
 import edu.cgl.sirius.business.dto.Announces;
 import edu.cgl.sirius.business.dto.Location;
 import edu.cgl.sirius.business.dto.Locations;
+import edu.cgl.sirius.business.dto.NumberCount;
+import edu.cgl.sirius.business.dto.NumberCounts;
 import edu.cgl.sirius.business.dto.Tag;
 import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
@@ -44,6 +46,7 @@ public class XMartCityService {
                 "SELECT * FROM users u WHERE (email = ? and password = ?);"),
         SELECT_ALL_MATCHING_ANNOUNCES(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces WHERE title ~* ? OR description ~* ?;"),
+        SELECT_NB_USERS("SELECT COUNT(user_id) FROM users;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -291,6 +294,22 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(announceTags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_NB_USERS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_NB_USERS.query);
+                    NumberCounts numberCounts = new NumberCounts();
+                    if (res.next()) {
+                        NumberCount numberCount = new NumberCount(null).build(res);
+                        numberCounts.add(numberCount);
+                    }
+
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(numberCounts));
                     System.out.println(response.getResponseBody());
                     break;
 
