@@ -40,15 +40,14 @@ import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.commons.UtilsManager;
 
 public class Application {
-    public static String userMail;
     protected static User connectedUser;
 
-    public static String getUserMail() {
-        return userMail;
+    public static User getConnectedUser() {
+        return connectedUser;
     }
 
-    public static void setUserMail(String userMail) {
-        Application.userMail = userMail;
+    public static void setConnectedUser(User connectedUser) {
+        Application.connectedUser = connectedUser;
     }
 
     private final int FRAME_WIDTH = 1280;
@@ -132,8 +131,9 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                logger.info("Logo Button clicked");
-                JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+                // logger.info("Logo Button clicked");
+                // JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
+                selectSuggestions();
             }
         });
         this.createButton.addActionListener(new ActionListener() {
@@ -157,7 +157,7 @@ public class Application {
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logger.info("Account Button clicked");
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + getUserMail());
+                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + connectedUser.getEmail());
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
@@ -214,7 +214,7 @@ public class Application {
         this.servicesButton.setBounds(650, 100, 250, 50);
         this.aroundMeButton.setBounds(925, 100, 250, 50);
         // enable or disable components
-        this.logoButton.setEnabled(false);
+        this.logoButton.setEnabled(true);
         this.createButton.setEnabled(true);
         this.logOutButton.setEnabled(true);
         this.accountButton.setEnabled(true);
@@ -374,8 +374,8 @@ public class Application {
     }
 
     public void selectActivities() {
-        this.activitiesButton.setBackground(Color.DARK_GRAY);
-        this.activitiesButton.setEnabled(false);
+        // this.activitiesButton.setBackground(Color.LIGHT_GRAY);
+        // this.activitiesButton.setEnabled(false);
 
         parser = new AnnounceParser();
 
@@ -383,6 +383,39 @@ public class Application {
             logger.info("Launch querry (all anounces)");
             MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
             Application.requestResult = client.getAnnounces();
+            logger.info("Querry ended!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        displayResult(pagePanel, requestResult);
+    }
+
+    public void selectSuggestions() {
+        // this.activitiesButton.setBackground(Color.LIGHT_GRAY);
+        // this.activitiesButton.setEnabled(false);
+
+        parser = new AnnounceParser();
+
+        try {
+            logger.info("Launch querry (all anounces)");
+            // MainSelectAnnounces client = new MainSelectAnnounces("SELECT_ALL_ANNOUNCES");
+            // Application.requestResult = client.getAnnounces();
+            ArrayList<String> ref_tag_id = new ArrayList<>();
+            ref_tag_id.add(Integer.toString(Application.connectedUser.getTag()));
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            ref_tag_id.add(null);
+            MainSelectAnnouncesTag mainSelectAnnouncesTag = new MainSelectAnnouncesTag("SELECT_ANNOUNCES_FOR_TAG_ID",
+                    ref_tag_id);
+            Announces announcesWithUserLocationAndUserTag = new Announces();
+            for (Announce announce : mainSelectAnnouncesTag.getAnnounces().getAnnounces()) {
+                if (announce.getRef_location_id().equals(Integer.toString(Application.connectedUser.getLocation())))
+                    announcesWithUserLocationAndUserTag.add(announce);
+            }
+            requestResult = announcesWithUserLocationAndUserTag;
             logger.info("Querry ended!");
 
         } catch (Exception e) {

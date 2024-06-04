@@ -11,6 +11,10 @@ import edu.cgl.sirius.business.dto.Locations;
 import edu.cgl.sirius.business.dto.Tag;
 import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.business.dto.UserLocation;
+import edu.cgl.sirius.business.dto.UserLocations;
+import edu.cgl.sirius.business.dto.UserTag;
+import edu.cgl.sirius.business.dto.UserTags;
 import edu.cgl.sirius.business.dto.Users;
 import edu.cgl.sirius.commons.Request;
 import edu.cgl.sirius.commons.Response;
@@ -37,6 +41,8 @@ public class XMartCityService {
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces JOIN announce_tags ON announce_id = ref_announce_id WHERE ref_tag_id IN (?::int, ?::int, ?::int, ?::int, ?::int) GROUP BY announce_id HAVING COUNT(DISTINCT ref_tag_id) = ?::int;"),
         SELECT_ALL_LOCATIONS("SELECT * FROM locations"),
         SELECT_ALL_TAGS("SELECT * FROM tags"),
+        SELECT_ALL_USERS_TAGS("SELECT * FROM users_tags;"),
+        SELECT_ALL_USERS_LOCATIONS("SELECT * FROM users_locations;"),
         SELECT_ALL_TAGS_OF_ANNOUNCE("SELECT * FROM announce_tags WHERE ref_announce_id = ?;"),
         SELECT_USER_TO_LOGIN(
                 "SELECT * FROM users u WHERE (email = ? and password = ?);"),
@@ -48,7 +54,9 @@ public class XMartCityService {
                 "INSERT INTO announces VALUES(DEFAULT, ?::int, ?::timestamp, ?, ?, ?, ?, ?::timestamp, ?::float ,?::timestamp ,?::boolean, ?::smallint, ?::smallint, ?::float, ?::int) RETURNING announce_id;"),
         INSERT_ANNOUNCE_TAGS("INSERT INTO announce_tags VALUES (DEFAULT, ?::int, ?::int);"),
         INSERT_USER(
-                "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;");
+                "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;"),
+        INSERT_USER_TAG("INSERT INTO users_tags VALUES (DEFAULT, ?::int, ?::int)"),
+        INSERT_USER_LOCATION("INSERT INTO users_locations VALUES (DEFAULT, ?::int, ?::int)");
 
         // UPDATE Queries
         // TODO
@@ -266,6 +274,38 @@ public class XMartCityService {
                     System.out.println(response.getResponseBody());
                     break;
 
+                case "SELECT_ALL_USERS_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS_TAGS.query);
+                    UserTags userTags = new UserTags();
+                    while (res.next()) {
+                        UserTag userTag = new UserTag().build(res);
+                        userTags.add(userTag);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(userTags));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "SELECT_ALL_USERS_LOCATIONS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_ALL_USERS_LOCATIONS.query);
+                    UserLocations userLocations = new UserLocations();
+                    while (res.next()) {
+                        UserLocation userLocation = new UserLocation().build(res);
+                        userLocations.add(userLocation);
+                    }
+                    mapper = new ObjectMapper();
+
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(userLocations));
+                    System.out.println(response.getResponseBody());
+                    break;
+
                 // INSERT QUERRIES
                 case "INSERT_ANNOUNCE":
                     mapper = new ObjectMapper();
@@ -318,19 +358,24 @@ public class XMartCityService {
                     pstmt.setString(3, user.getDisplay_name());
                     pstmt.setString(4, user.getEmail());
                     pstmt.setString(5, user.getPassword());
-                    pstmt.executeQuery();
+                    // pstmt.executeQuery();
                     res = pstmt.executeQuery();
-                    // if (res.next()) {
-                    // String id = String.valueOf(res.getInt("user_id"));
-                    // System.out.println("ID récupéré : " + id);
-                    // for (String tagId : announce.getAnnounceTags()) {
-                    // System.out.println(tagId);
-                    // pstmt = connection.prepareStatement(Queries.INSERT_ANNOUNCE_TAGS.query);
-                    // pstmt.setString(1, id);
-                    // pstmt.setString(2, tagId);
-                    // pstmt.executeUpdate();
-                    // }
-                    // }
+                    if (res.next()) {
+                        String id = String.valueOf(res.getInt("user_id"));
+                        System.out.println("ID récupéré : " + id);
+
+                        int tagId = user.getTag();
+                        pstmt = connection.prepareStatement(Queries.INSERT_USER_TAG.query);
+                        pstmt.setString(1, id);
+                        pstmt.setInt(2, tagId);
+                        pstmt.executeUpdate();
+
+                        int locationId = user.getLocation();
+                        pstmt = connection.prepareStatement(Queries.INSERT_USER_LOCATION.query);
+                        pstmt.setString(1, id);
+                        pstmt.setInt(2, locationId);
+                        pstmt.executeUpdate();
+                    }
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(user));

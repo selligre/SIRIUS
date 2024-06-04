@@ -6,9 +6,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -18,15 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.User;
-import edu.cgl.sirius.client.MainInsertUser;
-import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectUsersEmails;
 
-public class SubscribeView {
-
-    public SubscribeView() {
+public class UserUpdateView {
+    public UserUpdateView() {
         JFrame frame = new JFrame("MyPanel");
         // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Ville partagée");
@@ -37,7 +30,7 @@ public class SubscribeView {
         JPanel panel = new JPanel();
 
         // construct components
-        JLabel titleLabel = new JLabel("INSCRIPTION");
+        JLabel titleLabel = new JLabel("UPDATE USER : " + Application.getConnectedUser().getDisplay_name());
         JLabel firstNameLabel = new JLabel("Prénom :");
         JTextField firstNameTextField = new JTextField(5);
         JLabel lastNameLabel = new JLabel("Nom :");
@@ -52,72 +45,20 @@ public class SubscribeView {
         final String SELECT_ITEM = "<Sélectionner>";
 
         JLabel locationLabel = new JLabel("Quartier favori :");
-        String locations[] = {
-                SELECT_ITEM,
-                "Plaza",
-                "Court",
-                "Plaza",
-                "Pass",
-                "Place",
-                "Park",
-                "Bar St Patricks",
-                "Place de la Mairie",
-                "Parc du chateau",
-                "Salle de fêtes",
-                "Piscine",
-                "Cinéma",
-                "Théâtre",
-                "Mairie"
-        };
-        int locations_id[] = {
-                0,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                4,
-                5,
-                6,
-                7,
-                2,
-                3,
-                1,
-                8
-        };
+        String locations[] = { SELECT_ITEM, "Plaza", "Court", "Plaza", "Pass", "Place", "Park", "Bar St Patricks",
+                "Place de la Mairie", "Parc du chateau", "Salle de fêtes", "Piscine", "Cinéma", "Théâtre", "Mairie" };
+        int locations_id[] = { 0, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 2, 3, 1, 8 };
         @SuppressWarnings({ "rawtypes", "unchecked" })
         JComboBox locationComboBox = new JComboBox(locations);
-        // AnnounceParser parser = new AnnounceParser();
-        // HashMap<String, String> map_locationsItems = new HashMap<>();
-        // try {
-        // MainSelectLocations mainSelectLocations = new
-        // MainSelectLocations("SELECT_ALL_LOCATIONS");
-        // parser.updateLocations(mainSelectLocations.getLocations());
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
-
-        // map_locationsItems.put(SELECT_ITEM, "0");
-        // Map<String, String> parsedLocations = parser.getParsedLocations();
-        // for (String key : parsedLocations.keySet()) {
-        // map_locationsItems.put(parsedLocations.get(key), key);
-        // }
-        // String[] cb_locationsItems = (String[])
-        // map_locationsItems.keySet().toArray(new String[0]);
-        // reorderWithDefaultOnTop(cb_locationsItems, SELECT_ITEM);
-        // @SuppressWarnings({ "rawtypes", "unchecked" })
-        // JComboBox locationComboBox = new JComboBox(cb_locationsItems);
-        // locationComboBox.setSelectedItem(SELECT_ITEM);
 
         JLabel tagLabel = new JLabel("Tag favori :");
         String tags[] = { SELECT_ITEM, "Concert", "Festival", "Séniors", "Couple", "Tout public", "Musée", "Peinture",
                 "Théatre", "Visite", "Adultes", "Chorale", "Enfants", "Jeunes" };
-        int tags_id[] = { 0, 1, 3, 7, 8, 9, 10, 11, 12, 13, 6, 2, 4, 5 };
+        String tags_id[] = { null, "1", "3", "7", "8", "9", "10", "11", "12", "13", "6", "2", "4", "5" };
         @SuppressWarnings({ "rawtypes", "unchecked" })
         JComboBox tagComboBox = new JComboBox(tags);
 
-        JButton subscribeButton = new JButton("S'INSCRIRE");
+        JButton subscribeButton = new JButton("UPDATE");
         subscribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -131,36 +72,35 @@ public class SubscribeView {
                         || lastNameTextField.getText().equals("")) {
                     JOptionPane.showMessageDialog(null, "ERROR: Missing data.");
                     return;
-                } else {
-                    try {
-                        MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails(
-                                "SELECT_ALL_USERS_EMAILS");
-                        Boolean testEmail = false;
-                        for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                            if (user.getEmail().equals(emailTextField.getText())) {
-                                testEmail = true;
-                            }
-                        }
-                        if (testEmail) {
-                            JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
-                        } else {
-                            new MainInsertUser("INSERT_USER",
-                                    firstNameTextField.getText(),
-                                    lastNameTextField.getText(), pseudoTextField.getText(),
-                                    emailTextField.getText(),
-                                    new String(passwordPasswordField.getPassword()),
-                                    locations_id[locationComboBox.getSelectedIndex()],
-                                    tags_id[tagComboBox.getSelectedIndex()]);
-                            frame.setVisible(false);
-                            frame.setEnabled(false);
-                            frame.repaint();
-                        }
-                    } catch (IOException | InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-
                 }
-
+                try {
+                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
+                    Boolean testEmail = false;
+                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
+                        if (user.getEmail().equals(emailTextField.getText())) {
+                            testEmail = true;
+                        }
+                    }
+                    if (testEmail) {
+                        JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
+                    } else {
+                        String message = "Prénom : " + firstNameTextField.getText()
+                                + ", Nom : " + lastNameTextField.getText()
+                                + ", Pseudo : " + pseudoTextField.getText()
+                                + ", Email : " + emailTextField.getText()
+                                + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
+                                + ", Quartier favori : " + locationComboBox.getSelectedItem()
+                                + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
+                        JOptionPane.showMessageDialog(null, message);
+                        // MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER",
+                        // firstNameTextField.getText(),
+                        // lastNameTextField.getText(), pseudoTextField.getText(),
+                        // emailTextField.getText(),
+                        // new String(passwordPasswordField.getPassword()));
+                    }
+                } catch (IOException | InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -187,7 +127,7 @@ public class SubscribeView {
         panel.add(tagComboBox);
 
         // set component bounds (only needed by Absolute Positioning)
-        titleLabel.setBounds(350, 50, 100, 25);
+        titleLabel.setBounds(300, 50, 500, 25);
         firstNameLabel.setBounds(100, 150, 100, 25);
         firstNameTextField.setBounds(200, 150, 200, 25);
         lastNameLabel.setBounds(100, 200, 100, 25);
