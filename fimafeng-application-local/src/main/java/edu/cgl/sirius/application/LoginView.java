@@ -18,8 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.cgl.sirius.business.dto.User;
+import edu.cgl.sirius.business.dto.UserLocation;
+import edu.cgl.sirius.business.dto.UserTag;
 import edu.cgl.sirius.client.MainSelectUsers;
-import edu.cgl.sirius.client.MainSelectUsersEmails;
+import edu.cgl.sirius.client.MainSelectUsersLocations;
+import edu.cgl.sirius.client.MainSelectUsersTags;
 
 /*
  * La création d'un profil utilisateur (avec des règles métiers pour vérifier le format de son e-mail, 
@@ -79,6 +82,23 @@ public class LoginView {
                         frame.setVisible(false);
                         frame.setEnabled(false);
                         frame.repaint();
+
+                        MainSelectUsersTags mainSelectUsersTags = new MainSelectUsersTags(
+                                "SELECT_ALL_USERS_TAGS");
+                        for (UserTag userTag : mainSelectUsersTags.getUserTags().getUserTags()) {
+                            if (userTag.getRef_user_id().equals(Application.connectedUser.getUser_id())) {
+                                Application.connectedUser.setTag(Integer.valueOf(userTag.getRef_tag_id()));
+                            }
+                        }
+                        MainSelectUsersLocations mainSelectUsersLocations = new MainSelectUsersLocations(
+                                "SELECT_ALL_USERS_LOCATIONS");
+                        for (UserLocation userLocation : mainSelectUsersLocations.getUserLocations()
+                                .getUserLocations()) {
+                            if (userLocation.getRef_user_id().equals(Application.connectedUser.getUser_id())) {
+                                Application.connectedUser
+                                        .setLocation(Integer.valueOf(userLocation.getRef_location_id()));
+                            }
+                        }
                     } else if (selectCredentialsUsers.getUsers().getUsers().isEmpty()) {
                         logger.info("User mail x pswd doesn't exist");
                         JOptionPane.showMessageDialog(null, "Compte inexistant ou mauvais indentifants");
