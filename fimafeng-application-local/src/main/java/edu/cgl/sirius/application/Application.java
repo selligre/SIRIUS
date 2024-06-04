@@ -273,6 +273,8 @@ public class Application {
             e.printStackTrace();
         }
 
+        headerPanel.add(statusCombox);
+
         String[] tags = (String[]) map_tagsItems.keySet().toArray(new String[0]);
         UtilsManager.reorderWithDefaultOnTop(tags, "-");
 
@@ -291,8 +293,6 @@ public class Application {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final JComboBox tagList5 = new JComboBox(tags);
         headerPanel.add(tagList5);
-
-        headerPanel.add(statusCombox);
 
         JButton filter_by_tag = new JButton("Filtrer par tag(s)");
         filter_by_tag.addActionListener(new ActionListener() {
@@ -424,7 +424,7 @@ public class Application {
 
         headerPanel.add(cross_filter);
 
-        JButton remove_filters = new JButton("Retirer tous les filtres");
+        JButton remove_filters = new JButton("RESET");
         remove_filters.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
