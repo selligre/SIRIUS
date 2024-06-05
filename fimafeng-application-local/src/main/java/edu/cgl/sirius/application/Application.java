@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.Announces;
+import edu.cgl.sirius.business.dto.NumberCount;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainSelectAnnounces;
 import edu.cgl.sirius.client.MainSelectAnnouncesLocation;
@@ -80,7 +81,9 @@ public class Application {
     int online;
     int offline;
 
-    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline };
+    MainSelectNumberCount count;
+
+    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline};
     final JComboBox<String> statusCombox = new JComboBox<>(status);
 
     public static void main(String[] args) {
@@ -322,8 +325,30 @@ public class Application {
             logger.info("Launch querry (locations for filters)");
             MainSelectLocations locationClient = new MainSelectLocations("SELECT_ALL_LOCATIONS");
             parser.updateLocations(locationClient.getLocations());
-            MainSelectNumberCount count = new MainSelectNumberCount("SELECT_NB_USERS");
-            System.out.println(count);
+            String nbUsers = "";
+            String nbLocations = "";
+            String nbTags = "";
+            
+            count = new MainSelectNumberCount("SELECT_NB_USERS");
+            for (final NumberCount numberCount : count.getNumberCounts().getNumberCounts()){
+                nbUsers = numberCount.getCount();
+            }
+
+            count = new MainSelectNumberCount("SELECT_NB_LOCATIONS");
+            for (final NumberCount numberCount : count.getNumberCounts().getNumberCounts()){
+                nbLocations = numberCount.getCount();
+            }
+
+            count = new MainSelectNumberCount("SELECT_NB_TAGS");
+            for (final NumberCount numberCount : count.getNumberCounts().getNumberCounts()){
+                nbTags = numberCount.getCount();
+            }
+
+            String message = "Nombre d'utilisateurs : " + nbUsers + "\n" +
+                            "Nombre de localisations : "+ nbLocations + "\n" + 
+                            "Nombre de tags : " + nbTags;
+            JOptionPane.showMessageDialog(null, message, "Informations", JOptionPane.INFORMATION_MESSAGE);
+
             logger.info("Query ended!");
 
         } catch (Exception e) {
@@ -367,10 +392,6 @@ public class Application {
         JButton cross_filter = new JButton("Filtrer par tag(s) et lieu");
         cross_filter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
-                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
-                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
                 try {
                     String selectedTagId1 = map_tagsItems.get(tagList1.getSelectedItem());
                     String selectedTagId2 = map_tagsItems.get(tagList2.getSelectedItem());
@@ -386,26 +407,10 @@ public class Application {
                     selectedTagIds.add(selectedTagId5);
 
                     String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
-
-                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
                     logger.debug(selectedLocation);
-
-                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
                     if (selectedLocation.equals("0")) {
-                        System.out.println("#################################################################");
-                        System.out.println();
-                        System.out.println("#################################################################");
-                        System.out.println("#################################################################");
-
                         filter_by_location.doClick();
                     } else {
-
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
                         MainSelectAnnouncesTagLocation client = new MainSelectAnnouncesTagLocation(
                                 "SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION",
                                 selectedTagIds, selectedLocation);
