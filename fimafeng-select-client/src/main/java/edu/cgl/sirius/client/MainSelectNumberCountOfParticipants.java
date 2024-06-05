@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
 
-public class MainSelectNumberCount {
+public class MainSelectNumberCountOfParticipants {
     private final static String LoggingLabel = "S e l e c t e r - C l i e n t";
     private final static Logger logger = LoggerFactory.getLogger(LoggingLabel);
     private final static String networkConfigFile = "network.yaml";
@@ -38,9 +38,17 @@ public class MainSelectNumberCount {
         return number;
     }
 
-    public MainSelectNumberCount(String requestOrder) throws IOException, InterruptedException {
+    public MainSelectNumberCountOfParticipants(String requestOrder, String announceId)
+            throws IOException, InterruptedException {
         final NetworkConfig networkConfig = ConfigLoader.loadConfig(NetworkConfig.class, networkConfigFile);
         logger.debug("Load Network config file : {}", networkConfig.toString());
+
+        Announce annId = new Announce();
+        annId.setAnnounce_id(announceId);
+
+        final ObjectMapper objectMapper2 = new ObjectMapper();
+        final String jsonifiedAnnounce = objectMapper2.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(annId);
 
         int birthdate = 0;
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -48,29 +56,13 @@ public class MainSelectNumberCount {
         final Request request = new Request();
         request.setRequestId(requestId);
         request.setRequestOrder(requestOrder);
+        request.setRequestContent(jsonifiedAnnounce);
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         final byte[] requestBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(request);
         LoggingUtils.logDataMultiLine(logger, Level.TRACE, requestBytes);
         final SelectAllNumberCountClientRequest clientRequest = new SelectAllNumberCountClientRequest(
                 networkConfig,
-                birthdate++, request, null, requestBytes);
+                birthdate++, request, annId, requestBytes);
         clientRequests.push(clientRequest);
-        while (!clientRequests.isEmpty()) {
-            final ClientRequest joinedClientRequest = clientRequests.pop();
-            joinedClientRequest.join();
-            logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
-            numberCounts = (NumberCounts) joinedClientRequest.getResult();
-            final AsciiTable asciiTable = new AsciiTable();
-            for (final NumberCount numberCount : numberCounts.getNumberCounts()) {
-                asciiTable.addRule();
-                asciiTable.addRow(numberCount.getCount());
-                // sBuilder.append(Location.getfirst_name() + "; " + Location.getName() + "; " +
-                // Location.getGroup() + "\n");
-            }
-            asciiTable.addRule();
-            // logger.debug("\n{}\n", asciiTable.render());
-            // logger.debug("\n{}\n", sBuilder.toString());
-        }
     }
-
 }

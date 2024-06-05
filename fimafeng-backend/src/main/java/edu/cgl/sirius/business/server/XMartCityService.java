@@ -65,10 +65,11 @@ public class XMartCityService {
         INSERT_USER(
                 "INSERT INTO users VALUES (DEFAULT, ?, ?, 'user', ?, ?, ?) RETURNING user_id;"),
         INSERT_USER_TAG("INSERT INTO users_tags VALUES (DEFAULT, ?::int, ?::int)"),
-        INSERT_USER_LOCATION("INSERT INTO users_locations VALUES (DEFAULT, ?::int, ?::int)");
+        INSERT_USER_LOCATION("INSERT INTO users_locations VALUES (DEFAULT, ?::int, ?::int)"),
 
         // UPDATE Queries
-        // TODO
+        UPDATE_ANNOUNCE(
+                "UPDATE announces SET status = ?, title = ?, description = ?, date_time_start = ?::timestamp, duration = ?::float, date_time_end = ?::timestamp, is_recurrent = ?::boolean, slots_number = ?::smallint, price = ?::float, ref_location_id = ?::int WHERE announce_id = ?::int;");
 
         private final String query;
 
@@ -393,14 +394,14 @@ public class XMartCityService {
                     mapper = new ObjectMapper();
                     NumberCounts nbCountsParticipants = new NumberCounts();
                     while (res.next()) {
-                        NumberCount count = new NumberCount().build(res);
+                        NumberCount count = new NumberCount(null).build(res);
+                        logger.info(count.getCount());
                         nbCountsParticipants.add(count);
                     }
-                    logger.info(res.toString());
-                    NumberCount nb = new NumberCount().build(res);
+                    mapper = new ObjectMapper();
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody(mapper.writeValueAsString(nb));
+                    response.setResponseBody(mapper.writeValueAsString(nbCountsParticipants));
                     System.out.println(response.getResponseBody());
                     break;
 
@@ -477,6 +478,28 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(user));
+                    System.out.println(response.getResponseBody());
+                    break;
+
+                case "UPDATE_ANNOUNCE":
+                    mapper = new ObjectMapper();
+                    Announce announceUpdate = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.UPDATE_ANNOUNCE.query);
+                    pstmt.setString(1, announceUpdate.getStatus());
+                    pstmt.setString(2, announceUpdate.getTitle());
+                    pstmt.setString(3, announceUpdate.getDescription());
+                    pstmt.setString(4, announceUpdate.getDate_time_start());
+                    pstmt.setString(5, announceUpdate.getDuration());
+                    pstmt.setString(6, announceUpdate.getDate_time_end());
+                    pstmt.setString(7, announceUpdate.getIs_recurrent());
+                    pstmt.setString(8, announceUpdate.getSlots_number());
+                    pstmt.setString(9, announceUpdate.getPrice());
+                    pstmt.setString(10, announceUpdate.getRef_location_id());
+                    pstmt.setString(11, announceUpdate.getAnnounce_id());
+                    pstmt.executeQuery();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(announceUpdate));
                     System.out.println(response.getResponseBody());
                     break;
 
