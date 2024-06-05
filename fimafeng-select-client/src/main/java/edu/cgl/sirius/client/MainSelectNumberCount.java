@@ -7,6 +7,8 @@ import edu.cgl.sirius.commons.LoggingUtils;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.NumberCount;
 import edu.cgl.sirius.business.dto.NumberCounts;
+import edu.cgl.sirius.business.dto.Tag;
+import edu.cgl.sirius.business.dto.Tags;
 import edu.cgl.sirius.client.commons.ClientRequest;
 import edu.cgl.sirius.client.commons.ConfigLoader;
 import edu.cgl.sirius.client.commons.NetworkConfig;
@@ -53,6 +55,22 @@ public class MainSelectNumberCount {
                 networkConfig,
                 birthdate++, request, null, requestBytes);
         clientRequests.push(clientRequest);
+        while (!clientRequests.isEmpty()) {
+            final ClientRequest joinedClientRequest = clientRequests.pop();
+            joinedClientRequest.join();
+            logger.debug("Thread {} complete.", joinedClientRequest.getThreadName());
+            numberCounts = (NumberCounts) joinedClientRequest.getResult();
+            final AsciiTable asciiTable = new AsciiTable();
+            for (final NumberCount numberCount : numberCounts.getNumberCounts()) {
+                asciiTable.addRule();
+                asciiTable.addRow(numberCount.getCount());
+                // sBuilder.append(Location.getfirst_name() + "; " + Location.getName() + "; " +
+                // Location.getGroup() + "\n");
+            }
+            asciiTable.addRule();
+            // logger.debug("\n{}\n", asciiTable.render());
+            // logger.debug("\n{}\n", sBuilder.toString());
+        }
     }
 
     public MainSelectNumberCount(String requestOrder, String announceId) throws IOException, InterruptedException {

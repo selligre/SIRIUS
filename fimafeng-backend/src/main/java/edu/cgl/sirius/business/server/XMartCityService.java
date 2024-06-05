@@ -52,7 +52,9 @@ public class XMartCityService {
                 "SELECT * FROM users u WHERE (email = ? and password = ?);"),
         SELECT_ALL_MATCHING_ANNOUNCES(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces WHERE title ~* ? OR description ~* ?;"),
-        SELECT_NB_USERS("SELECT COUNT(user_id) FROM users;"),
+        SELECT_NB_USERS("SELECT COUNT(*) FROM users;"),
+        SELECT_NB_LOCATIONS("SELECT COUNT(*) FROM locations;"),
+        SELECT_NB_TAGS("SELECT COUNT(*) FROM tags;"),
         SELECT_NB_PARTICIPATING_USERS(
                 "SELECT COUNT(ref_user_id) FROM user_participations WHERE ref_announce_id = ?;"),
 
@@ -340,16 +342,46 @@ public class XMartCityService {
                 case "SELECT_NB_USERS":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_NB_USERS.query);
-                    NumberCounts numberCounts = new NumberCounts();
+                    NumberCounts nbUsers = new NumberCounts();
                     if (res.next()) {
                         NumberCount numberCount = new NumberCount(null).build(res);
-                        numberCounts.add(numberCount);
+                        nbUsers.add(numberCount);
                     }
 
                     mapper = new ObjectMapper();
                     response = new Response();
                     response.setRequestId(request.getRequestId());
-                    response.setResponseBody(mapper.writeValueAsString(numberCounts));
+                    response.setResponseBody(mapper.writeValueAsString(nbUsers));
+                    break;
+
+                case "SELECT_NB_LOCATIONS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_NB_LOCATIONS.query);
+                    NumberCounts nBLocations = new NumberCounts();
+                    if (res.next()) {
+                        NumberCount numberCount = new NumberCount(null).build(res);
+                        nBLocations.add(numberCount);
+                    }
+
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(nBLocations));
+                    break;
+
+                case "SELECT_NB_TAGS":
+                    stmt = connection.createStatement();
+                    res = stmt.executeQuery(Queries.SELECT_NB_TAGS.query);
+                    NumberCounts nbTags = new NumberCounts();
+                    if (res.next()) {
+                        NumberCount numberCount = new NumberCount(null).build(res);
+                        nbTags.add(numberCount);
+                    }
+
+                    mapper = new ObjectMapper();
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(nbTags));
                     break;
 
                 case "SELECT_NB_PARTICIPATING_USERS":
