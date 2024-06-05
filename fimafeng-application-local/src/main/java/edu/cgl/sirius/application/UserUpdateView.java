@@ -3,20 +3,15 @@ package edu.cgl.sirius.application;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import edu.cgl.sirius.business.dto.User;
-import edu.cgl.sirius.client.MainSelectUsersEmails;
 
 public class UserUpdateView {
     public UserUpdateView() {
@@ -62,51 +57,53 @@ public class UserUpdateView {
         subscribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (firstNameTextField.getText().equals("")
-                        || lastNameTextField.getText().equals("")
-                        || pseudoTextField.getText().equals("")
-                        || emailTextField.getText().equals("")
-                        || !emailTextField.getText().contains("@")
-                        || new String(passwordPasswordField.getPassword()).equals("")
-                        || locationComboBox.getSelectedItem().equals(SELECT_ITEM)
-                        || lastNameTextField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(null, "ERROR: Missing data.");
-                    return;
-                }
-                try {
-                    MainSelectUsersEmails mainSelectUsersMails = new MainSelectUsersEmails("SELECT_ALL_USERS_EMAILS");
-                    Boolean testEmail = false;
-                    for (User user : mainSelectUsersMails.getUsers().getUsers()) {
-                        if (user.getEmail().equals(emailTextField.getText())) {
-                            testEmail = true;
-                        }
-                    }
-                    if (testEmail) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Email already used.");
-                    } else {
-                        String message = "Prénom : " + firstNameTextField.getText()
-                                + ", Nom : " + lastNameTextField.getText()
-                                + ", Pseudo : " + pseudoTextField.getText()
-                                + ", Email : " + emailTextField.getText()
-                                + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
-                                + ", Quartier favori : " + locationComboBox.getSelectedItem()
-                                + ", Tag favori : " + tags[tagComboBox.getSelectedIndex()];
-                        JOptionPane.showMessageDialog(null, message);
-                        // MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER",
-                        // firstNameTextField.getText(),
-                        // lastNameTextField.getText(), pseudoTextField.getText(),
-                        // emailTextField.getText(),
-                        // new String(passwordPasswordField.getPassword()));
-                    }
-                } catch (IOException | InterruptedException e1) {
-                    e1.printStackTrace();
-                }
+                // String message = "Prénom : " + firstNameTextField.getText()
+                // + ", Nom : " + lastNameTextField.getText()
+                // + ", Pseudo : " + pseudoTextField.getText()
+                // + ", Email : " + emailTextField.getText()
+                // + ", Mot de passe : " + new String(passwordPasswordField.getPassword())
+                // + ", Quartier favori ID : " + locations[locationComboBox.getSelectedIndex()]
+                // + ", Tag favori ID : " + tags[tagComboBox.getSelectedIndex()];
+                // JOptionPane.showMessageDialog(null, message);
+
+                // MainInsertUser mainInsertUser = new MainInsertUser("INSERT_USER",
+                // firstNameTextField.getText(),
+                // lastNameTextField.getText(), pseudoTextField.getText(),
+                // emailTextField.getText(),
+                // new String(passwordPasswordField.getPassword()));
+
             }
         });
+
+        firstNameTextField.setText("user_first_name");
+        firstNameTextField.setText(Application.getConnectedUser().getFirst_name());
+        lastNameTextField.setText(Application.getConnectedUser().getLast_name());
+        pseudoTextField.setText(Application.getConnectedUser().getDisplay_name());
+        emailTextField.setText(Application.getConnectedUser().getEmail());
+        passwordPasswordField.setText(Application.getConnectedUser().getPassword());
+        locationComboBox.setSelectedIndex(Application.getConnectedUser().getLocation());
+        tagComboBox.setSelectedIndex(Application.getConnectedUser().getTag());
 
         // adjust size and set layout
         panel.setPreferredSize(new Dimension(800, 600));
         panel.setLayout(null);
+
+        titleLabel.setEnabled(true);
+        firstNameLabel.setEnabled(true);
+        firstNameTextField.setEnabled(true);
+        lastNameLabel.setEnabled(true);
+        lastNameTextField.setEnabled(true);
+        pseudoLabel.setEnabled(true);
+        pseudoTextField.setEnabled(true);
+        emailLabel.setEnabled(true);
+        emailTextField.setEnabled(true);
+        passwordLabel.setEnabled(true);
+        passwordPasswordField.setEnabled(true);
+        locationLabel.setEnabled(true);
+        locationComboBox.setEnabled(true);
+        tagLabel.setEnabled(true);
+        tagComboBox.setEnabled(true);
+        subscribeButton.setEnabled(false);
 
         // add components
         panel.add(titleLabel);
@@ -127,7 +124,7 @@ public class UserUpdateView {
         panel.add(tagComboBox);
 
         // set component bounds (only needed by Absolute Positioning)
-        titleLabel.setBounds(300, 50, 500, 25);
+        titleLabel.setBounds(350, 50, 500, 25);
         firstNameLabel.setBounds(100, 150, 100, 25);
         firstNameTextField.setBounds(200, 150, 200, 25);
         lastNameLabel.setBounds(100, 200, 100, 25);
