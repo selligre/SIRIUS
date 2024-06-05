@@ -36,7 +36,9 @@ import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
 import edu.cgl.sirius.client.MainSelectNumberCount;
+import edu.cgl.sirius.client.MainSelectNumberCountOfParticipants;
 import edu.cgl.sirius.client.MainSelectUsers;
+import edu.cgl.sirius.client.MainUpdateAnnounce;
 import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.MainSelectTagsOfAnnounce;
 import edu.cgl.sirius.client.commons.UtilsManager;
@@ -77,6 +79,9 @@ public class FocusView extends JPanel {
     private JLabel lbl_datetimestart;
     private JCheckBox cbtn_recurrence;
     private DateTimePicker dtpicker_panel;
+
+    // Announce status
+    private JComboBox<String[]> cb_status;
 
     // Announce title
     private JLabel lbl_title;
@@ -187,6 +192,7 @@ public class FocusView extends JPanel {
         map_durationItems.put("1h30", 1.5);
         map_durationItems.put("2h00", 2.0);
 
+        String[] cb_statusItems = { "Publiée", "Brouillon", "Périmée", "Masquée", "Refusée" };
         String[] cb_durationsItems = { SELECT_ITEM, "15min", "30min", "45min", "1h00", "1h30", "2h00" };
 
         // construct components
@@ -207,6 +213,7 @@ public class FocusView extends JPanel {
         rbtn_service = new JRadioButton("Service");
         lbl_datetimestart = new JLabel("Date et heure de début :");
         cbtn_recurrence = new JCheckBox("Récurrent ?");
+        cb_status = new JComboBox(cb_statusItems);
         lbl_title = new JLabel("Titre :");
         tf_title = new JTextField(1);
         lbl_tags = new JLabel("Tags :");
@@ -360,26 +367,28 @@ public class FocusView extends JPanel {
         // define fonctionnalities
         btn_update.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // checkInputs();
+                logger.info("Update");
+                checkInputs();
+            }
+        });
+
+        btn_edit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logger.info("Edit");
+                setEditMod();
             }
         });
 
         try {
-            MainSelectNumberCount requestCount = new MainSelectNumberCount("SELECT_NB_PARTICIPATING_USERS",
+            String nb = "";
+            MainSelectNumberCountOfParticipants requestCount = new MainSelectNumberCountOfParticipants(
+                    "SELECT_NB_PARTICIPATING_USERS",
                     announce_focus.getAnnounce_id());
-            // Set<NumberCount> nc = requestCount.getNumberCounts().getNumberCounts();
-            // for (NumberCount n : nc) {
-            // System.out.println(n.getCount());
-            // }
-            // System.out.println("/////////");
-            // NumberCount[] res =
-            // requestCount.getNumberCounts().getNumberCounts().toArray(new NumberCount[0]);
-            // tf_nb_register.setText(res[0].getCount());
-            // for (NumberCount st : res) {
-            // System.out.println(st.getCount());
-
-            // }
-            // logger.info(res[0].getCount());
+            for (final NumberCount nbc : requestCount.getNumberCounts().getNumberCounts()) {
+                nb = nbc.getCount();
+            }
+            System.out.println(nb);
+            tf_nb_register.setText(nb);
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -403,6 +412,7 @@ public class FocusView extends JPanel {
         add(lbl_datetimestart);
         add(dtpicker_panel);
         add(cbtn_recurrence);
+        add(cb_status);
         add(lbl_title);
         add(tf_title);
         add(lbl_tags);
@@ -455,6 +465,7 @@ public class FocusView extends JPanel {
         dtpicker_panel.setBounds(630, 180, 200, 25);
         cbtn_recurrence.setBounds(870, 180, 100, 25);
         // TODO: ajouter combobox statut (en ligne, draft, masqué, etc.)
+        cb_status.setBounds(990, 180, 150, 25);
         lbl_title.setBounds(100, 230, 100, 25);
         tf_title.setBounds(140, 230, 1035, 25);
         lbl_tags.setBounds(100, 280, 100, 25);
@@ -500,16 +511,55 @@ public class FocusView extends JPanel {
         materialsButton.setEnabled(false);
         servicesButton.setEnabled(false);
         aroundMeButton.setEnabled(false);
+        btn_update.setVisible(false);
+        cb_status.setEnabled(false);
 
         // Display what should be displayed if connectedUser.Id == ref_owner_id or not
         if (!announce_focus.getRef_author_id().equals(Application.connectedUser.getUser_id())) {
-            btn_update.setVisible(false);
             btn_edit.setVisible(false);
             btn_see_registered.setVisible(false);
         } else {
             btn_register.setVisible(false);
         }
 
+    }
+
+    private void setEditMod() {
+        btn_edit.setVisible(false);
+        btn_update.setVisible(true);
+
+        tf_title.setEnabled(true);
+        tfa_description.setEnabled(true);
+        dtpicker_panel.setEnabled(true);
+        tf_price.setEnabled(true);
+        tf_slots.setEnabled(true);
+        cb_locations.setEnabled(true);
+        cb_durations.setEnabled(true);
+
+        cb_status.setEnabled(true);
+
+        for (JCheckBox box : list_tags_checkBoxs) {
+            box.setEnabled(true);
+        }
+    }
+
+    private void setViewMod() {
+        btn_edit.setVisible(true);
+        btn_update.setVisible(false);
+
+        tf_title.setEnabled(false);
+        tfa_description.setEnabled(false);
+        dtpicker_panel.setEnabled(false);
+        tf_price.setEnabled(false);
+        tf_slots.setEnabled(false);
+        cb_locations.setEnabled(false);
+        cb_durations.setEnabled(false);
+
+        cb_status.setEnabled(false);
+
+        for (JCheckBox box : list_tags_checkBoxs) {
+            box.setEnabled(false);
+        }
     }
 
     private void checkInputs() {
@@ -527,7 +577,7 @@ public class FocusView extends JPanel {
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());
             String date_time_start = dateFormat.format(dstart);
 
-            String status = "online";
+            String status = (String) cb_status.getSelectedItem();
             String title = checkTitle();
             ArrayList<String> list_tags_id = checkTags();
             String description = checkDescription();
@@ -549,12 +599,10 @@ public class FocusView extends JPanel {
             logger.info("Valid data");
             JOptionPane.showMessageDialog(this, "Donneés valides");
 
-            logger.info("Launching insert querry");
-            new MainInsertAnnounce("INSERT_ANNOUNCE", author_id, publication_date,
-                    status, "activité", title,
+            logger.info("Launching update querry");
+            new MainUpdateAnnounce("UPDATE_ANNOUNCE", announce_focus.getAnnounce_id(), status, title,
                     description, date_time_start, duration, date_time_end, is_recurrent,
-                    slot_number,
-                    slots_available, price, location_id, list_tags_id);
+                    slot_number, price, location_id, list_tags_id);
             logger.info("Querry ended!");
 
         } catch (DataFormatException e) {
@@ -565,7 +613,7 @@ public class FocusView extends JPanel {
             logger.warn("Error: " + e.getLocalizedMessage());
             // Todo
         }
-
+        setViewMod();
         logger.info("Insert ended");
 
     }
