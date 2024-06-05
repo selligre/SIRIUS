@@ -142,22 +142,21 @@ public class Application {
         // add component functions
         this.logoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // logger.info("Logo Button clicked");
+                logger.info("Logo Button clicked");
                 // JOptionPane.showMessageDialog(null, "Retour à la page d'accueil.");
                 selectSuggestions();
             }
         });
         this.createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
-
                 logger.info("Create Button clicked");
+                // JOptionPane.showMessageDialog(null, "Ajout d'une nouvelle entrée.");
                 changeViewToInsert();
             }
         });
         this.logOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // logger.info("LogOut Button clicked");
+                logger.info("LogOut Button clicked");
                 // JOptionPane.showMessageDialog(null, "Deconnexion de l'utilisateur.");
                 frame.setVisible(false);
                 frame.setEnabled(false);
@@ -168,7 +167,9 @@ public class Application {
         this.accountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logger.info("Account Button clicked");
-                JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " + connectedUser.getEmail());
+                // JOptionPane.showMessageDialog(null, "Accès aux détails de l'utilisateur : " +
+                // connectedUser.getEmail());
+                new UserUpdateView();
             }
         });
         this.searchButton.addActionListener(new ActionListener() {
@@ -186,7 +187,6 @@ public class Application {
         });
         this.activitiesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Activites Button clicked");
                 // JOptionPane.showMessageDialog(null, "Affichage des annonces d'activités.");
                 selectActivities();
@@ -194,21 +194,18 @@ public class Application {
         });
         this.materialsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Materials Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de matériels.");
             }
         });
         this.servicesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("Services Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces de services.");
             }
         });
         this.aroundMeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 logger.info("ArroundMe Button clicked");
                 JOptionPane.showMessageDialog(null, "Affichage des annonces autour d'un quartier.");
             }
