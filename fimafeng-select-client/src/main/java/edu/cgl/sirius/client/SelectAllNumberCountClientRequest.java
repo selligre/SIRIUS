@@ -13,7 +13,7 @@ import edu.cgl.sirius.commons.Request;
 public class SelectAllNumberCountClientRequest extends ClientRequest<Object, NumberCounts> {
 
     public SelectAllNumberCountClientRequest(
-            NetworkConfig networkConfig, int myBirthDate, Request request, NumberCount info, byte[] bytes)
+            NetworkConfig networkConfig, int myBirthDate, Request request, Object info, byte[] bytes)
             throws IOException {
         super(networkConfig, myBirthDate, request, info, bytes);
     }
