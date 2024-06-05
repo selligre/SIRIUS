@@ -53,6 +53,8 @@ public class XMartCityService {
         SELECT_ALL_MATCHING_ANNOUNCES(
                 "SELECT announce_id, ref_author_id, publication_date, status, type, title, description, date_time_start, duration, date_time_end, is_recurrent, slots_number, slots_available, price, ref_location_id FROM announces WHERE title ~* ? OR description ~* ?;"),
         SELECT_NB_USERS("SELECT COUNT(user_id) FROM users;"),
+        SELECT_NB_PARTICIPATING_USERS(
+                "SELECT COUNT(ref_user_id) FROM user_participations WHERE ref_announce_id = ?;"),
 
         // INSERT Queries
         INSERT_ANNOUNCE(
@@ -172,7 +174,6 @@ public class XMartCityService {
                     mapper = new ObjectMapper();
                     Announce announceL = mapper.readValue(request.getRequestBody(), Announce.class);
                     pstmt = connection.prepareStatement(Queries.SELECT_ANNOUNCES_FOR_LOCATION.query);
-                    // pstmt.setString(1, announceL.getRef_location_id());
                     pstmt.setInt(1, Integer.parseInt(announceL.getRef_location_id()));
                     res = pstmt.executeQuery();
                     mapper = new ObjectMapper();
@@ -335,7 +336,7 @@ public class XMartCityService {
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(userLocations));
                     break;
-                
+
                 case "SELECT_NB_USERS":
                     stmt = connection.createStatement();
                     res = stmt.executeQuery(Queries.SELECT_NB_USERS.query);
@@ -349,6 +350,26 @@ public class XMartCityService {
                     response = new Response();
                     response.setRequestId(request.getRequestId());
                     response.setResponseBody(mapper.writeValueAsString(numberCounts));
+                    break;
+
+                case "SELECT_NB_PARTICIPATING_USERS":
+                    mapper = new ObjectMapper();
+                    Announce announceP = mapper.readValue(request.getRequestBody(), Announce.class);
+                    pstmt = connection.prepareStatement(Queries.SELECT_NB_PARTICIPATING_USERS.query);
+                    pstmt.setInt(1, Integer.parseInt(announceP.getAnnounce_id()));
+                    res = pstmt.executeQuery();
+                    mapper = new ObjectMapper();
+                    NumberCounts nbCountsParticipants = new NumberCounts();
+                    while (res.next()) {
+                        NumberCount count = new NumberCount().build(res);
+                        nbCountsParticipants.add(count);
+                    }
+                    logger.info(res.toString());
+                    NumberCount nb = new NumberCount().build(res);
+                    response = new Response();
+                    response.setRequestId(request.getRequestId());
+                    response.setResponseBody(mapper.writeValueAsString(nb));
+                    System.out.println(response.getResponseBody());
                     break;
 
                 // INSERT QUERRIES

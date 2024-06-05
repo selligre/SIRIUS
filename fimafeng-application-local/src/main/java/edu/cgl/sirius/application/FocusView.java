@@ -31,9 +31,11 @@ import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 import edu.cgl.sirius.business.AnnounceParser;
 import edu.cgl.sirius.business.dto.Announce;
 import edu.cgl.sirius.business.dto.AnnounceTag;
+import edu.cgl.sirius.business.dto.NumberCount;
 import edu.cgl.sirius.business.dto.User;
 import edu.cgl.sirius.client.MainInsertAnnounce;
 import edu.cgl.sirius.client.MainSelectLocations;
+import edu.cgl.sirius.client.MainSelectNumberCount;
 import edu.cgl.sirius.client.MainSelectUsers;
 import edu.cgl.sirius.client.MainSelectTags;
 import edu.cgl.sirius.client.MainSelectTagsOfAnnounce;
@@ -361,6 +363,27 @@ public class FocusView extends JPanel {
                 // checkInputs();
             }
         });
+
+        try {
+            MainSelectNumberCount requestCount = new MainSelectNumberCount("SELECT_NB_PARTICIPATING_USERS",
+                    announce_focus.getAnnounce_id());
+            // Set<NumberCount> nc = requestCount.getNumberCounts().getNumberCounts();
+            // for (NumberCount n : nc) {
+            // System.out.println(n.getCount());
+            // }
+            // System.out.println("/////////");
+            // NumberCount[] res =
+            // requestCount.getNumberCounts().getNumberCounts().toArray(new NumberCount[0]);
+            // tf_nb_register.setText(res[0].getCount());
+            // for (NumberCount st : res) {
+            // System.out.println(st.getCount());
+
+            // }
+            // logger.info(res[0].getCount());
+
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
 
         // add components
         add(logoButton);
