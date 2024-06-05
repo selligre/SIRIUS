@@ -80,9 +80,8 @@ public class Application {
     int online;
     int offline;
 
-    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline};
+    String status[] = { "Statut", "En ligne : " + online, "Hors ligne : " + offline };
     final JComboBox<String> statusCombox = new JComboBox<>(status);
-
 
     public static void main(String[] args) {
         new Application();
@@ -371,10 +370,6 @@ public class Application {
         JButton cross_filter = new JButton("Filtrer par tag(s) et lieu");
         cross_filter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
-                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
-                System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
                 try {
                     String selectedTagId1 = map_tagsItems.get(tagList1.getSelectedItem());
                     String selectedTagId2 = map_tagsItems.get(tagList2.getSelectedItem());
@@ -390,26 +385,10 @@ public class Application {
                     selectedTagIds.add(selectedTagId5);
 
                     String selectedLocation = map_locationsItems.get(locationList.getSelectedItem());
-
-                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
                     logger.debug(selectedLocation);
-
-                    System.out.println("CALL CALL CALL CALL CALL CALL CALL CALL");
                     if (selectedLocation.equals("0")) {
-                        System.out.println("#################################################################");
-                        System.out.println();
-                        System.out.println("#################################################################");
-                        System.out.println("#################################################################");
-
                         filter_by_location.doClick();
                     } else {
-
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
-                        System.out.println("spliterspliterspliterspliterspliterspliterspliterspliter");
                         MainSelectAnnouncesTagLocation client = new MainSelectAnnouncesTagLocation(
                                 "SELECT_ANNOUNCES_FOR_TAG_AND_LOCATION",
                                 selectedTagIds, selectedLocation);
@@ -532,13 +511,13 @@ public class Application {
         online = 0;
         offline = 0;
         for (Announce announce : resultAnnounces.getAnnounces()) {
-            switch(announce.getStatus()){
+            switch (announce.getStatus()) {
                 case "online":
-                online += 1;
-                break;
+                    online += 1;
+                    break;
                 case "offline":
-                offline += 1;
-                break;
+                    offline += 1;
+                    break;
             }
             JButton btn = new JButton("Voir");
             btn.addActionListener(new ActionListener() {
