@@ -423,7 +423,7 @@ public class InsertView extends JPanel {
             Date dstart = Date.from(ldt_start.atZone(ZoneId.systemDefault()).toInstant());
             String date_time_start = dateFormat.format(dstart);
 
-            String status = "online";
+            String status = "Publiée";
             String title = checkTitle();
             ArrayList<String> list_tags_id = checkTags();
             String description = checkDescription();
