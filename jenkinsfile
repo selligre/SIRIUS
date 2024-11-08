@@ -1,4 +1,6 @@
 pipeline {
+    agent any
+
     stages {
         stage("Verify 👀") {
             steps {
@@ -21,12 +23,14 @@ pipeline {
         }
 
         stage("Deliver 🚚") {
-            // sh scp
+            sh "scripts/deploy.sh"
+            // scp
         }
 
 
         stage("Start 🚀") {
             // sh kill+launch
+            sh "scripts/start.sh"
         }
     }
 }
