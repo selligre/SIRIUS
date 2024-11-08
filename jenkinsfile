@@ -1,0 +1,32 @@
+pipeline {
+    stages {
+        stage("Verify 👀") {
+            steps {
+                sh "java -version"
+                sh "mvn -version"
+                sh "npm -version"
+            }
+        }
+
+        stage("Test 🧪") {
+            // mvn surefire biduletruc (Soon)
+        }
+
+        stage("Package 📦") {
+            steps {
+                sh "mvn compile"
+                sh "npm install"
+            }
+            // mvn clean compile/package
+        }
+
+        stage("Deliver 🚚") {
+            // sh scp
+        }
+
+
+        stage("Start 🚀") {
+            // sh kill+launch
+        }
+    }
+}
