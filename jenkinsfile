@@ -11,7 +11,9 @@ pipeline {
         }
 
         stage("Test 🧪") {
-            // mvn surefire biduletruc (Soon)
+            steps {
+                sh "mvn test"
+            }
         }
 
         stage("Package 📦") {
