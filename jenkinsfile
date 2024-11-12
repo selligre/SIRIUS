@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+        /*
         stage("Verify 👀") {
             steps {
                 sh "java -version"
@@ -9,6 +10,7 @@ pipeline {
                 sh "npm -version"
             }
         }
+        */
 
         stage("Test 🧪") {
             steps {
@@ -21,18 +23,18 @@ pipeline {
                 sh "mvn compile"
                 sh "npm install"
             }
-            // mvn clean compile/package
         }
 
         stage("Deliver 🚚") {
-            sh "scripts/deploy.sh"
-            // scp
+            steps {
+                sh "scripts/deploy.sh"
+            }
         }
 
-
         stage("Start 🚀") {
-            // sh kill+launch
-            sh "scripts/start.sh"
+            steps {
+                sh "scripts/start.sh"
+            }
         }
     }
 }
