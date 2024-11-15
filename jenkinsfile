@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        /*
+        
         stage("Verify 👀") {
             steps {
                 sh "java -version"
@@ -10,7 +10,7 @@ pipeline {
                 sh "npm -version"
             }
         }
-        */
+    
 
         stage("Test 🧪") {
             steps {
