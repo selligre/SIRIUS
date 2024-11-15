@@ -5,6 +5,7 @@ pipeline {
         /*
         stage("Verify 👀") {
             steps {
+                sh "git -version"
                 sh "java -version"
                 sh "mvn -version"
                 sh "npm -version"
