@@ -4,7 +4,7 @@ pipeline {
     stages {
 
         stage("Checkout") {
-            steps {
+            steps { // blbalbalblba
                 checkout scm
                 git branch: 'jenkins', url: 'https://github.com/BlooSkyd/Sirius.git', credentialsId: 'github-pat'
             }
