@@ -1,4 +1,4 @@
-package esiag.back;
+package fimafeng.back.proto_back;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

@@ -1,12 +1,13 @@
-package esiag.back;
+package fimafeng.back.proto_back;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class EsiagBackApplication {
+public class ProtoBackApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EsiagBackApplication.class, args);
+		SpringApplication.run(ProtoBackApplication.class, args);
 	}
+
 }
