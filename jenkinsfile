@@ -11,6 +11,7 @@ pipeline {
                 sh "npm -version"
             }
         }
+        // still trying
 
         stage("Test 🧪") {
             steps {
