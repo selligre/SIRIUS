@@ -106,23 +106,35 @@ export default function Announce() {
 
   const handleNewAnnounceSubmit = async (e) => {
     e.preventDefault();
-    if (!newAnnounce.title || !newAnnounce.description) {
-      alert('Please fill in at least title and description');
+  
+    // Vérifier les champs obligatoires
+    if (!newAnnounce.type || !newAnnounce.title) {
+      alert('Please fill in at least type and title');
       return;
     }
-    
-    console.log('Creating new announce:', newAnnounce);
-    axios.post(ADD_ANNOUNCE, newAnnounce).then((response) => {
+  
+    // Assurer que toutes les valeurs par défaut sont bien incluses
+    const announceToSubmit = {
+      ...newAnnounce,
+      status: newAnnounce.status || 'online', // Inclure le statut par défaut si manquant
+      type: newAnnounce.type || '', // Inclure un type vide si aucun type n'est spécifié
+    };
+  
+    console.log('Creating new announce:', announceToSubmit);
+  
+    try {
+      const response = await axios.post(ADD_ANNOUNCE, announceToSubmit);
       console.log('Created announce:', response.data);
       showNotification('Announce successfully created');
       setAnnounceData();
       resetNewAnnounce();
       setShowCreateForm(false);
-    }).catch(error => {
+    } catch (error) {
       console.error('Error creating announce:', error);
       alert("Error occurred while creating announce:" + error);
-    });
-  }
+    }
+  };
+  
 
   useEffect(() => {
     setAnnounceData();
@@ -245,7 +257,7 @@ export default function Announce() {
         <div className="btn-container">
           <button
             type="button"
-            className="btn btn-outline-primary"
+            className="btn btn-outline-primary"babouin
             onClick={() => setEditingId(announce.idAnnounce)}
           >Edit</button>
           <button
