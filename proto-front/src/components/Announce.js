@@ -130,8 +130,17 @@ export default function Announce() {
 
   const formatDateTime = (dateString) => {
     if (!dateString) return 'Invalid date';
+    
     try {
-      const date = new Date(dateString);
+      // Utilisation explicite pour extraire les composantes de la date
+      const [datePart, timePart] = dateString.split('T');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hours, minutes] = timePart.split(':').map(Number);
+      
+      // Création d'une date locale sans décalage UTC
+      const date = new Date(year, month - 1, day, hours, minutes);
+  
+      // Formatage de la date avec Intl
       return new Intl.DateTimeFormat('fr-FR', {
         day: '2-digit',
         month: '2-digit',
@@ -144,6 +153,7 @@ export default function Announce() {
       return 'Invalid date';
     }
   };
+  
 
   const calculateEndDateTime = (startDate, duration) => {
     if (!startDate || duration == null) return '';
@@ -166,7 +176,7 @@ export default function Announce() {
   
   
 
-  const handleFieldChange = (field, value) => {
+  const handleTimeChange = (field, value) => {
     const updatedAnnounce = { ...newAnnounce, [field]: value };
   
     if (field === 'dateTimeStart' || field === 'duration') {
@@ -421,7 +431,7 @@ export default function Announce() {
                     type="datetime-local"
                     className="form-control"
                     value={newAnnounce.dateTimeStart}
-                    onChange={(e) => handleFieldChange('dateTimeStart', e.target.value)}
+                    onChange={(e) => handleTimeChange('dateTimeStart', e.target.value)}
                   />
                 </td>
                 <td className="duration-cell">
@@ -430,7 +440,7 @@ export default function Announce() {
                       type="number"
                       className="form-control"
                       value={newAnnounce.duration}
-                      onChange={(e) => handleFieldChange('duration', parseFloat(e.target.value))}
+                      onChange={(e) => handleTimeChange('duration', parseFloat(e.target.value))}
                       step="0.5"
                       min="0"
                     />
