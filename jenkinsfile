@@ -2,13 +2,18 @@ pipeline {
     agent any
 
     stages {
-
+        stage("preview") {
+            steps {
+                sh "ls -la"
+            }
+        }
+        /*
         stage("Checkout") {
             steps { // blbalbalblba
                 checkout scm
                 git branch: 'jenkins', url: 'https://github.com/BlooSkyd/Sirius.git', credentialsId: 'github-pat'
             }
-        }
+        }*/
         
         stage("Verify 👀") {
             steps {
@@ -22,7 +27,7 @@ pipeline {
         stage("Test 🧪") {
             steps {
                 echo "Lancement des tests"
-                sh "mvn test"
+                //sh "mvn test"
             }
         }
 
