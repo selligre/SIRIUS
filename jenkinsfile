@@ -6,15 +6,7 @@ pipeline {
         stage ("Initialisation ⏳") {
             steps {
                 scripts {
-                    adr = switch(${env.BRANCH_NAME}) {
-                        case 'main': // PROD
-                            return "cgl-prod@172.31.252.155"
-
-                        case 'dev': // PRE-PROD
-                            return "cgl-preprod@172.31.250.67"
-                        default:
-                            return null
-                    }
+                    adr = getAdressFromBranch(env.BRANCH_NAME)
                 }
                 
                 sh '''
