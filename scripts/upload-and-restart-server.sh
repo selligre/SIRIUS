@@ -9,7 +9,7 @@ ssh_key=${PWD}/key
 ## Updating serveur
 # Getting java server PID
 echo -e '\033[107m\033[1;94m'Récupération du processus d\'execution du serveur...'\033[0m'
-server_pid=$(ssh -i ${ssh_key} cgl-server@172.31.249.69 pgrep java)
+server_pid=$(ssh -i ${ssh_key} cgl-server@172.31.249.69 pgrep java) 
 echo -e '\033[107m\033[1;92m'PID trouvé : $server_pid'\033[0m'
 
 # Stopping server
