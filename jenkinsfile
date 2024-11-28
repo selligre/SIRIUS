@@ -5,7 +5,6 @@ pipeline {
 
         stage ("Verify 👀") {
             steps {
-                echo "${GIT_CHECKOUT_DIR}"
                 echo "${BRANCH_NAME}"
                 echo "${WORKSPACE_TMP}"
                 echo "${WORKSPACE}"
