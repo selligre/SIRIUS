@@ -11,8 +11,8 @@ pipeline {
                 echo "Machine Cible: ${adr}"
                 sh '''
                     cd ${WORKSPACE}
-                    sudo chmod -R 755 ./proto-front
-                    sudo chmod -R 755 ./proto-back
+                    chmod -R 755 ./proto-front
+                    # chmod -R 755 ./proto-back
                 '''
             }
         }
