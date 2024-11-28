@@ -6,10 +6,12 @@ pipeline {
         stage("Test 🧪") {
             steps {
                 echo "$PWD"
-                sh "ls -la"
+                sh "ls"
+                sh "git branch"
 
                 echo "Lancement des tests BACK"
                 sh "cd proto-back"
+                sh "ls"
                 sh "mvn test"
 
                 echo "Lancement des tests FRONT"
