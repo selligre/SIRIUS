@@ -2,44 +2,36 @@ pipeline {
     agent any
 
     stages {
-        stage("preview") {
-            steps {
-                sh "ls -la"
-            }
-        }
-        /*
-        stage("Checkout") {
-            steps { // blbalbalblba
-                checkout scm
-                git branch: 'jenkins', url: 'https://github.com/BlooSkyd/Sirius.git', credentialsId: 'github-pat'
-            }
-        }*/
-        
-        stage("Verify 👀") {
-            steps {
-                sh "git --version"
-                sh "java -version"
-                sh "mvn -version"
-                sh "npm -version"
-            }
-        }
 
         stage("Test 🧪") {
             steps {
-                echo "Lancement des tests"
-                //sh "mvn test"
+                echo "$PWD"
+
+                echo "Lancement des tests BACK"
+                sh "cd proto-back"
+                sh "mvn test"
+
+                echo "Lancement des tests FRONT"
+                sh "cd ../proto-front"
+                sh "npm test"
             }
         }
 
         stage("Package 📦") {
             steps {
+                echo "Compilation du FRONT"
+                sh "npm run build"
+
+                echo "Compilation du BACK"
+                sh "cd ../proto-back"
                 sh "mvn compile"
-                sh "npm install"
             }
         }
 
         stage("Deliver 🚚") {
             steps {
+                echo "Livraison des fichiers (WIP)"
+                sh "cd .."
                 sh "scripts/deploy.sh"
             }
         }
