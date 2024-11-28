@@ -3,40 +3,37 @@ pipeline {
 
     stages {
 
-        stage ("Verify 👀") {
-            steps {
-                echo "${BRANCH_NAME}"
-                echo "${WORKSPACE_TMP}"
-                echo "${WORKSPACE}"
-            }
-        }
-
         stage("Test 🧪") {
             steps {
-                echo "$PWD"
-                sh "ls"
-                sh "git branch"
-
                 echo "Lancement des tests BACK"
-                sh "cd ${WORKSPACE}/proto-back"
-                sh "ls"
-                echo "$PWD"
-                sh "mvn test"
+                sh '''
+                    cd ${WORKSPACE}/proto-back/
+                    mvn test
+                '''
 
                 echo "Lancement des tests FRONT"
-                sh "cd ../proto-front"
-                sh "npm test"
+                sh '''
+                    cd ${WORKSPACE}/proto-front
+                    npm test
+                '''
             }
         }
 
         stage("Package 📦") {
             steps {
-                echo "Compilation du FRONT"
-                sh "npm run build"
 
                 echo "Compilation du BACK"
-                sh "cd ../proto-back"
-                sh "mvn compile"
+                sh '''
+                    cd ${WORKSPACE}/proto-back
+                    mvn clean package
+                '''
+
+                echo "Compilation du FRONT"
+                sh '''
+                    cd ${WORKSPACE}/proto-front
+                    npm run build
+                '''
+                
             }
         }
 
