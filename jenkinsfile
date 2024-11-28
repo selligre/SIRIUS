@@ -11,8 +11,8 @@ pipeline {
                 echo "Machine Cible: ${adr}"
                 sh '''
                     cd ${WORKSPACE}
-                    chmod -R 755 ./proto-front
-                    chmod -R 755 ./proto-back 
+                    sudo chmod -R 755 ./proto-front
+                    sudo chmod -R 755 ./proto-back
                 '''
             }
         }
@@ -29,7 +29,7 @@ pipeline {
                 sh '''
                     cd ${WORKSPACE}/proto-front
                     chmod +x ./node_modules/.bin/react-scripts
-                    # chmod -R 755 ./node_modules
+                    chmod -R 755 ./node_modules
                     rm -rf node_modules
                     npm install
                     npx update-browserslist-db@latest
