@@ -18,7 +18,7 @@ pipeline {
                 sh "git branch"
 
                 echo "Lancement des tests BACK"
-                sh "cd ${WORKSPACE}"
+                sh "cd ${WORKSPACE}/proto-back"
                 sh "ls"
                 echo "$PWD"
                 sh "mvn test"
