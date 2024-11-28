@@ -10,8 +10,9 @@ pipeline {
                 sh "git branch"
 
                 echo "Lancement des tests BACK"
-                sh "cd proto-back"
+                sh "cd ${WORKSPACE}"
                 sh "ls"
+                echo "$PWD"
                 sh "mvn test"
 
                 echo "Lancement des tests FRONT"
