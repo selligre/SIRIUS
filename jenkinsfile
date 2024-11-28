@@ -5,10 +5,10 @@ pipeline {
 
         stage ("Initialisation ⏳") {
             steps {
-                scripts {
+                script {
                     adr = getAdressFromBranch(env.BRANCH_NAME)
                 }
-                
+                echo "Machine Cible: ${adr}"
                 sh '''
                     cd ${WORKSPACE}
                     chmod -R 755 ./proto-front
