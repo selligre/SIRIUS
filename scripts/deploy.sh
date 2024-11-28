@@ -5,7 +5,7 @@ if [ $# -ne 1 ]: then
 fi
 
 # Définition de la connexion (mdp géré par clé SSH)
-cnx="cgl-server@172.31.2533.138"
+cnx="cgl-server@172.31.253.138"
 
 # Renommage de l'ancien fichier
 ssh "$cnx" mv "backend.jar" "backend.jar.old"
