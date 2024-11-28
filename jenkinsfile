@@ -6,6 +6,7 @@ pipeline {
         stage("Test 🧪") {
             steps {
                 echo "$PWD"
+                sh "ls -la"
 
                 echo "Lancement des tests BACK"
                 sh "cd proto-back"
