@@ -107,9 +107,13 @@ export default function Announce() {
   const handleNewAnnounceSubmit = async (e) => {
     e.preventDefault();
   
-    // Vérifier les champs obligatoires
-    if (!newAnnounce.type || !newAnnounce.title) {
-      alert('Please fill in at least type and title');
+    // Vérifier les champs obligatoires après suppression des espaces superflus
+    if (
+      !newAnnounce.type?.trim() || 
+      !newAnnounce.title?.trim() || 
+      !newAnnounce.description?.trim()
+    ) {
+      alert('Please ensure that type, title, and description are not empty or only spaces.');
       return;
     }
   
@@ -117,7 +121,9 @@ export default function Announce() {
     const announceToSubmit = {
       ...newAnnounce,
       status: newAnnounce.status || 'online', // Inclure le statut par défaut si manquant
-      type: newAnnounce.type || '', // Inclure un type vide si aucun type n'est spécifié
+      type: newAnnounce.type.trim(), // Supprimer les espaces superflus
+      title: newAnnounce.title.trim(),
+      description: newAnnounce.description.trim(),
     };
   
     console.log('Creating new announce:', announceToSubmit);
@@ -134,6 +140,7 @@ export default function Announce() {
       alert("Error occurred while creating announce:" + error);
     }
   };
+  
   
 
   useEffect(() => {
