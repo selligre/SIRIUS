@@ -73,9 +73,9 @@ pipeline {
             steps {
                 echo "Démarrage des modules"
                 sh '''
-                    ssh ${SCP_ADR} sudo systemctl restart backend.service
-                    ssh ${SCP_ADR} sudo cp -r build/* /var/www/html/
-                    ssh ${SCP_ADR} sudo systemctl restart apache2
+                    ssh ${SCP_ADR} "sudo -i && systemctl restart backend.service"
+                    ssh ${SCP_ADR} cp -r build/* /var/www/html/
+                    ssh ${SCP_ADR} "sudo -i && systemctl restart apache2"
                 '''
             }
         }
