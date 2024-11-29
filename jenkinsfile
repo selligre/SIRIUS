@@ -74,21 +74,22 @@ pipeline {
             steps {
                 echo "Démarrage des modules"
 
+                echo "Mise à jour du front"
                 sh '''
-                    echo "Mise à jour du front"
                     ssh ${SCP_ADR} rm -r /var/www/html/*
                     ssh ${SCP_ADR} cp -r build/* /var/www/html/
-
-                    echo "Mise à jour du back"
                     '''
+                
+                echo "Mise à jour du back"
                 script {
                     def backend_pid = sh "ssh ${SCP_ADR} pgrep java"
+                    echo backend_pid
                 }
                 
                 echo "${env.backend_pid}"
                 sh '''
                     if [ ! -n "${env.backend_pid}" ]; then
-                        echo "Backend PID:" ${env.backend_pid}
+                        echo "Backend PID: ${env.backend_pid}"
                         ssh ${SCP_ADR} kill ${env.backend_pid}
                     fi
                     ls -l
