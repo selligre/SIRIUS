@@ -9,10 +9,6 @@ pipeline {
 
         stage ("Initialisation ⏳") {
             steps {
-                script {
-                    adr = getAdressFromBranch(env.BRANCH_NAME)
-                }
-                echo "Machine Cible: ${adr}"
                 echo "Environment: ${SCP_ADR}"
                 sh '''
                     cd ${WORKSPACE}
