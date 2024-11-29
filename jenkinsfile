@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        SCP_ADR = getAdressFromBranch(env.BRANCH_NAME)
+    }
+
     stages {
 
         stage ("Initialisation ⏳") {
@@ -9,6 +13,7 @@ pipeline {
                     adr = getAdressFromBranch(env.BRANCH_NAME)
                 }
                 echo "Machine Cible: ${adr}"
+                echo "Environment: ${SCP_ADR}"
                 sh '''
                     cd ${WORKSPACE}
                     chmod -R 755 ./proto-front
@@ -62,8 +67,8 @@ pipeline {
                 echo "Livraison des fichiers"
                 sh '''
                     cd ${WORKSPACE}
-                    scp ./proto-back/target/*.jar ${adr}:
-                    scp -r ./proto-front/build/ ${adr}:
+                    scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    scp -r ./proto-front/build/ ${SCP_ADR}:
                 '''
             }
         }
