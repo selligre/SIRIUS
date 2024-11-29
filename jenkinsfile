@@ -77,7 +77,6 @@ pipeline {
                 echo "Mise à jour du front"
                 sh '''
                     ssh ${SCP_ADR} rm -r /var/www/html/*
-                    sleep 20
                     ssh ${SCP_ADR} cp -r build/* /var/www/html/
                     '''
                 
