@@ -6,14 +6,12 @@ import { GET_ANNOUNCES, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES, ADD_ANNOUNCE } fr
 export default function Announce() {
   const getCurrentDateTime = () => {
     const now = new Date();
-      // Récupération des composants de la date et de l'heure en fonction du fuseau horaire local
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     
-    // Retourne la date et l'heure au format attendu pour un champ datetime-local
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
@@ -100,14 +98,13 @@ export default function Announce() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setAnnounceData(); // Recharge les données originales depuis l'API
+    setAnnounceData();
   };
   
 
   const handleNewAnnounceSubmit = async (e) => {
     e.preventDefault();
   
-    // Vérifier les champs obligatoires après suppression des espaces superflus
     if (
       !newAnnounce.type?.trim() || 
       !newAnnounce.title?.trim() || 
@@ -117,11 +114,10 @@ export default function Announce() {
       return;
     }
   
-    // Assurer que toutes les valeurs par défaut sont bien incluses
     const announceToSubmit = {
       ...newAnnounce,
-      status: newAnnounce.status || 'online', // Inclure le statut par défaut si manquant
-      type: newAnnounce.type.trim(), // Supprimer les espaces superflus
+      status: newAnnounce.status || 'online',
+      type: newAnnounce.type.trim(),
       title: newAnnounce.title.trim(),
       description: newAnnounce.description.trim(),
     };
@@ -151,15 +147,12 @@ export default function Announce() {
     if (!dateString) return 'Invalid date';
     
     try {
-      // Utilisation explicite pour extraire les composantes de la date
       const [datePart, timePart] = dateString.split('T');
       const [year, month, day] = datePart.split('-').map(Number);
       const [hours, minutes] = timePart.split(':').map(Number);
       
-      // Création d'une date locale sans décalage UTC
       const date = new Date(year, month - 1, day, hours, minutes);
   
-      // Formatage de la date avec Intl
       return new Intl.DateTimeFormat('fr-FR', {
         day: '2-digit',
         month: '2-digit',
@@ -177,13 +170,10 @@ export default function Announce() {
   const calculateEndDateTime = (startDate, duration) => {
     if (!startDate || duration == null) return '';
     
-    // Créer une nouvelle date à partir de la date de départ (en heure locale)
     const start = new Date(startDate);
     
-    // Ajouter la durée en heures
-    const end = new Date(start.getTime() + duration * 60 * 60 * 1000); // Durée en millisecondes
+    const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
     
-    // Formater la date de fin au format 'YYYY-MM-DDTHH:mm' pour le champ datetime-local
     const year = end.getFullYear();
     const month = String(end.getMonth() + 1).padStart(2, '0');
     const day = String(end.getDate()).padStart(2, '0');
@@ -213,12 +203,10 @@ export default function Announce() {
     if (!dateString) return '';
     
     try {
-      // Extraire manuellement les composantes de la date et de l'heure
       const [datePart, timePart] = dateString.split('T');
       const [year, month, day] = datePart.split('-');
       const [hours, minutes] = timePart.split(':');
       
-      // Reconstruire le format attendu sans créer d'objet Date
       return `${year}-${month}-${day}T${hours}:${minutes}`;
     } catch (e) {
       console.error('Invalid date format:', dateString);
