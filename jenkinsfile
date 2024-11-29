@@ -82,14 +82,17 @@ pipeline {
                     '''
                 
                 echo "Mise à jour du back"
+                sh 'export BACKEND_PID=$(ssh ${SCP_ADR} "pgrep java")'
+                echo "PID: $BACKEND_PID"
+                /*
                 script {
                     def backend_pid = sh "ssh ${SCP_ADR} pgrep java"
                     echo backend_pid
                 }
+                */
                 
-                echo "${env.backend_pid}"
                 sh '''
-                    if [ ! -n "${env.backend_pid}" ]; then
+                    if [ ! -n "$BACKEND_PID" ]; then
                         echo "Backend PID: ${env.backend_pid}"
                         ssh ${SCP_ADR} kill ${env.backend_pid}
                     fi
