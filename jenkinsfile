@@ -85,7 +85,7 @@ pipeline {
                     def backend_pid = ssh ${SCP_ADR} pgrep java
                 }
                 
-                echo ${backend_pid}
+                echo "${backend_pid}"
                 sh '''
                     if [ ! -n "${backend_pid}" ]; then
                         echo "Backend PID:" ${backend_pid}
