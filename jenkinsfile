@@ -70,31 +70,29 @@ pipeline {
             }
         }
 
-        stage("Start 🚀") {
+        stage("Start front 🚀") {
             steps {
                 echo "Démarrage des modules"
 
                 echo "Mise à jour du front"
                 sh '''
                     ssh ${SCP_ADR} rm -r /var/www/html/*
-                    sleep 20
                     ssh ${SCP_ADR} cp -r build/* /var/www/html/
                     '''
                 
                 echo "Mise à jour du back"
                 sh 'export BACKEND_PID=$(ssh ${SCP_ADR} "pgrep java")'
+            }
+        }
+
+        stage ("Start back 🚀") {
+            steps {
                 echo "PID: $BACKEND_PID"
-                /*
-                script {
-                    def backend_pid = sh "ssh ${SCP_ADR} pgrep java"
-                    echo backend_pid
-                }
-                */
                 
                 sh '''
                     if [ ! -n "$BACKEND_PID" ]; then
-                        echo "Backend PID: ${env.backend_pid}"
-                        ssh ${SCP_ADR} kill ${env.backend_pid}
+                        echo "Backend PID: ${env.BACKEND_PID}"
+                        ssh ${SCP_ADR} kill ${env.BACKEND_PID}
                     fi
                     ls -l
                     ssh ${SCP_ADR} java -jar *.jar &
