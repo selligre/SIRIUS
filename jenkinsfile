@@ -91,7 +91,7 @@ pipeline {
                 }
                 
                 sh "ssh ${SCP_ADR} ls -l"
-                sh "ssh ${SCP_ADR} java -jar *.jar &"
+                sh "ssh ${SCP_ADR} java -jar proto-back-1.0-SNAPSHOT.jar &"
             }
         }
     }
