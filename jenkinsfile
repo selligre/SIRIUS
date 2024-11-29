@@ -81,7 +81,10 @@ pipeline {
 
                     echo "Mise à jour du back"
                     '''
-                backend_pid=$(ssh ${SCP_ADR} pgrep java)
+                script {
+                    def backend_pid = $(ssh ${SCP_ADR} pgrep java)
+                }
+                
                 echo ${backend_pid}
                 sh '''
                     if [ ! -n "${backend_pid}" ]; then
