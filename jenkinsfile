@@ -64,6 +64,7 @@ pipeline {
                 sh '''
                     cd ${WORKSPACE}
                     scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    ssh ${SCP_ADR} rm -r ./build/
                     scp -r ./proto-front/build/ ${SCP_ADR}:
                 '''
             }
@@ -75,7 +76,7 @@ pipeline {
 
                 sh '''
                     backend_pid=$(ssh ${SCP_ADR} pgrep java)
-                    if [ ! -z "${backend_pid}" ]; then
+                    if [ ! -n "${backend_pid}" ]; then
                         echo "Backend PID:" ${backend_pid}
                         ssh ${SCP_ADR} kill $backend_pid
                     fi
