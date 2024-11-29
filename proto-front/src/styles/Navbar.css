@@ -1,0 +1,62 @@
+/* Style global pour la barre de navigation */
+.nav {
+    background-color: #343a40; /* Couleur de fond sombre */
+    padding: 10px 20px;
+    top: 0;
+    margin: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre subtile */
+}
+
+body {
+    margin: 0; /* Supprime la marge par défaut du body */
+    padding: 0; /* Supprime le padding par défaut */
+    padding-top: 0; /* Ajoute un espacement en haut pour que le contenu ne soit pas caché sous la navbar */
+}
+
+/* Style des éléments de la navigation */
+.nav-item {
+    margin: 0 10px; /* Espacement horizontal entre les éléments */
+    list-style: none; /* Supprime les puces */
+}
+
+/* Style des liens de la navigation */
+.nav-link {
+    color: #ffffff; /* Texte blanc */
+    text-decoration: none; /* Pas de soulignement */
+    font-size: 18px; /* Taille de texte */
+    font-weight: 500; /* Texte semi-gras */
+    transition: color 0.3s ease; /* Transition douce pour le changement de couleur */
+}
+
+/* Couleur lors du survol */
+.nav-link:hover {
+    color: #ffc107; /* Jaune doré lors du survol */
+}
+
+/* Style pour l'élément actif (si vous utilisez des classes dynamiques plus tard) */
+.nav-link.active {
+    color: #ffc107;
+    font-weight: 700; /* Texte plus gras pour indiquer la page active */
+    border-bottom: 2px solid #ffc107; /* Liseré en bas */
+}
+
+/* Styles responsives */
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column; /* Empile les éléments verticalement sur petits écrans */
+        align-items: center; /* Centre les éléments */
+    }
+
+    .nav-item {
+        margin: 5px 0; /* Espacement vertical entre les éléments */
+    }
+
+    .nav-link {
+        font-size: 16px; /* Taille légèrement réduite pour petits écrans */
+    }
+}
+
+ul.nav.justify-content-center {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
