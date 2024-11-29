@@ -82,7 +82,7 @@ pipeline {
                     echo "Mise à jour du back"
                     '''
                 script {
-                    def backend_pid = $(ssh ${SCP_ADR} pgrep java)
+                    def backend_pid = ssh ${SCP_ADR} pgrep java
                 }
                 
                 echo ${backend_pid}
