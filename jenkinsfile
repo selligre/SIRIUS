@@ -74,6 +74,7 @@ pipeline {
                 echo "Démarrage des modules"
                 sh '''
                     backend_pid=$(ssh ${SCP_ADR} pgrep java)
+                    echo "Backend PID:" ${backend_pid}
                     ssh ${SCP_ADR} kill $backend_pid
                     ssh ${SCP_ADR} java -jar *.jar &
                     ssh ${SCP_ADR} rm -r /var/www/html/
