@@ -213,6 +213,27 @@ export default function Announce() {
       return '';
     }
   };
+
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const sortedAnnounces = [...announces].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+  
+    const key = sortConfig.key;
+    const order = sortConfig.direction === 'asc' ? 1 : -1;
+  
+    if (a[key] < b[key]) return -1 * order;
+    if (a[key] > b[key]) return 1 * order;
+    return 0;
+  });
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      const isSameKey = prev.key === key;
+      const direction = isSameKey && prev.direction === 'asc' ? 'desc' : 'asc';
+      return { key, direction };
+    });
+  };
   
   
 
@@ -515,26 +536,26 @@ export default function Announce() {
           ) : (
             <div className="table-container">
               <table className="table table-bordered table-hover">
-                <thead className="table-light">
-                  <tr>
-                    <th>Publication Date</th>
-                    <th>Status</th>
-                    <th>Type</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Start Date</th>
-                    <th>Duration</th>
-                    <th>End Date</th>
-                    <th>Recurrent</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
+              <thead className="table-light">
+                <tr>
+                  <th onClick={() => handleSort('publicationDate')}>Publication Date</th>
+                  <th onClick={() => handleSort('status')}>Status</th>
+                  <th onClick={() => handleSort('type')}>Type</th>
+                  <th onClick={() => handleSort('title')}>Title</th>
+                  <th onClick={() => handleSort('description')}>Description</th>
+                  <th onClick={() => handleSort('dateTimeStart')}>Start Date</th>
+                  <th onClick={() => handleSort('duration')}>Duration</th>
+                  <th onClick={() => handleSort('dateTimeEnd')}>End Date</th>
+                  <th>Recurrent</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
                 <tbody>
-                  {announces.map((announce, index) => (
+                  {sortedAnnounces.map((announce, index) => (
                     <tr key={index}>
-                      {editingId === announce.idAnnounce ? 
-                        renderEditRow(announce) : 
-                        renderReadOnlyRow(announce)}
+                      {editingId === announce.idAnnounce
+                        ? renderEditRow(announce)
+                        : renderReadOnlyRow(announce)}
                     </tr>
                   ))}
                 </tbody>
