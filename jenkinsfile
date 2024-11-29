@@ -62,7 +62,7 @@ pipeline {
                 echo "Livraison des fichiers"
                 sh '''
                     cd ${WORKSPACE}
-                    scp ./proto-back/target/*.jar ${adr}:backend.jar
+                    scp ./proto-back/target/proto-back-1.0-SNAPSHOT.jar ${adr}:backend.jar
                     scp ./proto-front/build/ ${adr}:
                 '''
             }
