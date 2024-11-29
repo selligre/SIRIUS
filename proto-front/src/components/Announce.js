@@ -84,17 +84,36 @@ export default function Announce() {
   }
 
   const updateAnnounce = async (announce) => {
-    console.log('Updating announce:', announce);
-    axios.post(UPDATE_ANNOUNCES, announce).then((response) => {
+    if (
+      !announce.type?.trim() || 
+      !announce.title?.trim() || 
+      !announce.description?.trim()
+    ) {
+      alert('Please ensure that type, title, and description are not empty or only spaces.');
+      return;
+    }
+  
+    const announceToUpdate = {
+      ...announce,
+      type: announce.type.trim(),
+      title: announce.title.trim(),
+      description: announce.description.trim(),
+    };
+  
+    console.log('Updating announce:', announceToUpdate);
+  
+    try {
+      const response = await axios.post(UPDATE_ANNOUNCES, announceToUpdate);
       console.log('Updated announce:', response.data);
-      showNotification('Announc successfully updated');
+      showNotification('Announce successfully updated');
       setEditingId(null);
       setAnnounceData();
-    }).catch(error => {
+    } catch (error) {
       console.error('Error updating announce:', error);
-      alert("Error occurred in updateAnnounce:" + error);
-    });
-  }
+      alert("Error occurred in updateAnnounce: " + error);
+    }
+  };
+  
 
   const handleCancelEdit = () => {
     setEditingId(null);
