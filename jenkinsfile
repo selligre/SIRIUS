@@ -83,8 +83,8 @@ pipeline {
                 echo "Mise à jour du back"
                 script {
                     def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
+                    echo "result: [$result]"
                     if (result.size() != '') {
-                        echo result
                         env.BACKEND_PID = result
                         sh (script: 'ssh ${SCP_ADR} "kill ${BACKEND_PID}"')
                     }
