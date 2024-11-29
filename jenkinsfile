@@ -9,7 +9,7 @@ pipeline {
 
         stage ("Initialisation ⏳") {
             steps {
-                echo "Environment: ${SCP_ADR}"
+                echo "\033[0;34mEnvironment: ${SCP_ADR}\033[0m"
                 sh '''
                     cd ${WORKSPACE}
                     chmod -R 755 ./proto-front
@@ -20,13 +20,13 @@ pipeline {
 
         stage("Test 🧪") {
             steps {
-                echo "Lancement des tests BACK"
+                echo "\033[0;34mLancement des tests BACK\033[0m"
                 sh '''
                     cd ${WORKSPACE}/proto-back/
                     # mvn test
                 '''
 
-                echo "Lancement des tests FRONT"
+                echo "\033[0;34mLancement des tests FRONT\033[0m"
                 sh '''
                     cd ${WORKSPACE}/proto-front
                     chmod +x ./node_modules/.bin/react-scripts
@@ -43,13 +43,13 @@ pipeline {
         stage("Package 📦") {
             steps {
 
-                echo "Compilation du BACK"
+                echo "\033[0;34mCompilation du BACK\033[0m"
                 sh '''
                     cd ${WORKSPACE}/proto-back
                     mvn clean package
                 '''
 
-                echo "Compilation du FRONT"
+                echo "\033[0;34mCompilation du FRONT\033[0m"
                 sh '''
                     cd ${WORKSPACE}/proto-front
                     npm run build
@@ -60,7 +60,7 @@ pipeline {
 
         stage("Deliver 🚚") {
             steps {
-                echo "Livraison des fichiers"
+                echo "\033[0;34mLivraison des fichiers\033[0m"
                 sh '''
                     cd ${WORKSPACE}
                     scp ./proto-back/target/*.jar ${SCP_ADR}:
@@ -71,7 +71,12 @@ pipeline {
 
         stage("Start 🚀") {
             steps {
-                echo "Démarrage des modules"
+                echo "\033[0;34mDémarrage des modules\033[0m"
+                sh '''
+                    sudo ssh ${SCP_ADR} sudo systemctl restart backend.service
+                    sudo ssh ${SCP_ADR} sudo cp -r build/* /var/www/html/
+                    sudo ssh ${SCP_ADR} sudo systemctl restart apache2
+                '''
             }
         }
     }
