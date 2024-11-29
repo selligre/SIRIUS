@@ -75,16 +75,20 @@ pipeline {
                 echo "Démarrage des modules"
 
                 sh '''
-                    backend_pid=$(ssh ${SCP_ADR} pgrep java)
+                    echo "Mise à jour du front"
+                    ssh ${SCP_ADR} rm -r /var/www/html/
+                    ssh ${SCP_ADR} cp -r build/* /var/www/html/
+
+                    echo "Mise à jour du back"
+                    '''
+                backend_pid=$(ssh "${SCP_ADR} pgrep java")
+                sh '''
                     if [ ! -n "${backend_pid}" ]; then
                         echo "Backend PID:" ${backend_pid}
                         ssh ${SCP_ADR} kill $backend_pid
                     fi
-
+                    ls -l
                     ssh ${SCP_ADR} java -jar *.jar &
-                    ssh ${SCP_ADR} rm -r /var/www/html/
-                    ssh ${SCP_ADR} cp -r build/* /var/www/html/
-                    # ssh ${SCP_ADR} "sudo -i && systemctl restart apache2"
                 '''
             }
         }
