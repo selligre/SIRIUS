@@ -81,22 +81,18 @@ pipeline {
                     '''
                 
                 echo "Mise à jour du back"
-                sh 'export BACKEND_PID=$(ssh ${SCP_ADR} "pgrep java")'
-            }
-        }
 
-        stage ("Start back 🚀") {
-            steps {
-                echo "PID: $BACKEND_PID"
+                script {
+                    def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
+                    if (result.size() != 0) {
+                        sh (script: 'ssh ${SCP_ADR} "kill $result"')
+                    }
+                }
+                // sh 'export BACKEND_PID=$(ssh ${SCP_ADR} "pgrep java")'
+            
+                //echo "PID: $BACKEND_PID"
                 
-                sh '''
-                    if [ ! -n "$BACKEND_PID" ]; then
-                        echo "Backend PID: ${env.BACKEND_PID}"
-                        ssh ${SCP_ADR} kill ${env.BACKEND_PID}
-                    fi
-                    ls -l
-                    ssh ${SCP_ADR} java -jar *.jar &
-                '''
+                sh "ssh ${SCP_ADR} java -jar *.jar &"
             }
         }
     }
