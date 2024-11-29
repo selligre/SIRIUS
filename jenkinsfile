@@ -64,27 +64,34 @@ pipeline {
                 sh '''
                     cd ${WORKSPACE}
                     scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    ssh ${SCP_ADR} rm -r ./build/
                     scp -r ./proto-front/build/ ${SCP_ADR}:
                 '''
             }
         }
 
-        stage("Start 🚀") {
+        stage("Start front 🚀") {
             steps {
                 echo "Démarrage des modules"
 
+                echo "Mise à jour du front"
                 sh '''
-                    backend_pid=$(ssh ${SCP_ADR} pgrep java)
-                    if [ ! -z "${backend_pid}" ]; then
-                        echo "Backend PID:" ${backend_pid}
-                        ssh ${SCP_ADR} kill $backend_pid
-                    fi
-
-                    ssh ${SCP_ADR} java -jar *.jar &
-                    ssh ${SCP_ADR} rm -r /var/www/html/
+                    ssh ${SCP_ADR} rm -r /var/www/html/*
                     ssh ${SCP_ADR} cp -r build/* /var/www/html/
-                    # ssh ${SCP_ADR} "sudo -i && systemctl restart apache2"
-                '''
+                    '''
+                
+                echo "Mise à jour du back"
+                script {
+                    def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
+                    echo "result: [$result]"
+                    if (result.size() != '') {
+                        env.BACKEND_PID = result
+                        sh (script: 'ssh ${SCP_ADR} "kill ${BACKEND_PID}"')
+                    }
+                }
+                
+                sh "ssh ${SCP_ADR} ls"
+                sh "ssh ${SCP_ADR} java -jar *.jar &"
             }
         }
     }
