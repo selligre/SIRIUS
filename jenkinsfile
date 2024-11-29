@@ -90,7 +90,7 @@ pipeline {
                     }
                 }
                 
-                sh "ssh ${SCP_ADR} ls"
+                sh "ssh ${SCP_ADR} ls -l"
                 sh "ssh ${SCP_ADR} java -jar *.jar &"
             }
         }
