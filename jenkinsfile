@@ -1,0 +1,95 @@
+pipeline {
+    agent any
+
+    environment {
+        SCP_ADR = getAdressFromBranch(env.BRANCH_NAME)
+    }
+
+    stages {
+
+        stage ("Initialisation ⏳") {
+            steps {
+                echo "Environment: ${SCP_ADR}"
+                sh '''
+                    cd ${WORKSPACE}
+                    chmod -R 755 ./proto-front
+                    # chmod -R 755 ./proto-back
+                '''
+            }
+        }
+
+        stage("Test 🧪") {
+            steps {
+                echo "Lancement des tests BACK"
+                sh '''
+                    cd ${WORKSPACE}/proto-back/
+                    # mvn test
+                '''
+
+                echo "Lancement des tests FRONT"
+                sh '''
+                    cd ${WORKSPACE}/proto-front
+                    chmod +x ./node_modules/.bin/react-scripts
+                    chmod -R 755 ./node_modules
+                    rm -rf node_modules
+                    npm install
+                    npx update-browserslist-db@latest
+                    npm install --save-dev @babel/plugin-proposal-private-property-in-object
+                    # npm test --passWithNoTests
+                '''
+            }
+        }
+
+        stage("Package 📦") {
+            steps {
+
+                echo "Compilation du BACK"
+                sh '''
+                    cd ${WORKSPACE}/proto-back
+                    mvn clean package
+                '''
+
+                echo "Compilation du FRONT"
+                sh '''
+                    cd ${WORKSPACE}/proto-front
+                    npm run build
+                '''
+                
+            }
+        }
+
+        stage("Deliver 🚚") {
+            steps {
+                echo "Livraison des fichiers"
+                sh '''
+                    cd ${WORKSPACE}
+                    scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    scp -r ./proto-front/build/ ${SCP_ADR}:
+                '''
+            }
+        }
+
+        stage("Start 🚀") {
+            steps {
+                echo "Démarrage des modules"
+                sh '''
+                    ssh ${SCP_ADR} sudo systemctl restart backend.service
+                    ssh ${SCP_ADR} sudo cp -r build/* /var/www/html/
+                    ssh ${SCP_ADR} sudo systemctl restart apache2
+                '''
+            }
+        }
+    }
+}
+
+def getAdressFromBranch(branchName) {
+    switch(branchName) {
+        case 'main': // PROD
+            return "cgl-prod@172.31.252.155"
+
+        case 'dev': // PRE-PROD
+            return "cgl-preprod@172.31.250.67"
+        default:
+            return null
+    }
+}
