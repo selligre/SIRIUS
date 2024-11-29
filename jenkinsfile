@@ -77,12 +77,12 @@ pipeline {
                 sh '''
                     echo "Mise à jour du front"
                     ssh ${SCP_ADR} rm -r /var/www/html/*
-                    ssh ${SCP_ADR} cp -r build/ /var/www/html/
+                    ssh ${SCP_ADR} cp -r build/* /var/www/html/
 
                     echo "Mise à jour du back"
                     '''
                 script {
-                    def backend_pid = ssh ${SCP_ADR} pgrep java
+                    def backend_pid = sh "ssh ${SCP_ADR} pgrep java"
                 }
                 
                 echo "${backend_pid}"
