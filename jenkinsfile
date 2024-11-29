@@ -1,48 +1,109 @@
 pipeline {
     agent any
 
+    environment {
+        SCP_ADR = getAdressFromBranch(env.BRANCH_NAME)
+    }
+
     stages {
 
-        stage("Checkout") {
-            steps { // blbalbalblba
-                checkout scm
-                git branch: 'jenkins', url: 'https://github.com/BlooSkyd/Sirius.git', credentialsId: 'github-pat'
-            }
-        }
-        
-        stage("Verify 👀") {
+        stage ("Initialisation ⏳") {
             steps {
-                sh "git -version"
-                sh "java -version"
-                sh "mvn -version"
-                sh "npm -version"
+                echo "Environment: ${SCP_ADR}"
+                sh '''
+                    cd ${WORKSPACE}
+                    chmod -R 755 ./proto-front
+                    # chmod -R 755 ./proto-back
+                '''
             }
         }
 
         stage("Test 🧪") {
             steps {
-                echo "Lancement des tests"
-                sh "mvn test"
+                echo "Lancement des tests BACK"
+                sh '''
+                    cd ${WORKSPACE}/proto-back/
+                    # mvn test
+                '''
+
+                echo "Lancement des tests FRONT"
+                sh '''
+                    cd ${WORKSPACE}/proto-front
+                    chmod +x ./node_modules/.bin/react-scripts
+                    chmod -R 755 ./node_modules
+                    rm -rf node_modules
+                    npm install
+                    npx update-browserslist-db@latest
+                    npm install --save-dev @babel/plugin-proposal-private-property-in-object
+                    # npm test --passWithNoTests
+                '''
             }
         }
 
         stage("Package 📦") {
             steps {
-                sh "mvn compile"
-                sh "npm install"
+
+                echo "Compilation du BACK"
+                sh '''
+                    cd ${WORKSPACE}/proto-back
+                    mvn clean package
+                '''
+
+                echo "Compilation du FRONT"
+                sh '''
+                    cd ${WORKSPACE}/proto-front
+                    npm run build
+                '''
+                
             }
         }
 
         stage("Deliver 🚚") {
             steps {
-                sh "scripts/deploy.sh"
+                echo "Livraison des fichiers"
+                sh '''
+                    cd ${WORKSPACE}
+                    scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    ssh ${SCP_ADR} rm -r ./build/
+                    scp -r ./proto-front/build/ ${SCP_ADR}:
+                '''
             }
         }
 
         stage("Start 🚀") {
             steps {
-                sh "scripts/start.sh"
+                echo "Démarrage des modules"
+
+                sh '''
+                    echo "Mise à jour du front"
+                    ssh ${SCP_ADR} rm -r /var/www/html/
+                    ssh ${SCP_ADR} cp -r build/* /var/www/html/
+
+                    echo "Mise à jour du back"
+                    '''
+                backend_pid=$(ssh ${SCP_ADR} pgrep java)
+                echo ${backend_pid}
+                sh '''
+                    if [ ! -n "${backend_pid}" ]; then
+                        echo "Backend PID:" ${backend_pid}
+                        ssh ${SCP_ADR} kill $backend_pid
+                    fi
+                    ls -l
+                    ssh ${SCP_ADR} java -jar *.jar &
+                '''
             }
         }
+    }
+}
+
+def getAdressFromBranch(branchName) {
+    switch(branchName) {
+        case 'main': // PROD
+            return "cgl-prod@172.31.252.155"
+
+        case 'dev': // PRE-PROD
+            return "cgl-preprod@172.31.250.67"
+        default:
+            return null
     }
 }

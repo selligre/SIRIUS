@@ -1,12 +1,12 @@
-import React from 'react';
-import logo from '../assets/logo.jpeg';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/App.css';
 
-export default function App() {
+function App() {
   return (
     <div className="App">
 
-        <img src={logo} alt="logo" />
     </div>
   );
 }
+
+export default App;
