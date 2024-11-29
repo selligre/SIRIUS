@@ -85,7 +85,9 @@ pipeline {
                 script {
                     def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
                     if (result.size() != 0) {
-                        sh (script: 'ssh ${SCP_ADR} "kill $result"')
+                        echo result
+                        env.BACKEND_PID = result
+                        sh (script: 'ssh ${SCP_ADR} "kill ${BACKEND_PID}"')
                     }
                 }
                 // sh 'export BACKEND_PID=$(ssh ${SCP_ADR} "pgrep java")'
