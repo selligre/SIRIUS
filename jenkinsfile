@@ -34,7 +34,7 @@ pipeline {
                     npm install
                     npx update-browserslist-db@latest
                     npm install --save-dev @babel/plugin-proposal-private-property-in-object
-                    // npm test --passWithNoTests
+                    # npm test --passWithNoTests
                 '''
             }
         }
@@ -62,8 +62,8 @@ pipeline {
                 echo "Livraison des fichiers"
                 sh '''
                     cd ${WORKSPACE}
-                    scp ./proto-back/target/*.jar ${adr}:backend.jar
-                    scp ./proto-front/build/ ${adr}:
+                    scp ./proto-back/target/*.jar ${adr}:
+                    scp -r ./proto-front/build/ ${adr}:
                 '''
             }
         }
