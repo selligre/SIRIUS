@@ -29,7 +29,7 @@ pipeline {
                 echo "Lancement des tests FRONT"
                 sh '''
                     cd ${WORKSPACE}/proto-front
-                    chmod +x ./node_modules/.bin/react-scripts
+                    #chmod +x ./node_modules/.bin/react-scripts
                     chmod -R 755 ./node_modules
                     rm -rf node_modules
                     npm install
