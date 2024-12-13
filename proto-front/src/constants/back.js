@@ -1,5 +1,10 @@
-export const LOCAL_HOST = 'http://172.31.253.138:8080';
+export const LOCAL_HOST = 'http://localhost:8080';
 export const LOCAL_HOST_ANNOUNCE = LOCAL_HOST + '/announce/';
 export const GET_ANNOUNCES = LOCAL_HOST_ANNOUNCE + 'all';
 export const ADD_ANNOUNCE = LOCAL_HOST_ANNOUNCE + 'add';
 export const UPDATE_ANNOUNCES = LOCAL_HOST_ANNOUNCE + 'update';
+
+export const LOCAL_HOST_LOCATION = LOCAL_HOST + '/location/';
+export const GET_LOCATIONS = LOCAL_HOST_LOCATION + 'all';
+export const ADD_LOCATION = LOCAL_HOST_LOCATION + 'add';
+export const UPDATE_LOCATIONS = LOCAL_HOST_LOCATION + 'update';

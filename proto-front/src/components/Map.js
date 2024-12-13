@@ -1,27 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import React, { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../styles/Map.css'
+import '../styles/Map.css';
+import { GET_LOCATIONS } from '../constants/back';
+import customPin from './PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
 
 const OSMMap = () => {
-    // Stockage des données GeoJSON dans un état
-    const [geoData, setGeoData] = useState([]);
+    const [locations, setLocations] = useState([]);
+    const mapRef = useRef();
 
     useEffect(() => {
-        // Appel à l'API pour récupérer les données
-        fetch('/api/osm-lines')
+        fetch(GET_LOCATIONS)
             .then(response => response.json())
-            .then(data => {
-                const parsedData = data.map(geojson => JSON.parse(geojson));
-                setGeoData(parsedData); // Mettre à jour l'état
-            })
-            .catch(error => console.error('Erreur lors de la récupération des données:', error));
+            .then(data => setLocations(data))
+            .catch(error => console.error('Erreur lors de la récupération des locations:', error));
     }, []);
 
     const bounds = [
         [48.7000, 2.3000], // Coin inférieur gauche
         [48.9000, 2.6000]  // Coin supérieur droit
     ];
+
+    const customIcon = L.icon({
+        iconUrl: customPin,
+        iconSize: [70, 70], // Adjust the size as needed
+        iconAnchor: [35, 70], // Adjust the icon anchor point as needed
+        popupAnchor: [0, -70] // Adjust the popup anchor point as needed
+    });
+
+    const handleMarkerClick = (lat, lng) => {
+        const map = mapRef.current;
+        if (map) {
+            map.setView([lat, lng], 17);
+        }
+    };
 
     return (
         <MapContainer
@@ -31,16 +44,24 @@ const OSMMap = () => {
             maxZoom={18}
             maxBounds={bounds}
             style={{ height: '100vh', width: '100%' }}
+            ref={mapRef}
         >
-            {/* Couche de fond OpenStreetMap */}
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="© OpenStreetMap contributors"
             />
 
-            {/* Ajouter des lignes GeoJSON */}
-            {geoData.map((geojson, index) => (
-                <GeoJSON key={index} data={geojson} style={{ color: 'blue' }} />
+            {locations.map(location => (
+                <Marker
+                    key={location.idLocation}
+                    position={[location.latitude, location.longitude]}
+                    icon={customIcon}
+                    eventHandlers={{
+                        click: () => handleMarkerClick(location.latitude, location.longitude),
+                    }}
+                >
+
+                </Marker>
             ))}
         </MapContainer>
     );
