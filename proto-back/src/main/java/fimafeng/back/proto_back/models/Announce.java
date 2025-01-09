@@ -1,6 +1,7 @@
 package fimafeng.back.proto_back.models;
 
 import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
@@ -9,7 +10,7 @@ public class Announce {
 
     // Getters and setters
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
