@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LocationRepository extends JpaRepository<Location, Long> {
+public interface LocationRepository extends JpaRepository<Location, Integer> {
     @Query(value="SELECT * FROM location AS s ORDER BY s.name DESC LIMIT 1", nativeQuery = true)
     Location findLastSampleByDate();
 
