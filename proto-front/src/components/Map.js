@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polygon } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
+import polygones from './data/polygones.json';
 import { GET_LOCATIONS } from '../constants/back';
 import customPin from './PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
 
@@ -16,11 +17,6 @@ const OSMMap = () => {
             .then(data => setLocations(data))
             .catch(error => console.error('Erreur lors de la récupération des locations:', error));
     }, []);
-
-    const bounds = [
-        [48.7000, 2.3000], // Coin inférieur gauche
-        [48.9000, 2.6000]  // Coin supérieur droit
-    ];
 
     const customIcon = L.icon({
         iconUrl: customPin,
@@ -36,13 +32,15 @@ const OSMMap = () => {
         }
     };
 
+    const colors = ['blue', 'red', 'green', 'purple', 'orange', 'yellow', 'pink', 'cyan', 'magenta', 'lime'];
+
     return (
         <MapContainer
             center={[48.79520917100231, 2.447223069760298]} // Centré sur Créteil L'Échat
-            zoom={17}
-            minZoom={15}
-            maxZoom={18}
-            maxBounds={bounds}
+            zoom={13}
+            //minZoom={13}
+            //maxZoom={18}
+            //maxBounds={}
             style={{ height: '100vh', width: '100%' }}
             ref={mapRef}
         >
@@ -53,15 +51,21 @@ const OSMMap = () => {
 
             {locations.map(location => (
                 <Marker
-                    key={location.idLocation}
+                    key={location.location_id}
                     position={[location.latitude, location.longitude]}
                     icon={customIcon}
                     eventHandlers={{
                         click: () => handleMarkerClick(location.latitude, location.longitude),
                     }}
-                >
+                />
+            ))}
 
-                </Marker>
+            {polygones.zones.map((zone, index) => (
+                <Polygon
+                    key={index}
+                    positions={zone.coordinates}
+                    color={colors[index % colors.length]}
+                />
             ))}
         </MapContainer>
     );
