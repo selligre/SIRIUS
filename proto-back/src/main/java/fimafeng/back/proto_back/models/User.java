@@ -3,7 +3,7 @@ package fimafeng.back.proto_back.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 public class User {
 
     // Getters and setters

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DistrictRepository extends JpaRepository<District, Integer> {
-    @Query(value="SELECT * FROM location AS s ORDER BY s.name DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM location AS s ORDER BY s.name DESC LIMIT 1", nativeQuery = true)
     District findLastSampleByDate();
 
 }

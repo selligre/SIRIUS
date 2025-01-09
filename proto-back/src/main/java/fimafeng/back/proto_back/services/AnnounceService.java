@@ -23,7 +23,7 @@ public class AnnounceService {
         return optionalAnnounce.orElse(null);
     }
 
-    public List<Announce> findAll(){
+    public List<Announce> findAll() {
         return announceRepository.findAll();
     }
 
@@ -32,15 +32,15 @@ public class AnnounceService {
         if (updatedAnnounce == null) {
             throw new IllegalArgumentException("The updated announce must not be null");
         }
-    
+
         int id = updatedAnnounce.getId();
-    
+
         // Vérifiez si l'annonce existe
         Optional<Announce> optionalAnnounce = announceRepository.findById(id);
         if (optionalAnnounce.isEmpty()) {
             return false; // Si l'annonce n'existe pas, retournez false
         }
-    
+
         // Mise à jour des champs de l'entité existante
         Announce announce = optionalAnnounce.get();
         announce.setPublicationDate(updatedAnnounce.getPublicationDate());
@@ -52,10 +52,10 @@ public class AnnounceService {
         announce.setDuration(updatedAnnounce.getDuration());
         announce.setDateTimeEnd(updatedAnnounce.getDateTimeEnd());
         announce.setIsRecurrent(updatedAnnounce.getIsRecurrent());
-    
+
         // Sauvegardez les modifications
         announceRepository.saveAndFlush(announce);
-    
+
         return true;
     }
 

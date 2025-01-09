@@ -23,7 +23,7 @@ public class DistrictService {
         return optionalLocation.orElse(null);
     }
 
-    public List<District> findAll(){
+    public List<District> findAll() {
         return locationRepository.findAll();
     }
 
@@ -32,22 +32,22 @@ public class DistrictService {
         if (updatedLocation == null) {
             throw new IllegalArgumentException("The updated announce must not be null");
         }
-    
+
         int id = updatedLocation.getId();
-    
+
         // Vérifiez si l'annonce existe
         Optional<District> optionalLocation = locationRepository.findById(id);
         if (optionalLocation.isEmpty()) {
             return false; // Si l'annonce n'existe pas, retournez false
         }
-    
+
         // Mise à jour des champs de l'entité existante
         District location = optionalLocation.get();
         location.setName(updatedLocation.getName());
-    
+
         // Sauvegardez les modifications
         locationRepository.saveAndFlush(location);
-    
+
         return true;
     }
 
