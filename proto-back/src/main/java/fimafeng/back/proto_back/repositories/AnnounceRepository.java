@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AnnounceRepository extends JpaRepository<Announce, Long> {
+public interface AnnounceRepository extends JpaRepository<Announce, Integer> {
     @Query(value="SELECT * FROM Sample AS s ORDER BY s.date_sample DESC LIMIT 1", nativeQuery = true)
     Announce findLastSampleByDate();
 

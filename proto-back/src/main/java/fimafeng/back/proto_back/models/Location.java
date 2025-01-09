@@ -1,12 +1,10 @@
 package fimafeng.back.proto_back.models;
 
-import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Data
 @Table(name = "location")
 public class Location {
 
@@ -23,5 +21,41 @@ public class Location {
 
     @Column(name = "latitude")
     private double latitude;
+
+
+    // Getters and setters
+    public Long getIdLocation() {
+        return idLocation;
+    }
+
+    public void setIdLocation(Long idLocation) {
+        this.idLocation = idLocation;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    
 
 }
