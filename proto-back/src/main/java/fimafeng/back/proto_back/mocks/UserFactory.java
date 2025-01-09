@@ -3,6 +3,7 @@ package fimafeng.back.proto_back.mocks;
 import com.github.javafaker.Faker;
 import fimafeng.back.proto_back.models.User;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -13,7 +14,11 @@ public class UserFactory extends User {
 
     Faker FAKER = new Faker(new Locale("fr-FR"));
 
+    List<Integer> distritsIdsList;
 
+    public UserFactory() {
+
+    }
 
 
     public User create() {
