@@ -14,26 +14,26 @@ public class AnnounceService {
     @Autowired
     private AnnounceRepository announceRepository;
 
-    public Announce saveAnnounce(Announce announce) {
+    public Announce save(Announce announce) {
         return announceRepository.save(announce);
     }
 
-    public Announce findByIdAnnounce(Long idAnnounce) {
+    public Announce findById(int idAnnounce) {
         Optional<Announce> optionalAnnounce = announceRepository.findById(idAnnounce);
         return optionalAnnounce.orElse(null);
     }
 
-    public List<Announce> findAllAnnounce(){
+    public List<Announce> findAll(){
         return announceRepository.findAll();
     }
 
-    public boolean updateAnnounce(Announce updatedAnnounce) {
-        // Vérifiez si l'objet ou son ID est null
-        if (updatedAnnounce == null || updatedAnnounce.getIdAnnounce() == null) {
-            throw new IllegalArgumentException("The updated announce or its ID must not be null");
+    public boolean update(Announce updatedAnnounce) {
+        // Vérifiez si l'objet est null
+        if (updatedAnnounce == null) {
+            throw new IllegalArgumentException("The updated announce must not be null");
         }
     
-        Long id = updatedAnnounce.getIdAnnounce();
+        int id = updatedAnnounce.getId();
     
         // Vérifiez si l'annonce existe
         Optional<Announce> optionalAnnounce = announceRepository.findById(id);
@@ -59,7 +59,7 @@ public class AnnounceService {
         return true;
     }
 
-    public boolean deleteAnnounce(Long idAnnounce) {
+    public boolean delete(int idAnnounce) {
         Optional<Announce> optionalAnnounce = announceRepository.findById(idAnnounce);
         if (optionalAnnounce.isPresent()) {
             optionalAnnounce.ifPresent(announce -> announceRepository.delete(announce));

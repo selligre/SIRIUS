@@ -17,25 +17,24 @@ public class AnnounceController {
     private AnnounceService announceService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Announce> findById(@PathVariable Long id){
-
-        return new ResponseEntity<>(announceService.findByIdAnnounce(id), HttpStatus.OK);
+    public ResponseEntity<Announce> findById(@PathVariable int id){
+        return new ResponseEntity<>(announceService.findById(id), HttpStatus.OK);
     }
 
-        @PostMapping("add")
+    @PostMapping("add")
     public ResponseEntity<Announce> addAnnounce(@RequestBody Announce announce) {
-        Announce createdAnnounce = announceService.saveAnnounce(announce);
+        Announce createdAnnounce = announceService.save(announce);
         return new ResponseEntity<>(createdAnnounce, HttpStatus.CREATED);
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<Announce>> findAllAnnounce(){
-        return new ResponseEntity<>(announceService.findAllAnnounce(), HttpStatus.OK);
+    public ResponseEntity<List<Announce>> findAll(){
+        return new ResponseEntity<>(announceService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("update")
-    public ResponseEntity<Announce> updateAnnounce(@RequestBody Announce announce){
-        boolean isUpdated = announceService.updateAnnounce(announce);
+    public ResponseEntity<Announce> update(@RequestBody Announce announce){
+        boolean isUpdated = announceService.update(announce);
         if(!isUpdated){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -43,11 +42,12 @@ public class AnnounceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteMapping(@PathVariable Long id){
-        boolean isRemoved = announceService.deleteAnnounce(id);
+    public ResponseEntity<Long> delete(@PathVariable int id){
+        boolean isRemoved = announceService.delete(id);
         if(!isRemoved){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return  new ResponseEntity<>(id, HttpStatus.OK);
+        return new ResponseEntity<>((long) id, HttpStatus.OK);
+
     }
 }
