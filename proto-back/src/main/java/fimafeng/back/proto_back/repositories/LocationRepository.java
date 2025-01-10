@@ -5,9 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    @Query(value="SELECT * FROM location AS s ORDER BY s.name DESC LIMIT 1", nativeQuery = true)
-    Location findLastSampleByDate();
+    @Query(value=" SELECT ref_district,COUNT(ref_district) AS count FROM location GROUP BY ref_district ORDER BY ref_district", nativeQuery = true)
+    List<LocationCountProjection> countOfLocation();
 
 }

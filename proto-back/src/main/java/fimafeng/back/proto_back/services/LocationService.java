@@ -1,10 +1,12 @@
 package fimafeng.back.proto_back.services;
 
 import fimafeng.back.proto_back.models.Location;
+import fimafeng.back.proto_back.repositories.LocationCountProjection;
 import fimafeng.back.proto_back.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +27,10 @@ public class LocationService {
 
     public List<Location> findAllLocation(){
         return locationRepository.findAll();
+    }
+
+    public List<LocationCountProjection> countOfLocation(){
+        return locationRepository.countOfLocation();
     }
 
     public boolean updateLocation(Location updatedLocation) {

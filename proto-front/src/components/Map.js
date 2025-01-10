@@ -1,14 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Polygon } from 'react-leaflet';
+import React, {useEffect, useState, useRef} from 'react';
+import {MapContainer, TileLayer, Marker, Polygon, useMap} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 import polygones from './data/polygones.json';
-import { GET_LOCATIONS } from '../constants/back';
+import deli from './data/deli.json';
+import {GET_LOCATIONS, GET_COUNT} from '../constants/back';
 import customPin from './PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
+    const [counts, setCounts] = useState([]);
+    const [zoomLevel, setZoomLevel] = useState(14);
     const mapRef = useRef();
 
     useEffect(() => {
@@ -16,11 +19,15 @@ const OSMMap = () => {
             .then(response => response.json())
             .then(data => setLocations(data))
             .catch(error => console.error('Erreur lors de la récupération des locations:', error));
+
+        fetch(GET_COUNT)
+            .then(response => response.json())
+            .then(data => setCounts(data))
+            .catch(error => console.error('Erreur lors de la récupération des counts:', error));
     }, []);
 
     const customIcon = L.icon({
-        iconUrl: customPin,
-        iconSize: [70, 70], // Adjust the size as needed
+        iconUrl: customPin, iconSize: [50, 50], // Adjust the size as needed
         iconAnchor: [35, 70], // Adjust the icon anchor point as needed
         popupAnchor: [0, -70] // Adjust the popup anchor point as needed
     });
@@ -28,20 +35,42 @@ const OSMMap = () => {
     const handleMarkerClick = (lat, lng) => {
         const map = mapRef.current;
         if (map) {
-            map.setView([lat, lng], 17);
+            map.setView([lat, lng], 18);
         }
     };
 
     const colors = ['blue', 'red', 'green', 'purple', 'orange', 'yellow', 'pink', 'cyan', 'magenta', 'lime'];
 
+    const MapEventHandler = () => {
+        const map = useMap();
+        useEffect(() => {
+            const onZoomEnd = () => {
+                setZoomLevel(map.getZoom());
+            };
+            map.on('zoomend', onZoomEnd);
+            return () => {
+                map.off('zoomend', onZoomEnd);
+            };
+        }, [map]);
+        return null;
+    };
+
+    const calculateCenter = (coordinates) => {
+        const latitudes = coordinates.map(coord => coord[0]);
+        const longitudes = coordinates.map(coord => coord[1]);
+        const latSum = latitudes.reduce((a, b) => a + b, 0);
+        const lngSum = longitudes.reduce((a, b) => a + b, 0);
+        return [latSum / latitudes.length, lngSum / longitudes.length];
+    };
+
     return (
         <MapContainer
-            center={[48.79520917100231, 2.447223069760298]} // Centré sur Créteil L'Échat
-            zoom={13}
-            //minZoom={13}
-            //maxZoom={18}
-            //maxBounds={}
-            style={{ height: '100vh', width: '100%' }}
+            center={[48.7856883564271, 2.4577914299514134]} // Centré sur Créteil L'Échat
+            zoom={14}
+            minZoom={14}
+            maxZoom={18}
+            maxBounds={deli.zone}
+            style={{height: '100vh', width: '100%'}}
             ref={mapRef}
         >
             <TileLayer
@@ -49,7 +78,24 @@ const OSMMap = () => {
                 attribution="© OpenStreetMap contributors"
             />
 
-            {locations.map(location => (
+            <MapEventHandler />
+
+            {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
+                const center = calculateCenter(zone.coordinates);
+                const count = counts.find(c => c.ref_district === zone.id)?.count || 0;
+                return (
+                    <React.Fragment key={index}>
+                        <Polygon
+                            positions={zone.coordinates}
+                            color={colors[index % colors.length]}
+                            fillOpacity={0.5}
+                        />
+                        <Marker position={center} icon={L.divIcon({className: 'count-marker', html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`})} />
+                    </React.Fragment>
+                );
+            })}
+
+            {zoomLevel >= 16 && locations.map(location => (
                 <Marker
                     key={location.location_id}
                     position={[location.latitude, location.longitude]}
@@ -57,14 +103,6 @@ const OSMMap = () => {
                     eventHandlers={{
                         click: () => handleMarkerClick(location.latitude, location.longitude),
                     }}
-                />
-            ))}
-
-            {polygones.zones.map((zone, index) => (
-                <Polygon
-                    key={index}
-                    positions={zone.coordinates}
-                    color={colors[index % colors.length]}
                 />
             ))}
         </MapContainer>

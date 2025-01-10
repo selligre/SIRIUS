@@ -11,7 +11,7 @@ import java.util.Date;
 public class Announce {
 
     @Id
-    @Column(name="announce_id")
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idAnnounce;
 

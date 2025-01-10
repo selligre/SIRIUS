@@ -24,4 +24,7 @@ public class Location {
     @Column(name = "latitude")
     private double latitude;
 
+    @Column(name = "ref_district")
+    private int ref_district;
+
 }

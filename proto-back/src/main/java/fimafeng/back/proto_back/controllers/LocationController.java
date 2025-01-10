@@ -1,12 +1,14 @@
 package fimafeng.back.proto_back.controllers;
 
 import fimafeng.back.proto_back.models.Location;
+import fimafeng.back.proto_back.repositories.LocationCountProjection;
 import fimafeng.back.proto_back.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,6 +33,11 @@ public class LocationController {
     @GetMapping("all")
     public ResponseEntity<List<Location>> findAllLocation(){
         return new ResponseEntity<>(locationService.findAllLocation(), HttpStatus.OK);
+    }
+
+    @GetMapping("count")
+    public ResponseEntity<List<LocationCountProjection>> countOfLocation(){
+        return new ResponseEntity<>(locationService.countOfLocation(), HttpStatus.OK);
     }
 
     @PostMapping("update")
