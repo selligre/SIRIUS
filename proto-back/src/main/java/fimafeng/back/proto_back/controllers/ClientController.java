@@ -1,8 +1,10 @@
 package fimafeng.back.proto_back.controllers;
 
+import fimafeng.back.proto_back.implementations.mocks.ClientFactory;
 import fimafeng.back.proto_back.implementations.profiles.ClientProfileImplementation;
 import fimafeng.back.proto_back.models.Client;
 import fimafeng.back.proto_back.services.ClientService;
+import fimafeng.back.proto_back.services.DistrictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,9 @@ import java.util.List;
 public class ClientController {
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private DistrictService districtService;
 
     @GetMapping("/id")
     public ResponseEntity<Client> getClient(@RequestParam("id") int id) {
@@ -54,6 +59,13 @@ public class ClientController {
     public ResponseEntity<Client> buildClientProfiles() {
         new ClientProfileImplementation(clientService);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("generate")
+    public ResponseEntity<Client> generateClient() {
+        ClientFactory cf = new ClientFactory(districtService);
+        Client generatedClient = clientService.save(cf.generate());
+        return new ResponseEntity<>(generatedClient, HttpStatus.CREATED);
     }
 
 }
