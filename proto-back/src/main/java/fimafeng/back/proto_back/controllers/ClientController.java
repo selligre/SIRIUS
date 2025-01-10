@@ -52,7 +52,7 @@ public class ClientController {
 
     @GetMapping("profiles")
     public ResponseEntity<Client> buildClientProfiles() {
-        new ClientProfileImplementation();
+        new ClientProfileImplementation(clientService);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
