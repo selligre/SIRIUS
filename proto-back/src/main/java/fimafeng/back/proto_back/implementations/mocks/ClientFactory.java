@@ -3,7 +3,6 @@ package fimafeng.back.proto_back.implementations.mocks;
 import com.github.javafaker.Faker;
 import fimafeng.back.proto_back.models.Client;
 import fimafeng.back.proto_back.models.District;
-import fimafeng.back.proto_back.services.ClientService;
 import fimafeng.back.proto_back.services.DistrictService;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +66,7 @@ public class ClientFactory extends Client {
         email += faker.internet().domainName();
         client.setEmail(email.toLowerCase());
         client.setDistrict(districtsListWeighted.get(faker.random().nextInt(districtsListWeighted.size())));
-        LOGGER.info("Random client generated: " + client.toString());
+        LOGGER.info("Random client generated: " + client);
         return client;
 
     }
