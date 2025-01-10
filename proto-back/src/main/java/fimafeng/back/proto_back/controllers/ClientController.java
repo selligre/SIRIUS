@@ -3,6 +3,7 @@ package fimafeng.back.proto_back.controllers;
 import fimafeng.back.proto_back.implementations.profiles.ClientProfileImplementation;
 import fimafeng.back.proto_back.models.Client;
 import fimafeng.back.proto_back.services.ClientService;
+import fimafeng.back.proto_back.services.ClientTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,9 @@ import java.util.List;
 public class ClientController {
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private ClientTagService clientTagService;
 
     @GetMapping("/id")
     public ResponseEntity<Client> getClient(@RequestParam("id") int id) {
@@ -52,7 +56,7 @@ public class ClientController {
 
     @GetMapping("profiles")
     public ResponseEntity<Client> buildClientProfiles() {
-        new ClientProfileImplementation(clientService);
+        new ClientProfileImplementation(clientService, clientTagService);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

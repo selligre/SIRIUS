@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "client")
 public class Client {
 
-    // Getters and setters
+    // Columns
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
