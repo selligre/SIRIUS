@@ -14,7 +14,7 @@ const OSMMap = () => {
     const [zoomLevel, setZoomLevel] = useState(14);
     const mapRef = useRef();
 
-    useEffect(() => {
+    const fetchData = () => {
         fetch(GET_LOCATIONS)
             .then(response => response.json())
             .then(data => setLocations(data))
@@ -24,6 +24,12 @@ const OSMMap = () => {
             .then(response => response.json())
             .then(data => setCounts(data))
             .catch(error => console.error('Erreur lors de la récupération des counts:', error));
+    };
+
+    useEffect(() => {
+        fetchData();
+        const interval = setInterval(fetchData, 1000);
+        return () => clearInterval(interval);
     }, []);
 
     const customIcon = L.icon({
@@ -63,6 +69,23 @@ const OSMMap = () => {
         return [latSum / latitudes.length, lngSum / longitudes.length];
     };
 
+    const getOpacity = (count, minCount, maxCount) => {
+        if (maxCount === minCount) return 0.9;
+        const opacity = (count - minCount) / (maxCount - minCount);
+        return Math.max(0.2, Math.min(0.9, opacity)); // Clamp between 0 and 1
+    };
+
+    useEffect(() => {
+        if (counts.length > 0) {
+            const minCount = Math.min(...counts.map(c => c.count));
+            const maxCount = Math.max(...counts.map(c => c.count));
+            console.log('Min Count:', minCount, 'Max Count:', maxCount);
+        }
+    }, [counts]);
+
+    const minCount = counts.length > 0 ? Math.min(...counts.map(c => c.count)) : 0;
+    const maxCount = counts.length > 0 ? Math.max(...counts.map(c => c.count)) : 1;
+
     return (
         <MapContainer
             center={[48.7856883564271, 2.4577914299514134]} // Centré sur Créteil L'Échat
@@ -83,13 +106,20 @@ const OSMMap = () => {
             {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
                 const center = calculateCenter(zone.coordinates);
                 const count = counts.find(c => c.ref_district === zone.id)?.count || 0;
+                const opacity = getOpacity(count, minCount, maxCount);
+                console.log('Zone:', zone.id, 'Count:', count, 'Opacity:', opacity);
                 return (
                     <React.Fragment key={index}>
                         <Polygon
+                            key={index}
                             positions={zone.coordinates}
-                            color={colors[index % colors.length]}
-                            fillOpacity={0.5}
+                            pathOptions={{
+                                color: colors[index % colors.length],
+                                fillColor: 'magenta',
+                                fillOpacity: opacity,
+                            }}
                         />
+
                         <Marker position={center} icon={L.divIcon({className: 'count-marker', html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`})} />
                     </React.Fragment>
                 );

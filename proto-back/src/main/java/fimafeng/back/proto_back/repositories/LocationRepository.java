@@ -9,7 +9,11 @@ import java.util.List;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    @Query(value=" SELECT ref_district,COUNT(ref_district) AS count FROM location GROUP BY ref_district ORDER BY ref_district", nativeQuery = true)
+    @Query(value="SELECT d.id AS ref_district, COUNT(l.ref_district) AS count " +
+            "FROM district d " +
+            "LEFT JOIN location l ON d.id = l.ref_district " +
+            "GROUP BY d.id " +
+            "ORDER BY d.id", nativeQuery = true)
     List<LocationCountProjection> countOfLocation();
 
 }
