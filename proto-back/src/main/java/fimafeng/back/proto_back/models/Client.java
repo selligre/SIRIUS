@@ -3,8 +3,8 @@ package fimafeng.back.proto_back.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "`user`")
-public class User {
+@Table(name = "client")
+public class Client {
 
     // Getters and setters
     @Id
@@ -26,7 +26,7 @@ public class User {
 
     @Override
     public String toString() {
-        String res = "User[";
+        String res = "Client[";
         res += "ID: " + id + ", ";
         res += "firstName: " + firstName + ", ";
         res += "lastName: " + lastName + ", ";
