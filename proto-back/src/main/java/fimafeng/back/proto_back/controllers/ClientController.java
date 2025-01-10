@@ -4,6 +4,7 @@ import fimafeng.back.proto_back.implementations.mocks.ClientFactory;
 import fimafeng.back.proto_back.implementations.profiles.ClientProfileImplementation;
 import fimafeng.back.proto_back.models.Client;
 import fimafeng.back.proto_back.services.ClientService;
+import fimafeng.back.proto_back.services.ClientTagService;
 import fimafeng.back.proto_back.services.DistrictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,9 @@ import java.util.List;
 public class ClientController {
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private ClientTagService clientTagService;
 
     @Autowired
     private DistrictService districtService;
@@ -57,7 +61,7 @@ public class ClientController {
 
     @GetMapping("profiles")
     public ResponseEntity<Client> buildClientProfiles() {
-        new ClientProfileImplementation(clientService);
+        new ClientProfileImplementation(clientService, clientTagService);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
