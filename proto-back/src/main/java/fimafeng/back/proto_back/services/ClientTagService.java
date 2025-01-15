@@ -17,6 +17,10 @@ public class ClientTagService {
         return clientTagRepository.save(clientTag);
     }
 
+
+    public List<ClientTag> saveAll(List<ClientTag> clientTags) { return clientTagRepository.saveAll(clientTags); }
+
+
     public ClientTag findById(int idClientTag) {
         Optional<ClientTag> optionalClientTag = clientTagRepository.findById(idClientTag);
         return optionalClientTag.orElse(null);

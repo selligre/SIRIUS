@@ -3,9 +3,11 @@ package fimafeng.back.proto_back.controllers;
 import fimafeng.back.proto_back.implementations.mocks.ClientFactory;
 import fimafeng.back.proto_back.implementations.profiles.ClientProfileImplementation;
 import fimafeng.back.proto_back.models.Client;
+import fimafeng.back.proto_back.models.ClientTag;
 import fimafeng.back.proto_back.services.ClientService;
 import fimafeng.back.proto_back.services.ClientTagService;
 import fimafeng.back.proto_back.services.DistrictService;
+import fimafeng.back.proto_back.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +18,15 @@ import java.util.List;
 @RestController
 @RequestMapping("client")
 public class ClientController {
+
     @Autowired
     private ClientService clientService;
-
     @Autowired
     private ClientTagService clientTagService;
-
     @Autowired
     private DistrictService districtService;
+    @Autowired
+    private TagService tagService;
 
     @GetMapping("/id")
     public ResponseEntity<Client> getClient(@RequestParam("id") int id) {
@@ -66,10 +69,21 @@ public class ClientController {
     }
 
     @GetMapping("generate")
-    public ResponseEntity<Client> generateClient() {
-        ClientFactory cf = new ClientFactory(districtService);
-        Client generatedClient = clientService.save(cf.generate());
-        return new ResponseEntity<>(generatedClient, HttpStatus.CREATED);
+    public ResponseEntity<List<Object>> generateClient() {
+
+        ClientFactory cf = new ClientFactory(districtService, tagService);
+        Client generatedClient = clientService.save(cf.generateClient());
+        if(generatedClient == null) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        List<ClientTag> clientTags = cf.generateClientTags(generatedClient.getId());
+        List<ClientTag> generatedClientTag = clientTagService.saveAll(clientTags);
+        if(generatedClientTag.size() != clientTags.size()) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        List<Object> generatedObjects = List.of(generatedClient, clientTags);
+
+        return new ResponseEntity<>(generatedObjects, HttpStatus.CREATED);
     }
 
 }
