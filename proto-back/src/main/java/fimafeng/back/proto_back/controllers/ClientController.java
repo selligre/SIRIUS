@@ -69,21 +69,45 @@ public class ClientController {
     }
 
     @GetMapping("generate")
-    public ResponseEntity<List<Object>> generateClient() {
-
-        ClientFactory cf = new ClientFactory(districtService, tagService);
-        Client generatedClient = clientService.save(cf.generateClient());
-        if(generatedClient == null) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+    public ResponseEntity<String> generateClient(@RequestParam(required = false) Integer amount) {
+        if (amount == null) {
+            amount = 1;
         }
-        List<ClientTag> clientTags = cf.generateClientTags(generatedClient.getId());
-        List<ClientTag> generatedClientTag = clientTagService.saveAll(clientTags);
-        if(generatedClientTag.size() != clientTags.size()) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-        List<Object> generatedObjects = List.of(generatedClient, clientTags);
 
-        return new ResponseEntity<>(generatedObjects, HttpStatus.CREATED);
+        boolean error = false;
+        int savedAmount = 0;
+
+        for (int i = 0; i < amount; i++) {
+            // Generates a client
+            ClientFactory cf = new ClientFactory(districtService, tagService);
+            Client generatedClient;
+            try {
+                generatedClient = clientService.save(cf.generateClient());
+            } catch (IllegalArgumentException e) {
+                error = true;
+                break;
+            }
+
+            // Generates client's tags
+            List<ClientTag> clientTags = cf.generateClientTags(generatedClient.getId());
+            try {
+                clientTagService.saveAll(clientTags);
+            } catch (IllegalArgumentException e) {
+                error = true;
+                break;
+            }
+            savedAmount += 1;
+        }
+
+        // If error occurred, then returning Http Error and amount generated
+        if(error) {
+            String msg = String.format("Error: %d / %d", savedAmount, amount);
+            return new ResponseEntity<>(msg,HttpStatus.EXPECTATION_FAILED);
+        }
+
+        // Otherwise, returning Http Success and amount generated
+        String msg = String.format("Success: %d / %d", savedAmount, amount);
+        return new ResponseEntity<>(msg, HttpStatus.CREATED);
     }
 
 }

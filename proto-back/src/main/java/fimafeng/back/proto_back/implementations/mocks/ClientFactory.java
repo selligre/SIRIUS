@@ -59,8 +59,6 @@ public class ClientFactory extends Client {
         } else {
             LOGGER.info("Tags already initialized");
         }
-
-
     }
 
 
