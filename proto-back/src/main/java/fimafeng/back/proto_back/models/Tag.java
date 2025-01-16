@@ -1,21 +1,23 @@
 package fimafeng.back.proto_back.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "district")
-public class District {
+@Table(name = "tag")
+public class Tag {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "population_percentile")
-    private float populationPercentile;
+    @Column(name = "category")
+    private String category;
 
     // Getters et Setters
     public int getId() {
@@ -34,11 +36,11 @@ public class District {
         this.name = name;
     }
 
-    public float getPopulationPercentile() {
-        return populationPercentile;
+    public String getCategory() {
+        return category;
     }
 
-    public void setPopulationPercentile(float populationPercentile) {
-        this.populationPercentile = populationPercentile;
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

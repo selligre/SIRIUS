@@ -18,6 +18,13 @@ public class ClientTag {
     @Column(name = "ref_client_id")
     private int refClientId;
 
+    public ClientTag() {}
+
+    public ClientTag(int refTagId, int refClientId) {
+        this.refTagId = refTagId;
+        this.refClientId = refClientId;
+    }
+
     // Getters and Setters
     public void setId(Integer id) {
         this.id = id;
