@@ -21,7 +21,7 @@ export default function Announce() {
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [newAnnounce, setNewAnnounce] = useState({
         publicationDate: getCurrentDateTime(),
-        status: 'online',
+        status: 'DRAFT',
         type: '',
         title: '',
         description: '',
@@ -39,7 +39,7 @@ export default function Announce() {
     const resetNewAnnounce = () => {
         setNewAnnounce({
             publicationDate: getCurrentDateTime(),
-            status: '',
+            status: 'DRAFT',
             type: '',
             title: '',
             description: '',
@@ -135,7 +135,7 @@ export default function Announce() {
 
         const announceToSubmit = {
             ...newAnnounce,
-            status: newAnnounce.status || 'online',
+            status: newAnnounce.status || 'DRAFT',
             type: newAnnounce.type.trim(),
             title: newAnnounce.title.trim(),
             description: newAnnounce.description.trim(),
@@ -287,7 +287,7 @@ export default function Announce() {
                 <div className="btn-container">
                     <button
                         type="button"
-                        className="btn btn-outline-primary" babouin
+                        className="btn btn-outline-primary"
                         onClick={() => setEditingId(announce.idAnnounce)}
                     >Edit
                     </button>
@@ -314,22 +314,24 @@ export default function Announce() {
             </td>
             <td>
                 <select
-                    type="text"
                     className="form-control"
                     value={announce.status || ''}
                     onChange={e => handleChangeField(announce.idAnnounce, 'status', e.target.value)}
                 >
-                    <option value="online">Online</option>
-                    <option value="offline">Offline</option>
+                    <option value="PUBLISHED">Publiée</option>
+                    <option value="DRAFT">Brouillon</option>
                 </select>
             </td>
             <td>
-                <input
-                    type="text"
+                <select
                     className="form-control"
                     value={announce.type || ''}
                     onChange={e => handleChangeField(announce.idAnnounce, 'type', e.target.value)}
-                />
+                >
+                    <option value="EVENT">Événement</option>
+                    <option value="LOAN">Prêt</option>
+                    <option value="SERVICE">Service</option>
+                </select>
             </td>
             <td>
         <textarea
@@ -444,24 +446,24 @@ export default function Announce() {
                             </td>
                             <td>
                                 <select
-                                    type="text"
                                     className="form-control"
                                     value={newAnnounce.status}
                                     onChange={e => setNewAnnounce({...newAnnounce, status: e.target.value})}
-                                    placeholder="Status"
                                 >
-                                    <option value="online">Online</option>
-                                    <option value="offline">Offline</option>
+                                    <option value="PUBLISHED">Publiée</option>
+                                    <option value="DRAFT">Brouillon</option>
                                 </select>
                             </td>
                             <td>
-                                <input
-                                    type="text"
+                                <select
                                     className="form-control"
                                     value={newAnnounce.type}
                                     onChange={e => setNewAnnounce({...newAnnounce, type: e.target.value})}
-                                    placeholder="Type"
-                                />
+                                >
+                                    <option value="EVENT">Événement</option>
+                                    <option value="LOAN">Prêt</option>
+                                    <option value="SERVICE">Service</option>
+                                </select>
                             </td>
                             <td>
                   <textarea

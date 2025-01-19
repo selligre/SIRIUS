@@ -1,6 +1,6 @@
 */target/
 .vscode/
-proto-front/node_modules/*
+proto-front/node_modules/
 proto-front/src/constants/back.js
 */.idea/
 .idea/

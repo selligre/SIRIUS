@@ -1,5 +1,7 @@
 package fimafeng.back.proto_back.models;
 
+import fimafeng.back.proto_back.models.enums.AnnounceStatus;
+import fimafeng.back.proto_back.models.enums.AnnounceType;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -18,10 +20,12 @@ public class Announce {
     private Date publicationDate;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AnnounceStatus status;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private AnnounceType type;
 
     @Column(name = "title")
     private String title;
@@ -58,19 +62,19 @@ public class Announce {
         this.publicationDate = publicationDate;
     }
 
-    public String getStatus() {
+    public AnnounceStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AnnounceStatus status) {
         this.status = status;
     }
 
-    public String getType() {
+    public AnnounceType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(AnnounceType type) {
         this.type = type;
     }
 
