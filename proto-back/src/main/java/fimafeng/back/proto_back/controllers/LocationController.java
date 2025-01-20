@@ -1,6 +1,7 @@
 package fimafeng.back.proto_back.controllers;
 
 import fimafeng.back.proto_back.models.Location;
+import fimafeng.back.proto_back.repositories.DistrictAnnounceCountProjection;
 import fimafeng.back.proto_back.repositories.LocationCountProjection;
 import fimafeng.back.proto_back.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,11 @@ public class LocationController {
     @GetMapping("count")
     public ResponseEntity<List<LocationCountProjection>> countOfLocation(){
         return new ResponseEntity<>(locationService.countOfLocation(), HttpStatus.OK);
+    }
+
+    @GetMapping("countDis")
+    public ResponseEntity<List<DistrictAnnounceCountProjection>> countOfAnnounceByDistrict(){
+        return new ResponseEntity<>(locationService.countOfAnnounceByDistrict(), HttpStatus.OK);
     }
 
     @PostMapping("update")

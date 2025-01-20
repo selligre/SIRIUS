@@ -1,6 +1,7 @@
 package fimafeng.back.proto_back.services;
 
 import fimafeng.back.proto_back.models.Location;
+import fimafeng.back.proto_back.repositories.DistrictAnnounceCountProjection;
 import fimafeng.back.proto_back.repositories.LocationCountProjection;
 import fimafeng.back.proto_back.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class LocationService {
     public List<LocationCountProjection> countOfLocation(){
         return locationRepository.countOfLocation();
     }
+
+    public List<DistrictAnnounceCountProjection> countOfAnnounceByDistrict(){return locationRepository.countOfAnnounceByDistrict();}
 
     public boolean updateLocation(Location updatedLocation) {
         // Vérifiez si l'objet ou son ID est null

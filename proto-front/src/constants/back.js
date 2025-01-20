@@ -6,7 +6,7 @@ export const UPDATE_ANNOUNCES = LOCAL_HOST_ANNOUNCE + 'update';
 
 export const LOCAL_HOST_LOCATION = LOCAL_HOST + '/location/';
 export const GET_LOCATIONS = LOCAL_HOST_LOCATION + 'all';
-export const GET_COUNT = LOCAL_HOST_LOCATION + 'count';
+export const GET_COUNT = LOCAL_HOST_LOCATION + 'countDis';
 
 export const LOCAL_HOST_CLIENTS = LOCAL_HOST + '/client/';
 export const GET_CLIENTS = LOCAL_HOST_CLIENTS + 'all';

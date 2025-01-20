@@ -16,4 +16,11 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             "ORDER BY d.id", nativeQuery = true)
     List<LocationCountProjection> countOfLocation();
 
+    @Query(value="SELECT d.id AS district, COUNT(a.id) AS count " +
+            "FROM district d " +
+            "LEFT JOIN location l ON d.id = l.ref_district " +
+            "LEFT JOIN announce a ON l.location_id = a.ref_location_id " +
+            "GROUP BY d.id " +
+            "ORDER BY d.id", nativeQuery = true)
+    List<DistrictAnnounceCountProjection> countOfAnnounceByDistrict();
 }

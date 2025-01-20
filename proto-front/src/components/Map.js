@@ -105,7 +105,7 @@ const OSMMap = () => {
 
             {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
                 const center = calculateCenter(zone.coordinates);
-                const count = counts.find(c => c.ref_district === zone.id)?.count || 0;
+                const count = counts.find(c => c.district === zone.id)?.count || 0;
                 const opacity = getOpacity(count, minCount, maxCount);
                 console.log('Zone:', zone.id, 'Count:', count, 'Opacity:', opacity);
                 return (
