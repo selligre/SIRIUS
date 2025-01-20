@@ -4,16 +4,19 @@ import '../styles/Navbar.css';
 
 export default function Navbar(){
     return (
-            <ul className="nav justify-content-center my-3">
-                <li className="nav-item">
-                    <Link className="nav-link" to="/">Home</Link>
-                </li>
-                <li className="nav-item">
-                    <Link className="nav-link" to="/announce">Announce</Link>
-                </li>
-                <li className="nav-item">
-                    <Link className="nav-link" to="/map">Map</Link>
-                </li>
-            </ul>
+        <ul className="nav justify-content-center my-3">
+            <li className="nav-item">
+                <Link className="nav-link" to="/">Home</Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/announce">Announce</Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/map">Map</Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link" to="/client">Clients</Link>
+            </li>
+        </ul>
     );
 };

@@ -46,12 +46,13 @@ pipeline {
                 echo "Compilation du BACK"
                 sh '''
                     cd ${WORKSPACE}/proto-back
-                    mvn clean package
+                    mvn clean install
                 '''
 
                 echo "Compilation du FRONT"
                 sh '''
                     cd ${WORKSPACE}/proto-front
+                    npm install react-scripts --save
                     npm run build
                 '''
                 
@@ -70,7 +71,7 @@ pipeline {
             }
         }
 
-        stage("Start front 🚀") {
+        stage("Start 🚀") {
             steps {
                 echo "Démarrage des modules"
 
@@ -82,14 +83,17 @@ pipeline {
                 
                 echo "Mise à jour du back"
                 script {
-                    def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
-                    echo "result: [$result]"
-                    if (result.size() != '') {
-                        env.BACKEND_PID = result
-                        sh (script: 'ssh ${SCP_ADR} "kill ${BACKEND_PID}"')
+                    try {
+                        def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
+                        echo "result: [$result]"
+                        if (result.size() != '') {
+                            env.BACKEND_PID = result
+                            sh (script: 'ssh ${SCP_ADR} "kill ${BACKEND_PID}"')
+                        }
+                    } catch (Exception e) {
+                        echo "Echec de l'étape, il n'y avait probablement pas de serveur de lancé"
                     }
                 }
-                
                 sh "ssh ${SCP_ADR} ls -l"
                 sh "ssh ${SCP_ADR} java -jar proto-back-1.0-SNAPSHOT.jar &"
             }

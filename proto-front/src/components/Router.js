@@ -4,6 +4,7 @@ import App from "./App";
 import Navbar from "./Navbar";
 import Announce from './Announce';
 import Map from './Map';
+import Client from './Client';
 
 export default function Router () {
     return (
@@ -14,6 +15,7 @@ export default function Router () {
                     <Route path="/" element={<App />}/>
                     <Route path="/announce" element={<Announce />}/>
                     <Route path="/map" element={<Map />}/>
+                    <Route path="/client" element={<Client />}/>
                 </Routes>
             </div>
         </BrowserRouter>

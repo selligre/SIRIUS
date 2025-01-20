@@ -1,28 +1,31 @@
 package fimafeng.back.proto_back.models;
 
-import lombok.Data;
+import fimafeng.back.proto_back.models.enums.AnnounceStatus;
+import fimafeng.back.proto_back.models.enums.AnnounceType;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Data
 @Table(name = "announce")
 public class Announce {
 
+    // Getters and setters
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idAnnounce;
+    private int id;
 
     @Column(name = "publication_date")
     private Date publicationDate;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AnnounceStatus status;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private AnnounceType type;
 
     @Column(name = "title")
     private String title;
@@ -42,4 +45,95 @@ public class Announce {
     @Column(name = "is_recurrent")
     private Boolean isRecurrent;
 
+    @Column(name = "ref_author_id")
+    private int authorId;
+
+    // Getters et Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Date getPublicationDate() {
+        return publicationDate;
+    }
+
+    public void setPublicationDate(Date publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public AnnounceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AnnounceStatus status) {
+        this.status = status;
+    }
+
+    public AnnounceType getType() {
+        return type;
+    }
+
+    public void setType(AnnounceType type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getDateTimeStart() {
+        return dateTimeStart;
+    }
+
+    public void setDateTimeStart(Date dateTimeStart) {
+        this.dateTimeStart = dateTimeStart;
+    }
+
+    public Float getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Float duration) {
+        this.duration = duration;
+    }
+
+    public Date getDateTimeEnd() {
+        return dateTimeEnd;
+    }
+
+    public void setDateTimeEnd(Date dateTimeEnd) {
+        this.dateTimeEnd = dateTimeEnd;
+    }
+
+    public Boolean getIsRecurrent() {
+        return isRecurrent;
+    }
+
+    public void setIsRecurrent(Boolean recurrent) {
+        isRecurrent = recurrent;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
+    }
 }
