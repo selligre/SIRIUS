@@ -30,15 +30,17 @@ public class ClientProfileImplementation extends ClientService {
         ArrayList<Object> clientProfiles = new ArrayList<>();
         // Retrieve data for the first 10 users
         for (int i = 1; i < 11; i++) {
+            if (clientService.findById(i) == null) break;
             ArrayList<Integer> clientProfile = new ArrayList<>();
             Client client = clientService.findById(i);
             // Retrieve and store client's id
             clientProfile.add(client.getId());
             // Retrieve and store client's district id
             clientProfile.add(client.getDistrict());
+            // Retrieve and store client's tags
             for (ClientTag clientTag : clientTags) {
                 if (clientTag.getRefClientId() == client.getId()) {
-                    // Retrieve and store client's tags
+
                     clientProfile.add(clientTag.getRefTagId());
                 }
             }
