@@ -550,7 +550,7 @@ export default function Announce() {
                 {showCreateForm && renderCreateForm()}
 
                 <div className="section">
-                    <h4 className="section-title">Announces Listeeeee</h4>
+                    <h4 className="section-title">Liste des annonces</h4>
                     {announces.length === 0 ? (
                         <div className="alert alert-info">No announces available</div>
                     ) : (
