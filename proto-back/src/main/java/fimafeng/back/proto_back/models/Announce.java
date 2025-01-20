@@ -136,4 +136,21 @@ public class Announce {
     public void setAuthorId(int authorId) {
         this.authorId = authorId;
     }
+
+    @Override
+    public String toString() {
+        String res = "Announce[";
+        res += "id: " + id + ", ";
+        res += "publicationDate: " + publicationDate + ", ";
+        res += "status: " + status + ", ";
+        res += "type: " + type + ", ";
+        res += "title: " + title + ", ";
+        res += "description: " + description + ", ";
+        res += "dateTimeStart: " + dateTimeStart + ", ";
+        res += "duration: " + duration + ", ";
+        res += "dateTimeEnd: " + dateTimeEnd + ", ";
+        res += "isRecurrent: " + isRecurrent + ", ";
+        res += "authorId: " + authorId + "]";
+        return res;
+    }
 }
