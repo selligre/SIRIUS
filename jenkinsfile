@@ -46,7 +46,7 @@ pipeline {
                 echo "Compilation du BACK"
                 sh '''
                     cd ${WORKSPACE}/proto-back
-                    mvn clean package
+                    mvn clean install
                 '''
 
                 echo "Compilation du FRONT"
