@@ -48,6 +48,9 @@ public class Announce {
     @Column(name = "ref_author_id")
     private int authorId;
 
+    @Column(name = "ref_district_id")
+    private int refDistrictId;
+
     // Getters et Setters
     public int getId() {
         return id;
@@ -137,6 +140,14 @@ public class Announce {
         this.authorId = authorId;
     }
 
+    public int getRefDistrictId() {
+        return refDistrictId;
+    }
+
+    public void setRefDistrictId(int refDistrictId) {
+        this.refDistrictId = refDistrictId;
+    }
+
     @Override
     public String toString() {
         String res = "Announce[";
@@ -150,7 +161,8 @@ public class Announce {
         res += "duration: " + duration + ", ";
         res += "dateTimeEnd: " + dateTimeEnd + ", ";
         res += "isRecurrent: " + isRecurrent + ", ";
-        res += "authorId: " + authorId + "]";
+        res += "authorId: " + authorId + ", ";
+        res += "refDistrictId: " + refDistrictId + "]";
         return res;
     }
 }
