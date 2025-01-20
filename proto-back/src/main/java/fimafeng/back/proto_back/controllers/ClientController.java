@@ -69,9 +69,12 @@ public class ClientController {
     }
 
     @GetMapping("generate")
-    public ResponseEntity<String> generateClient(@RequestParam(required = false) Integer amount) {
+    public ResponseEntity<String> generateClient(@RequestParam(required = false) Integer amount, @RequestParam(required = false) Integer delay) {
         if (amount == null) {
             amount = 1;
+        }
+        if (delay == null) {
+            delay = 0;
         }
 
         boolean error = false;
@@ -97,6 +100,13 @@ public class ClientController {
                 break;
             }
             savedAmount += 1;
+
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                error = true;
+                break;
+            }
         }
 
         // If error occurred, then returning Http Error and amount generated
