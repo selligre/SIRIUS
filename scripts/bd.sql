@@ -1,5 +1,5 @@
 CREATE TABLE
-    "user" (
+    "client" (
         user_id SERIAL,
         first_name VARCHAR(50) NOT NULL,
         last_name VARCHAR(50) NOT NULL,
@@ -24,14 +24,14 @@ CREATE TABLE
         date_time_end TIMESTAMP,
         is_recurrent BOOL NOT NULL,
         PRIMARY KEY (announce_id),
-        FOREIGN KEY (ref_author_id) REFERENCES "user" (user_id)
+        FOREIGN KEY (ref_author_id) REFERENCES "client" (user_id)
     );
 
 CREATE TABLE
     user_history (
         ref_user_id INT NOT NULL,
         ref_announce_id INT NOT NULL,
-        FOREIGN KEY (ref_user_id) REFERENCES "user" (user_id),
+        FOREIGN KEY (ref_user_id) REFERENCES "client" (user_id),
         FOREIGN KEY (ref_announce_id) REFERENCES announce (announce_id)
     );
 
@@ -92,7 +92,7 @@ CREATE TABLE
     user_tag (
         ref_user_id INT NOT NULL,
         ref_tag_id INT NOT NULL,
-        FOREIGN KEY (ref_user_id) REFERENCES "user" (user_id),
+        FOREIGN KEY (ref_user_id) REFERENCES "client" (user_id),
         FOREIGN KEY (ref_tag_id) REFERENCES tag (tag_id)
     );
 
@@ -115,7 +115,7 @@ CREATE TABLE
     user_location (
         ref_user_id INT NOT NULL,
         ref_location_id INT NOT NULL,
-        FOREIGN KEY (ref_user_id) REFERENCES "user" (user_id),
+        FOREIGN KEY (ref_user_id) REFERENCES "client" (user_id),
         FOREIGN KEY (ref_location_id) REFERENCES location (location_id)
     );
 
