@@ -7,13 +7,8 @@ import {GET_CLIENTS} from "../constants/back";
 export default function Client() {
 
     const [clients, setClients] = useState([]);
-    const [notification, setNotification] = useState({show: false, message: '', type: ''});
-    const [newClient, setNewClient] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        district: 1,
-    });
+    const [notification] = useState({show: false, message: '', type: ''});
+
 
     const [sortConfig, setSortConfig] = useState({key: 'id', direction: 'desc'});
 
