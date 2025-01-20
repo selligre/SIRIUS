@@ -14,6 +14,7 @@
     - US7 : Algorithme de modération
     - US8 : Page des annonces créées
     - US9 : Ouverture d'une annonce depuis la carte
+
 - Étudiant 2 : MEUNIER Gilles
     - US1 : Profil de l'utilisateur avec ses données
     - US2 : Profil de l'annonce avec ses données
@@ -21,6 +22,7 @@
     - US4 : Mock les consultations
     - US5 : Calcul des annonces les plus pertinentes
     - US6 : Sélection et affichage des annonces
+
 - Étudiant 3 : TRAN Louis
     - US1 : Afficher la carte
     - US2 : Afficher les quartiers
