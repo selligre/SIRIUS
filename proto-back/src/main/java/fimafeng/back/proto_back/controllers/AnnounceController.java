@@ -1,7 +1,10 @@
 package fimafeng.back.proto_back.controllers;
 
+import fimafeng.back.proto_back.implementations.profiles.AnnounceProfileImplementation;
 import fimafeng.back.proto_back.models.Announce;
+import fimafeng.back.proto_back.models.Client;
 import fimafeng.back.proto_back.services.AnnounceService;
+import fimafeng.back.proto_back.services.AnnounceTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,9 @@ public class AnnounceController {
 
     @Autowired
     private AnnounceService announceService;
+
+    @Autowired
+    private AnnounceTagService announceTagService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Announce> findById(@PathVariable int id) {
@@ -53,5 +59,11 @@ public class AnnounceController {
         }
         return new ResponseEntity<>((long) id, HttpStatus.OK);
 
+    }
+
+    @GetMapping("profiles")
+    public ResponseEntity<Client> buildClientProfiles() {
+        new AnnounceProfileImplementation(announceService, announceTagService);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

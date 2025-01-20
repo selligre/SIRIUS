@@ -24,39 +24,30 @@ public class ClientProfileImplementation extends ClientService {
     }
 
     private void getClientsData() {
-        // Retrieve clients' data
-        // LOGGER.info("clients:");
-        ArrayList<Client> clients = new ArrayList<>(clientService.findAll());
-        // LOGGER.info(clients.toString());
-
         // Retrieve clients' tags
-        // LOGGER.info("clients_tags:");
-        ArrayList<ClientTag> clientsTags = new ArrayList<>(clientTagService.findAll());
-        // LOGGER.info(clientsTags.toString());
+        ArrayList<ClientTag> clientTags = new ArrayList<>(clientTagService.findAll());
+        // Create data structure
+        ArrayList<Object> clientProfiles = new ArrayList<>();
+        // Retrieve data for the first 10 users
+        for (int i = 1; i < 11; i++) {
+            if (clientService.findById(i) == null) break;
+            ArrayList<Integer> clientProfile = new ArrayList<>();
+            Client client = clientService.findById(i);
+            // Retrieve and store client's id
+            clientProfile.add(client.getId());
+            // Retrieve and store client's district id
+            clientProfile.add(client.getDistrict());
+            // Retrieve and store client's tags
+            for (ClientTag clientTag : clientTags) {
+                if (clientTag.getRefClientId() == client.getId()) {
 
-        // Assemble all user data to {client_id, district_id, ref_tag_id1, ref_tag_id2, etc.} format
-        LOGGER.info("clientProfiles:");
-        ArrayList<ArrayList<Integer>> clientProfiles = new ArrayList<>();
-        for (Client client : clients) {
-            // Creating data structure
-            ArrayList<Integer> clientProfilesIn = getProfiles(client, clientsTags);
-            clientProfiles.add(clientProfilesIn);
-        }
-        LOGGER.info(clientProfiles.toString());
-    }
-
-    private static ArrayList<Integer> getProfiles(Client client, ArrayList<ClientTag> clientsTags) {
-        ArrayList<Integer> clientProfilesIn = new ArrayList<>();
-        // Adding client's id
-        clientProfilesIn.add(client.getId());
-        // Adding client's district id
-        clientProfilesIn.add(client.getDistrict());
-        // Adding client's tags
-        for (ClientTag clientTag : clientsTags) {
-            if (clientTag.getRefClientId() == client.getId()) {
-                clientProfilesIn.add(clientTag.getRefTagId());
+                    clientProfile.add(clientTag.getRefTagId());
+                }
             }
+            clientProfiles.add(clientProfile);
         }
-        return clientProfilesIn;
+        // Display the first 10 clients' profiles in logs
+        LOGGER.info("clientProfiles: " + clientProfiles);
     }
+
 }
