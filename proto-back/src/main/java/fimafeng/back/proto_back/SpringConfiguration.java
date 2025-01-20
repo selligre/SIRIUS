@@ -11,8 +11,8 @@ public class SpringConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedMethods("")
-                .allowedOrigins("")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedOrigins("*")
                 .allowedHeaders("*")
                 .allowCredentials(false)
                 .maxAge(86400);

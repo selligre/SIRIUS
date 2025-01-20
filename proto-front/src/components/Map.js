@@ -28,7 +28,7 @@ const OSMMap = () => {
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 1000);
+        const interval = setInterval(fetchData, 10000);
         return () => clearInterval(interval);
     }, []);
 
