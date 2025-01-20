@@ -35,14 +35,13 @@ public class ClientProfileImplementation extends ClientService {
         // LOGGER.info(clientsTags.toString());
 
         // Assemble all user data to {client_id, district_id, ref_tag_id1, ref_tag_id2, etc.} format
-        LOGGER.info("clientProfiles:");
         ArrayList<ArrayList<Integer>> clientProfiles = new ArrayList<>();
         for (Client client : clients) {
             // Creating data structure
             ArrayList<Integer> clientProfilesIn = getProfiles(client, clientsTags);
             clientProfiles.add(clientProfilesIn);
         }
-        LOGGER.info(clientProfiles.toString());
+        LOGGER.info("clientProfiles: " + clientProfiles);
     }
 
     private static ArrayList<Integer> getProfiles(Client client, ArrayList<ClientTag> clientsTags) {
