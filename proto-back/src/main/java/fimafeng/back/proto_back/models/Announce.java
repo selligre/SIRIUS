@@ -45,6 +45,9 @@ public class Announce {
     @Column(name = "is_recurrent")
     private Boolean isRecurrent;
 
+    @Column(name = "ref_author_id")
+    private int authorId;
+
     // Getters et Setters
     public int getId() {
         return id;
@@ -124,5 +127,13 @@ public class Announce {
 
     public void setIsRecurrent(Boolean recurrent) {
         isRecurrent = recurrent;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 }

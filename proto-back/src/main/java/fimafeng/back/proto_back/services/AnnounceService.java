@@ -52,6 +52,7 @@ public class AnnounceService {
         announce.setDuration(updatedAnnounce.getDuration());
         announce.setDateTimeEnd(updatedAnnounce.getDateTimeEnd());
         announce.setIsRecurrent(updatedAnnounce.getIsRecurrent());
+        announce.setAuthorId(updatedAnnounce.getAuthorId());
 
         // Sauvegardez les modifications
         announceRepository.saveAndFlush(announce);
