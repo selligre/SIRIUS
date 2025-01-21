@@ -38,7 +38,7 @@ public class AnnounceController {
 
     @PostMapping("update")
     public ResponseEntity<Announce> update(@RequestBody Announce announce) {
-        boolean isUpdated = announceService.update(announce);
+        boolean isUpdated = announceService.update(announce, false);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

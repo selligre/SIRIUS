@@ -10,7 +10,6 @@ import java.util.Date;
 @Table(name = "announce")
 public class Announce {
 
-    // Getters and setters
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
