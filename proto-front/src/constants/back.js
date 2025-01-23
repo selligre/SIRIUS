@@ -8,7 +8,7 @@ export const LOCAL_HOST_LOCATION = LOCAL_HOST + '/location';
 export const GET_LOCATIONS = LOCAL_HOST_LOCATION + '/all';
 export const ADD_LOCATION = LOCAL_HOST_LOCATION + '/add';
 export const UPDATE_LOCATIONS = LOCAL_HOST_LOCATION + '/update';
-export const GET_COUNT = LOCAL_HOST_LOCATION + 'countDis';
+export const GET_COUNT = LOCAL_HOST_LOCATION + '/countDis';
 
 export const LOCAL_HOST_CLIENTS = LOCAL_HOST + '/client';
 export const GET_CLIENTS = LOCAL_HOST_CLIENTS + '/all';
