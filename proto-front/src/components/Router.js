@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Announce from './Announce';
 import Map from './Map';
 import Client from './Client';
+import Moderation from './Moderation';
 
 export default function Router () {
     return (
@@ -16,6 +17,7 @@ export default function Router () {
                     <Route path="/announce" element={<Announce />}/>
                     <Route path="/map" element={<Map />}/>
                     <Route path="/client" element={<Client />}/>
+                    <Route path="/moderation" element={<Moderation />}/>
                 </Routes>
             </div>
         </BrowserRouter>

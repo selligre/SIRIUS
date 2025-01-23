@@ -12,6 +12,9 @@ export default function Navbar(){
                 <Link className="nav-link" to="/announce">Announce</Link>
             </li>
             <li className="nav-item">
+                <Link className="nav-link" to="/moderation">Modération</Link>
+            </li>
+            <li className="nav-item">
                 <Link className="nav-link" to="/map">Map</Link>
             </li>
             <li className="nav-item">
