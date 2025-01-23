@@ -16,10 +16,8 @@ public class ClientProfileImplementation extends ClientService {
     private final ClientTagService clientTagService;
 
     public ClientProfileImplementation(ClientService clientService, ClientTagService clientTagService) {
-        super();
         this.clientService = clientService;
         this.clientTagService = clientTagService;
-
         this.getClientsData();
     }
 
