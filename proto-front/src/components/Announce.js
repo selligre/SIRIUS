@@ -79,7 +79,7 @@ export default function Announce() {
 
     const handleChangeField = (id, field, value) => {
         setAnnounces(prevData => prevData.map(
-            row => row.idAnnounce === id ? {...row, [field]: value} : row)
+            row => row.id === id ? {...row, [field]: value} : row) // TODO (WARNING): possible issue with row.id (row.id before)
         );
     }
 
@@ -288,13 +288,13 @@ export default function Announce() {
                     <button
                         type="button"
                         className="btn btn-outline-primary"
-                        onClick={() => setEditingId(announce.idAnnounce)}
+                        onClick={() => setEditingId(announce.id)}
                     >Edit
                     </button>
                     <button
                         type="button"
                         className="btn btn-outline-danger"
-                        onClick={() => confirmRemoveAnnounce(announce.idAnnounce)}
+                        onClick={() => confirmRemoveAnnounce(announce.id)}
                     >Delete
                     </button>
                 </div>
@@ -309,14 +309,14 @@ export default function Announce() {
                     type="datetime-local"
                     className="form-control"
                     value={toLocalDateTime(announce.publicationDate)}
-                    onChange={e => handleChangeField(announce.idAnnounce, 'publicationDate', e.target.value)}
+                    onChange={e => handleChangeField(announce.id, 'publicationDate', e.target.value)}
                 />
             </td>
             <td>
                 <select
                     className="form-control"
                     value={announce.status || ''}
-                    onChange={e => handleChangeField(announce.idAnnounce, 'status', e.target.value)}
+                    onChange={e => handleChangeField(announce.id, 'status', e.target.value)}
                 >
                     <option value="PUBLISHED">Publiée</option>
                     <option value="DRAFT">Brouillon</option>
@@ -326,7 +326,7 @@ export default function Announce() {
                 <select
                     className="form-control"
                     value={announce.type || ''}
-                    onChange={e => handleChangeField(announce.idAnnounce, 'type', e.target.value)}
+                    onChange={e => handleChangeField(announce.id, 'type', e.target.value)}
                 >
                     <option value="EVENT">Événement</option>
                     <option value="LOAN">Prêt</option>
@@ -337,14 +337,14 @@ export default function Announce() {
         <textarea
             className="form-control"
             value={announce.title || ''}
-            onChange={e => handleChangeField(announce.idAnnounce, 'title', e.target.value)}
+            onChange={e => handleChangeField(announce.id, 'title', e.target.value)}
         />
             </td>
             <td>
         <textarea
             className="form-control"
             value={announce.description || ''}
-            onChange={e => handleChangeField(announce.idAnnounce, 'description', e.target.value)}
+            onChange={e => handleChangeField(announce.id, 'description', e.target.value)}
         />
             </td>
             <td>
@@ -352,7 +352,7 @@ export default function Announce() {
                     type="datetime-local"
                     className="form-control"
                     value={toLocalDateTime(announce.dateTimeStart)}
-                    onChange={e => handleChangeField(announce.idAnnounce, 'dateTimeStart', e.target.value)}
+                    onChange={e => handleChangeField(announce.id, 'dateTimeStart', e.target.value)}
                 />
             </td>
             <td className="duration-cell">
@@ -361,7 +361,7 @@ export default function Announce() {
                         type="number"
                         className="form-control"
                         value={announce.duration || 0}
-                        onChange={e => handleChangeField(announce.idAnnounce, 'duration', parseFloat(e.target.value))}
+                        onChange={e => handleChangeField(announce.id, 'duration', parseFloat(e.target.value))}
                         step="0.5"
                         min="0"
                     />
@@ -373,7 +373,7 @@ export default function Announce() {
                     type="datetime-local"
                     className="form-control"
                     value={toLocalDateTime(announce.dateTimeEnd)}
-                    onChange={e => handleChangeField(announce.idAnnounce, 'dateTimeEnd', e.target.value)}
+                    onChange={e => handleChangeField(announce.id, 'dateTimeEnd', e.target.value)}
                 />
             </td>
             <td className="text-center">
@@ -381,7 +381,7 @@ export default function Announce() {
                     type="checkbox"
                     className="form-check-input"
                     checked={announce.isRecurrent || false}
-                    onChange={e => handleChangeField(announce.idAnnounce, 'isRecurrent', e.target.checked)}
+                    onChange={e => handleChangeField(announce.id, 'isRecurrent', e.target.checked)}
                 />
             </td>
             <td>
@@ -573,7 +573,7 @@ export default function Announce() {
                                 <tbody>
                                 {sortedAnnounces.map((announce, index) => (
                                     <tr key={index}>
-                                        {editingId === announce.idAnnounce
+                                        {editingId === announce.id
                                             ? renderEditRow(announce)
                                             : renderReadOnlyRow(announce)}
                                     </tr>

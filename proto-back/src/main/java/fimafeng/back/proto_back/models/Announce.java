@@ -10,7 +10,6 @@ import java.util.Date;
 @Table(name = "announce")
 public class Announce {
 
-    // Getters and setters
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +29,7 @@ public class Announce {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
 
     @Column(name = "date_time_start")

@@ -1,0 +1,80 @@
+package fimafeng.back.proto_back.services;
+
+import fimafeng.back.proto_back.models.Moderation;
+import fimafeng.back.proto_back.repositories.ModerationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+@Service
+public class ModerationService {
+
+
+    Logger LOGGER = Logger.getLogger(ModerationService.class.getName());
+
+
+    @Autowired
+    private ModerationRepository moderationRepository;
+
+
+    public Moderation findById(int idModeration) {
+        Optional<Moderation> optionalModeration = moderationRepository.findById(idModeration);
+        return optionalModeration.orElse(null);
+    }
+
+    public List<Moderation> findAll() {
+        return moderationRepository.findAll();
+    }
+
+    public boolean update(Moderation updatedModeration) {
+        if (updatedModeration == null) throw new IllegalArgumentException("moderation is null");
+        int id = updatedModeration.getId();
+
+        Optional<Moderation> optionalModeration = moderationRepository.findById(id);
+        if (optionalModeration.isEmpty()) return false;
+
+        Moderation moderation = optionalModeration.get();
+        moderation.setLatestAction(false);
+        LOGGER.info(moderation.toString());
+        moderationRepository.save(moderation);
+
+        Moderation newModeration = new Moderation();
+        newModeration.setModeratorName("MODERATOR_NAME"); // TODO : mettre en place un systeme de connexion rapide
+        newModeration.setModerationDate(new Date());
+        newModeration.setAnnounceId(updatedModeration.getAnnounceId());
+        newModeration.setAuthorId(updatedModeration.getAuthorId());
+        newModeration.setReason(updatedModeration.getReason());
+        newModeration.setDescription(updatedModeration.getDescription());
+        newModeration.setAnnounceTitle(updatedModeration.getAnnounceTitle());
+        newModeration.setAnnounceDescription(updatedModeration.getAnnounceDescription());
+        newModeration.setAnnounceType(updatedModeration.getAnnounceType());
+        newModeration.setAnnouncePublicationDate(updatedModeration.getAnnouncePublicationDate());
+        newModeration.setLatestAction(true);
+
+        LOGGER.info(newModeration.toString());
+        moderationRepository.saveAndFlush(newModeration);
+        return true;
+    }
+
+    public Moderation save(Moderation moderation) {
+        LOGGER.info("Saving Moderation action");
+        return moderationRepository.save(moderation);
+    }
+
+    public boolean delete(int idModeration) {
+        Optional<Moderation> optionalModeration = moderationRepository.findById(idModeration);
+        if (optionalModeration.isPresent()) {
+            optionalModeration.ifPresent(moderation -> moderationRepository.delete(moderation));
+            return true;
+        }
+        return false;
+    }
+
+
+
+
+}

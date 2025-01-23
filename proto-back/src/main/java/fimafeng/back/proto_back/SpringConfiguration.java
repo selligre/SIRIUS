@@ -12,7 +12,7 @@ public class SpringConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("*")
                 .allowedHeaders("*")
                 .allowCredentials(false)
                 .maxAge(86400);
