@@ -53,9 +53,14 @@ const OSMMap = () => {
             const onZoomEnd = () => {
                 setZoomLevel(map.getZoom());
             };
+            const onClick = (e) => {
+                console.log('Clicked at:', e.latlng);
+            };
             map.on('zoomend', onZoomEnd);
+            map.on('click', onClick);
             return () => {
                 map.off('zoomend', onZoomEnd);
+                map.off('click', onClick);
             };
         }, [map]);
         return null;
