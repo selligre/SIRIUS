@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Announce.css';
-import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../constants/back";
+import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../constants/back";
 
 export default function Announce() {
     const getCurrentDateTime = () => {
@@ -550,7 +550,7 @@ export default function Announce() {
                 {showCreateForm && renderCreateForm()}
 
                 <div className="section">
-                    <h4 className="section-title">Liste des annonces</h4>
+                    <h4 className="section-title">Liste des annonces sur {LOCAL_HOST}</h4>
                     {announces.length === 0 ? (
                         <div className="alert alert-info">No announces available</div>
                     ) : (

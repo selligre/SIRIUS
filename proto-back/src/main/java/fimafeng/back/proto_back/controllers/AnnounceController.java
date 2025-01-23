@@ -2,7 +2,6 @@ package fimafeng.back.proto_back.controllers;
 
 import fimafeng.back.proto_back.implementations.profiles.AnnounceProfileImplementation;
 import fimafeng.back.proto_back.models.Announce;
-import fimafeng.back.proto_back.models.Client;
 import fimafeng.back.proto_back.services.AnnounceService;
 import fimafeng.back.proto_back.services.AnnounceTagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +60,9 @@ public class AnnounceController {
 
     }
 
-    @GetMapping("profiles")
-    public ResponseEntity<Client> buildClientProfiles() {
-        new AnnounceProfileImplementation(announceService, announceTagService);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("profile")
+    public ResponseEntity<String> buildClientProfiles() {
+        AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);
+        return new ResponseEntity<>(announceProfileImplementation.getAnnouncesData(), HttpStatus.OK);
     }
 }

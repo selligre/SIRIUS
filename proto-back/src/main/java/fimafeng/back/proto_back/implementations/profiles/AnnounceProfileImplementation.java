@@ -16,13 +16,11 @@ public class AnnounceProfileImplementation extends AnnounceService {
     private final AnnounceTagService announceTagService;
 
     public AnnounceProfileImplementation(AnnounceService announceService, AnnounceTagService announceTagService) {
-        super();
         this.announceService = announceService;
         this.announceTagService = announceTagService;
-        this.getAnnouncesData();
     }
 
-    private void getAnnouncesData() {
+    public String getAnnouncesData() {
         // Retrieve announces' tags
         ArrayList<AnnounceTag> announceTags = new ArrayList<>(announceTagService.findAll());
         // Create data structure [announce_id, district_id, tag1_id, (tag2_id)]
@@ -44,6 +42,8 @@ public class AnnounceProfileImplementation extends AnnounceService {
             }
             announceProfiles.add(announceProfile);
         }
-        LOGGER.info("announceProfiles: " + announceProfiles);
+        // Display the first 10 announces profiles in logs
+        // LOGGER.info("announceProfiles: " + announceProfiles);
+        return announceProfiles.toString();
     }
 }

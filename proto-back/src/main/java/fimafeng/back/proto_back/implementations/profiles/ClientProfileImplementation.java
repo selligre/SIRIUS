@@ -16,14 +16,11 @@ public class ClientProfileImplementation extends ClientService {
     private final ClientTagService clientTagService;
 
     public ClientProfileImplementation(ClientService clientService, ClientTagService clientTagService) {
-        super();
         this.clientService = clientService;
         this.clientTagService = clientTagService;
-
-        this.getClientsData();
     }
 
-    private void getClientsData() {
+    public String getClientsData() {
         // Retrieve clients' tags
         ArrayList<ClientTag> clientTags = new ArrayList<>(clientTagService.findAll());
         // Create data structure
@@ -47,7 +44,8 @@ public class ClientProfileImplementation extends ClientService {
             clientProfiles.add(clientProfile);
         }
         // Display the first 10 clients' profiles in logs
-        LOGGER.info("clientProfiles: " + clientProfiles);
+        // LOGGER.info("clientProfiles: " + clientProfiles);
+        return clientProfiles.toString();
     }
 
 }
