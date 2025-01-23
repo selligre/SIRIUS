@@ -22,13 +22,14 @@ export default function Announce() {
     const [newAnnounce, setNewAnnounce] = useState({
         publicationDate: getCurrentDateTime(),
         status: 'DRAFT',
-        type: '',
+        type: 'EVENT',
         title: '',
         description: '',
         dateTimeStart: getCurrentDateTime(),
         duration: 0,
         dateTimeEnd: getCurrentDateTime(),
-        isRecurrent: false
+        isRecurrent: false,
+        authorId: 1
     });
 
     const showNotification = (message, type = 'success') => {
@@ -40,13 +41,14 @@ export default function Announce() {
         setNewAnnounce({
             publicationDate: getCurrentDateTime(),
             status: 'DRAFT',
-            type: '',
+            type: 'EVENT',
             title: '',
             description: '',
             dateTimeStart: getCurrentDateTime(),
             duration: 0,
             dateTimeEnd: getCurrentDateTime(),
-            isRecurrent: false
+            isRecurrent: false,
+            authorId: 1
         });
     };
 
@@ -67,7 +69,7 @@ export default function Announce() {
     };
 
     const removeAnnounce = async (id) => {
-        axios.delete(LOCAL_HOST_ANNOUNCE + id).then((response) => {
+        axios.delete(LOCAL_HOST_ANNOUNCE + '/'+id).then((response) => {
             console.log('Deleted announce:', response.data);
             showNotification('Announce successfully deleted');
             setAnnounceData();
@@ -85,9 +87,9 @@ export default function Announce() {
 
     const updateAnnounce = async (announce) => {
         if (
-            !announce.type?.trim() ||
-            !announce.title?.trim() ||
-            !announce.description?.trim()
+            !announce.type.trim() ||
+            !announce.title.trim() ||
+            !announce.description.trim()
         ) {
             alert('Please ensure that type, title, and description are not empty or only spaces.');
             return;
@@ -123,11 +125,11 @@ export default function Announce() {
 
     const handleNewAnnounceSubmit = async (e) => {
         e.preventDefault();
-
+        console.log(newAnnounce);
         if (
-            !newAnnounce.type?.trim() ||
-            !newAnnounce.title?.trim() ||
-            !newAnnounce.description?.trim()
+            !newAnnounce.type.trim() ||
+            !newAnnounce.title.trim() ||
+            !newAnnounce.description.trim()
         ) {
             alert('Please ensure that type, title, and description are not empty or only spaces.');
             return;
