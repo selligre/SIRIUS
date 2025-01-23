@@ -1,21 +1,13 @@
 package fimafeng.back.proto_back.services;
 
-import fimafeng.back.proto_back.models.Announce;
 import fimafeng.back.proto_back.models.Moderation;
-import fimafeng.back.proto_back.models.enums.AnnounceStatus;
-import fimafeng.back.proto_back.models.enums.ModerationReason;
 import fimafeng.back.proto_back.repositories.ModerationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -25,38 +17,47 @@ public class ModerationService {
     Logger LOGGER = Logger.getLogger(ModerationService.class.getName());
 
 
-    private static final String SYSTEM_MODERATOR_NAME = "SYSTEM";
-    private static final String MODERATION_DEFAULT_MESSAGE = "Votre annonce a été modérée car des mots ne relevant pas d'un bon comportement ont été repérés dans son contenu.";
-
-    // from https://github.com/darwiin/french-badwords-list
-    private static final String DICTIONARY_CLEAR_FILE_NAME = "french-bad-words-list-clear.txt";
-
-    // from https://fr.wiktionary.org/w/index.php?title=Cat%C3%A9gorie:Insultes_en_fran%C3%A7ais
-    private static final String DICTIONARY_CRYPTED_FILE_NAME = "french-bad-words-list.txt";
-
-    private static List<String> listBanWords = null;
-
     @Autowired
     private ModerationRepository moderationRepository;
 
-    @Autowired
-    @Lazy
-    // Lazy (dependencies cycling) Source: https://medium.com/@tuananhbk1996/how-to-handle-cyclic-dependency-between-beans-in-spring-754d1a56e297
-    private AnnounceService announceService;
 
+    public Moderation findById(int idModeration) {
+        Optional<Moderation> optionalModeration = moderationRepository.findById(idModeration);
+        return optionalModeration.orElse(null);
+    }
 
-    public ModerationService() {
-        // Load data from files if not already existing
-        if (listBanWords == null) {
-            LOGGER.info("Initializing Moderation Service");
-            try {
-                listBanWords = new ArrayList<>();
-                File file = ResourceUtils.getFile("classpath:"+ DICTIONARY_CLEAR_FILE_NAME);
-                listBanWords = Files.readAllLines(file.toPath());
-            } catch (IOException e) {
-                LOGGER.severe(e.getMessage());
-            }
-        }
+    public List<Moderation> findAll() {
+        return moderationRepository.findAll();
+    }
+
+    public boolean update(Moderation updatedModeration) {
+        if (updatedModeration == null) throw new IllegalArgumentException("moderation is null");
+        int id = updatedModeration.getId();
+
+        Optional<Moderation> optionalModeration = moderationRepository.findById(id);
+        if (optionalModeration.isEmpty()) return false;
+
+        Moderation moderation = optionalModeration.get();
+        moderation.setLatestAction(false);
+        LOGGER.info(moderation.toString());
+        moderationRepository.save(moderation);
+
+        Moderation newModeration = new Moderation();
+        newModeration.setModeratorName("MODERATOR_NAME"); // TODO : mettre en place un systeme de connexion rapide
+        newModeration.setModerationDate(new Date());
+        newModeration.setAnnounceId(updatedModeration.getAnnounceId());
+        newModeration.setAuthorId(updatedModeration.getAuthorId());
+        newModeration.setReason(updatedModeration.getReason());
+        newModeration.setDescription(updatedModeration.getDescription());
+        newModeration.setAnnounceTitle(updatedModeration.getAnnounceTitle());
+        newModeration.setAnnounceDescription(updatedModeration.getAnnounceDescription());
+        newModeration.setAnnounceType(updatedModeration.getAnnounceType());
+        newModeration.setAnnouncePublicationDate(updatedModeration.getAnnouncePublicationDate());
+        newModeration.setLatestAction(true);
+
+        LOGGER.info(newModeration.toString());
+        moderationRepository.saveAndFlush(newModeration);
+        return true;
     }
 
     public Moderation save(Moderation moderation) {
@@ -64,54 +65,16 @@ public class ModerationService {
         return moderationRepository.save(moderation);
     }
 
-    private void markAndUpdateAnnounceAs(Announce announce, AnnounceStatus status) {
-        LOGGER.info("Updating announce as " + status);
-        announce.setStatus(status);
-        announceService.update(announce, true);
-    }
-
-    private boolean isThereBanWord(String[] text) {
-        for(String word : text) {
-            if (listBanWords.contains(word)) {
-                return true;
-            }
+    public boolean delete(int idModeration) {
+        Optional<Moderation> optionalModeration = moderationRepository.findById(idModeration);
+        if (optionalModeration.isPresent()) {
+            optionalModeration.ifPresent(moderation -> moderationRepository.delete(moderation));
+            return true;
         }
         return false;
     }
 
-    public void analyse(Announce ata) {
-        // Assuring data isn't null or empty
-        if (ata.getDescription() != null && !ata.getDescription().isEmpty()) {
 
-            // Setting up data to do less interaction later
-            LOGGER.info("Analysing announce data");
-            String[] title = ata.getTitle().split(" ");
-            String[] desc = ata.getDescription().split(" ");
 
-            // Checking bad word presence
-            boolean titleModerated = isThereBanWord(title);
-            boolean descModerated = isThereBanWord(desc);
-            LOGGER.info("Moderation analyse: title=" + (titleModerated ? "KO" : "OK")+ ", desc=" + (descModerated ? "KO" : "OK"));
 
-            // Update announce according to case
-            if (titleModerated || descModerated) {
-                Moderation moderation = createModeration(ata);
-                markAndUpdateAnnounceAs(ata, AnnounceStatus.MODERATED);
-                save(moderation);
-            } else {
-                markAndUpdateAnnounceAs(ata, AnnounceStatus.PUBLISHED);
-            }
-        }
-    }
-
-    public Moderation createModeration(Announce announce) {
-        Moderation moderation = new Moderation();
-        moderation.setModeratorName(SYSTEM_MODERATOR_NAME);
-        moderation.setActionDate(new Date());
-        moderation.setAnnounceId(announce.getId());
-        moderation.setAuthorId(announce.getAuthorId());
-        moderation.setReason(ModerationReason.HATE);
-        moderation.setDescription(MODERATION_DEFAULT_MESSAGE);
-        return moderation;
-    }
 }

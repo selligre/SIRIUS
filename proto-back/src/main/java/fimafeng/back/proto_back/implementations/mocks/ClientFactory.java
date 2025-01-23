@@ -24,8 +24,8 @@ public class ClientFactory extends Client {
 
 
     public ClientFactory(DistrictService districtService, TagService tagService) {
-        LOGGER.info("Initializing clientFactory");
         if (districtsListWeighted == null || districtsListWeighted.isEmpty()) {
+            LOGGER.info("Initializing clientFactory");
             districtsListWeighted = new ArrayList<>();
 
             // Getting districts from DB
@@ -33,15 +33,11 @@ public class ClientFactory extends Client {
             List<District> districtsList = districtService.findAll();
 
             // Generating a list weighted from district data
-            LOGGER.info("Generating districts weights");
-
             for (District district : districtsList) {
                 for (int i = 0 ; i < district.getPopulationPercentile() ; i++) {
                     districtsListWeighted.add(district.getId());
                 }
             }
-
-            LOGGER.info("Data generated: " + districtsListWeighted.toString());
 
         } else {
             LOGGER.info("Districts already initialized");
@@ -55,7 +51,6 @@ public class ClientFactory extends Client {
             List<Tag> tagsList = tagService.findAll();
             tagIdsList = tagsList.stream().map(Tag::getId).collect(Collectors.toList());
 
-            LOGGER.info("Data retrieved: " + tagIdsList);
         } else {
             LOGGER.info("Tags already initialized");
         }

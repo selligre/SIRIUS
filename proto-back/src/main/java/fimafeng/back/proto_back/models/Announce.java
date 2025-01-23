@@ -29,7 +29,7 @@ public class Announce {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
 
     @Column(name = "date_time_start")
@@ -46,6 +46,7 @@ public class Announce {
 
     @Column(name = "ref_author_id")
     private int authorId;
+
 
     // Getters et Setters
     public int getId() {

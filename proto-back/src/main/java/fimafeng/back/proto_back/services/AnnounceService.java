@@ -1,5 +1,6 @@
 package fimafeng.back.proto_back.services;
 
+import fimafeng.back.proto_back.implementations.moderation.ModerationImplementation;
 import fimafeng.back.proto_back.models.Announce;
 import fimafeng.back.proto_back.models.enums.AnnounceStatus;
 import fimafeng.back.proto_back.repositories.AnnounceRepository;
@@ -16,7 +17,7 @@ public class AnnounceService {
     private AnnounceRepository announceRepository;
 
     @Autowired
-    private ModerationService moderationService;
+    private ModerationImplementation moderationImplementation;
 
     public Announce save(Announce announce) {
         // Save announce
@@ -25,7 +26,7 @@ public class AnnounceService {
         } else {
             announce.setStatus(AnnounceStatus.TO_ANALYSE);
             announceRepository.saveAndFlush(announce);
-            moderationService.analyse(announce);
+            moderationImplementation.analyse(announce);
         }
         return announceRepository.save(announce);
     }
@@ -74,7 +75,7 @@ public class AnnounceService {
         } else {
             announce.setStatus(AnnounceStatus.TO_ANALYSE);
             announceRepository.saveAndFlush(announce);
-            moderationService.analyse(announce);
+            moderationImplementation.analyse(announce);
         }
 
         return true;
@@ -83,7 +84,10 @@ public class AnnounceService {
     public boolean delete(int idAnnounce) {
         Optional<Announce> optionalAnnounce = announceRepository.findById(idAnnounce);
         if (optionalAnnounce.isPresent()) {
-            optionalAnnounce.ifPresent(announce -> announceRepository.delete(announce));
+            Announce announce = optionalAnnounce.get();
+            // TODO : récuperer les annonces_tags, puis les supprimer avant de supprimer l'annonce
+
+            announceRepository.delete(announce);
             return true;
         }
         return false;
