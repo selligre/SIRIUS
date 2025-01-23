@@ -62,10 +62,10 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("profiles")
-    public ResponseEntity<Client> buildClientProfiles() {
-        new ClientProfileImplementation(clientService, clientTagService);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("profile")
+    public ResponseEntity<String> buildClientProfiles() {
+        ClientProfileImplementation clientProfileImplementation = new ClientProfileImplementation(clientService, clientTagService);
+        return new ResponseEntity<>(clientProfileImplementation.getClientsData(), HttpStatus.OK);
     }
 
     @GetMapping("generate")
@@ -110,9 +110,9 @@ public class ClientController {
         }
 
         // If error occurred, then returning Http Error and amount generated
-        if(error) {
+        if (error) {
             String msg = String.format("Error: %d / %d", savedAmount, amount);
-            return new ResponseEntity<>(msg,HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(msg, HttpStatus.EXPECTATION_FAILED);
         }
 
         // Otherwise, returning Http Success and amount generated
