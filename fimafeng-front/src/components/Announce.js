@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Announce.css';
-import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../constants/back";
+import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../constants/back";
 
 export default function Announce() {
     const getCurrentDateTime = () => {
@@ -69,7 +69,7 @@ export default function Announce() {
     };
 
     const removeAnnounce = async (id) => {
-        axios.delete(LOCAL_HOST_ANNOUNCE + '/'+id).then((response) => {
+        axios.delete(LOCAL_HOST_ANNOUNCE + '/' + id).then((response) => {
             console.log('Deleted announce:', response.data);
             showNotification('Announce successfully deleted');
             setAnnounceData();
@@ -408,7 +408,7 @@ export default function Announce() {
     const renderCreateForm = () => (
         <div className="section">
             <div className="create-form-header">
-                <h4 className="section-title">Create New Announce</h4>
+                <h4 className="section-title">Ajouter une annonce</h4>
                 <button
                     type="button"
                     className="btn btn-outline-secondary"
@@ -544,7 +544,7 @@ export default function Announce() {
                             className="btn btn-primary btn-lg"
                             onClick={() => setShowCreateForm(true)}
                         >
-                            Create New Announce
+                            Ajouter une annonce
                         </button>
                     </div>
                 )}
@@ -552,7 +552,7 @@ export default function Announce() {
                 {showCreateForm && renderCreateForm()}
 
                 <div className="section">
-                    <h4 className="section-title">Liste des annonces sur {LOCAL_HOST}</h4>
+                    <h4 className="section-title">Liste des annonces</h4>
                     {announces.length === 0 ? (
                         <div className="alert alert-info">No announces available</div>
                     ) : (
@@ -560,15 +560,15 @@ export default function Announce() {
                             <table className="table table-bordered table-hover">
                                 <thead className="table-light">
                                 <tr>
-                                    <th onClick={() => handleSort('publicationDate')}>Publication Date</th>
+                                    <th onClick={() => handleSort('publicationDate')}>Date de publication</th>
                                     <th onClick={() => handleSort('status')}>Status</th>
                                     <th onClick={() => handleSort('type')}>Type</th>
-                                    <th onClick={() => handleSort('title')}>Title</th>
+                                    <th onClick={() => handleSort('title')}>Titre</th>
                                     <th onClick={() => handleSort('description')}>Description</th>
-                                    <th onClick={() => handleSort('dateTimeStart')}>Start Date</th>
-                                    <th onClick={() => handleSort('duration')}>Duration</th>
-                                    <th onClick={() => handleSort('dateTimeEnd')}>End Date</th>
-                                    <th>Recurrent</th>
+                                    <th onClick={() => handleSort('dateTimeStart')}>Date de début</th>
+                                    <th onClick={() => handleSort('duration')}>Durée</th>
+                                    <th onClick={() => handleSort('dateTimeEnd')}>Date de fin</th>
+                                    <th>Récurrence</th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>

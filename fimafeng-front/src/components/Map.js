@@ -119,7 +119,8 @@ const OSMMap = () => {
                             key={index}
                             positions={zone.coordinates}
                             pathOptions={{
-                                color: colors[index % colors.length],
+                                // color: colors[index % colors.length],
+                                color: 'grey',
                                 fillColor: 'magenta',
                                 fillOpacity: opacity,
                             }}

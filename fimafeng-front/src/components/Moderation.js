@@ -268,7 +268,7 @@ export default function Moderation() {
 
             <div className="moderation-content">
                 <div className="section">
-                    <h4 className="section-title">Liste des moderations</h4>
+                    <h4 className="section-title">Liste des modérations</h4>
                     {moderations.length === 0 ? (
                         <div className="alert alert-info">No moderations available</div>
                     ) : (

@@ -78,7 +78,7 @@ export default function Client() {
                                     <th onClick={() => handleSort('lastName')}>Nom</th>
                                     <th onClick={() => handleSort('email')}>Email</th>
                                     <th onClick={() => handleSort('refDistrict')}>Quartier</th>
-                                    <th>Actions</th>
+                                    {/*<th>Actions</th>*/}
                                 </tr>
                                 </thead>
                                 <tbody>
