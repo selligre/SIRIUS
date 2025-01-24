@@ -12,8 +12,8 @@ pipeline {
                 echo "Environment: ${SCP_ADR}"
                 sh '''
                     cd ${WORKSPACE}
-                    chmod -R 755 ./proto-front
-                    # chmod -R 755 ./proto-back
+                    chmod -R 755 ./fimafeng-front
+                    # chmod -R 755 ./fimafeng-back
                 '''
             }
         }
@@ -22,13 +22,13 @@ pipeline {
             steps {
                 echo "Lancement des tests BACK"
                 sh '''
-                    cd ${WORKSPACE}/proto-back/
+                    cd ${WORKSPACE}/fimafeng-back/
                     # mvn test
                 '''
 
                 echo "Lancement des tests FRONT"
                 sh '''
-                    cd ${WORKSPACE}/proto-front
+                    cd ${WORKSPACE}/fimafeng-front
                     #chmod +x ./node_modules/.bin/react-scripts
                     chmod -R 755 ./node_modules
                     rm -rf node_modules
@@ -45,13 +45,13 @@ pipeline {
 
                 echo "Compilation du BACK"
                 sh '''
-                    cd ${WORKSPACE}/proto-back
+                    cd ${WORKSPACE}/fimafeng-back
                     mvn clean install
                 '''
 
                 echo "Compilation du FRONT"
                 sh '''
-                    cd ${WORKSPACE}/proto-front
+                    cd ${WORKSPACE}/fimafeng-front
                     npm install react-scripts --save
                     npm run build
                 '''
@@ -64,9 +64,9 @@ pipeline {
                 echo "Livraison des fichiers"
                 sh '''
                     cd ${WORKSPACE}
-                    scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    scp ./fimafeng-back/target/*.jar ${SCP_ADR}:
                     ssh ${SCP_ADR} rm -r ./build/
-                    scp -r ./proto-front/build/ ${SCP_ADR}:
+                    scp -r ./fimafeng-front/build/ ${SCP_ADR}:
                 '''
             }
         }
@@ -95,7 +95,7 @@ pipeline {
                     }
                 }
                 sh "ssh ${SCP_ADR} ls -l"
-                sh "ssh ${SCP_ADR} java -jar proto-back-1.0-SNAPSHOT.jar &"
+                sh "ssh ${SCP_ADR} java -jar fimafeng-back-1.0-SNAPSHOT.jar &"
             }
         }
     }
