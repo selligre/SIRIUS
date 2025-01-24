@@ -29,10 +29,9 @@ pipeline {
                 echo "Lancement des tests FRONT"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-front
-                    #chmod +x ./node_modules/.bin/react-scripts
+                    npm install
                     chmod -R 755 ./node_modules
                     rm -rf node_modules
-                    npm install
                     npx update-browserslist-db@latest
                     npm install --save-dev @babel/plugin-proposal-private-property-in-object
                     # npm test --passWithNoTests
