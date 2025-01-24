@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import '../styles/Announce.css';
+import '../styles/Profile.css';
 import {GET_ANNOUNCES_PROFILES, GET_CLIENTS_PROFILES} from "../constants/back";
 
 export default function Profile() {
@@ -36,14 +36,15 @@ export default function Profile() {
 
 
     return (
-        <div className="announce-profile-container">
+        <div className="profile-container">
             {notification.show && (
                 <div className={`alert alert-${notification.type} notification-popup`}>
                     {notification.message}
                 </div>
             )}
+            <br/>
             <div className="announce-profile-content">
-                <h4 className="section-title">Profils d'annonces</h4>
+                <h4 className="section-title-left">Profils d'annonces</h4>
                 <div>
                     [announce_id, district_id, announce_tag1, *announce_tag2*]
                     {announceProfiles.map((profile, index) => (
@@ -53,8 +54,9 @@ export default function Profile() {
                     ))}
                 </div>
             </div>
+            <br/>
             <div className="client-profile-content">
-                <h4 className="section-title">Profils d'utilisateurs</h4>
+                <h4 className="section-title-left">Profils d'utilisateurs</h4>
                 <div>
                     [client_id, district_id, client_tag1, *client_tag2*]
                     {clientProfiles.map((profile, index) => (

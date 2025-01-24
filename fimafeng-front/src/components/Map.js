@@ -1,11 +1,11 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {MapContainer, TileLayer, Marker, Polygon, useMap} from 'react-leaflet';
+import React, {useEffect, useRef, useState} from 'react';
+import {MapContainer, Marker, Polygon, TileLayer, useMap} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 import polygones from './data/polygones.json';
 import deli from './data/deli.json';
-import {GET_LOCATIONS, GET_COUNT} from '../constants/back';
+import {GET_COUNT, GET_LOCATIONS} from '../constants/back';
 import customPin from './PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
 
 const OSMMap = () => {
@@ -45,7 +45,7 @@ const OSMMap = () => {
         }
     };
 
-    const colors = ['blue', 'red', 'green', 'purple', 'orange', 'yellow', 'pink', 'cyan', 'magenta', 'lime'];
+    // const colors = ['blue', 'red', 'green', 'purple', 'orange', 'yellow', 'pink', 'cyan', 'magenta', 'lime'];
 
     const MapEventHandler = () => {
         const map = useMap();
@@ -106,7 +106,7 @@ const OSMMap = () => {
                 attribution="© OpenStreetMap contributors"
             />
 
-            <MapEventHandler />
+            <MapEventHandler/>
 
             {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
                 const center = calculateCenter(zone.coordinates);
@@ -126,7 +126,10 @@ const OSMMap = () => {
                             }}
                         />
 
-                        <Marker position={center} icon={L.divIcon({className: 'count-marker', html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`})} />
+                        <Marker position={center} icon={L.divIcon({
+                            className: 'count-marker',
+                            html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`
+                        })}/>
                     </React.Fragment>
                 );
             })}
