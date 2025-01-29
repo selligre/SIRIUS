@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SCP_ADR = getAdressFromBranch(env.BRANCH_NAME)
+        SCP_ADR = getAddressFromBranch(env.BRANCH_NAME)
+        NPM_BUILD_PARAM = getParamFromBranch(env.BRANCH_NAME)
     }
 
     stages {
@@ -13,7 +14,6 @@ pipeline {
                 sh '''
                     cd ${WORKSPACE}
                     chmod -R 755 ./fimafeng-front
-                    # chmod -R 755 ./fimafeng-back
                 '''
             }
         }
@@ -23,9 +23,10 @@ pipeline {
                 echo "Lancement des tests BACK"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-back/
-                    # mvn test
+                    mvn test
                 '''
 
+                /*
                 echo "Lancement des tests FRONT"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-front
@@ -34,8 +35,8 @@ pipeline {
                     rm -rf node_modules
                     npx update-browserslist-db@latest
                     npm install --save-dev @babel/plugin-proposal-private-property-in-object
-                    # npm test --passWithNoTests
                 '''
+                */
             }
         }
 
@@ -51,8 +52,9 @@ pipeline {
                 echo "Compilation du FRONT"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-front
+                    npm install
                     npm install react-scripts --save
-                    npm run build
+                    npm run ${NPM_BUILD_PARAM}
                 '''
                 
             }
@@ -100,13 +102,26 @@ pipeline {
     }
 }
 
-def getAdressFromBranch(branchName) {
+def getAddressFromBranch(branchName) {
     switch(branchName) {
         case 'main': // PROD
             return "cgl-prod@172.31.252.155"
 
-        case 'dev': // PRE-PROD
+        case 'preprod': // PRE-PROD
+        case 'dev'
             return "cgl-preprod@172.31.250.67"
+        default:
+            return null
+    }
+}
+
+def getParamFromBranch(branchName) {
+    switch(branchName) {
+        case 'main':
+            return "build:prod"
+        case 'dev':
+        case 'preprod':
+            return "build:preprod"
         default:
             return null
     }
