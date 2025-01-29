@@ -108,7 +108,7 @@ def getAddressFromBranch(branchName) {
             return "cgl-prod@172.31.252.155"
 
         case 'preprod': // PRE-PROD
-        case 'dev'
+        case 'dev':
             return "cgl-preprod@172.31.250.67"
         default:
             return null
