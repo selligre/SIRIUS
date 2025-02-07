@@ -47,6 +47,9 @@ public class Announce {
     @Column(name = "ref_author_id")
     private int authorId;
 
+    @Column(name = "ref_location_id")
+    private int refLocationId;
+
     @Column(name = "ref_district_id")
     private int refDistrictId;
 
@@ -139,6 +142,14 @@ public class Announce {
         this.authorId = authorId;
     }
 
+    public int getRefLocationId() {
+        return refLocationId;
+    }
+
+    public void setRefLocationId(int refLocationId) {
+        this.refLocationId = refLocationId;
+    }
+
     public int getRefDistrictId() {
         return refDistrictId;
     }
@@ -161,6 +172,7 @@ public class Announce {
         res += "dateTimeEnd: " + dateTimeEnd + ", ";
         res += "isRecurrent: " + isRecurrent + ", ";
         res += "authorId: " + authorId + ", ";
+        res += "refLocationId: " + refLocationId + ", ";
         res += "refDistrictId: " + refDistrictId + "]";
         return res;
     }

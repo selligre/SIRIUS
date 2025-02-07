@@ -5,6 +5,7 @@ import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.services.AnnounceService;
 import fimafeng.back.fimafeng_back.services.AnnounceTagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,15 @@ public class AnnounceController {
     public ResponseEntity<Announce> findAnnounceById(@PathVariable int id) {
         LOGGER.info("findAnnounceById()");
         return new ResponseEntity<>(announceService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/announces")
+    public Page<Announce> getAnnounces(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "publicationDate") String sortBy,
+            @RequestParam(required = false) Integer refLocationId) {
+        return announceService.getAnnounces(page, size, sortBy, refLocationId);
     }
 
     @PostMapping("add")
