@@ -5,6 +5,10 @@ import fimafeng.back.proto_back.models.Announce;
 import fimafeng.back.proto_back.models.enums.AnnounceStatus;
 import fimafeng.back.proto_back.repositories.AnnounceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +35,14 @@ public class AnnounceService {
         return announceRepository.save(announce);
     }
 
-
+    public Page<Announce> getAnnounces(int page, int size, String sortBy, Integer refLocationId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        if (refLocationId != null) {
+            return announceRepository.findByRefLocationId(refLocationId, pageable);
+        } else {
+            return announceRepository.findAll(pageable);
+        }
+    }
 
     public Announce findById(int idAnnounce) {
         Optional<Announce> optionalAnnounce = announceRepository.findById(idAnnounce);
@@ -67,6 +78,7 @@ public class AnnounceService {
         announce.setDateTimeEnd(updatedAnnounce.getDateTimeEnd());
         announce.setIsRecurrent(updatedAnnounce.getIsRecurrent());
         announce.setAuthorId(updatedAnnounce.getAuthorId());
+        announce.setRefLocationId(updatedAnnounce.getRefLocationId());
         announce.setRefDistrictId(updatedAnnounce.getRefDistrictId());
 
         // Save announce
