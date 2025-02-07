@@ -20,24 +20,28 @@ public class ModerationController {
     private ModerationService moderationService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Moderation> findById(@PathVariable int id) {
+    public ResponseEntity<Moderation> findModerationById(@PathVariable int id) {
+        LOGGER.info("findModerationById()");
         return new ResponseEntity<>(moderationService.findById(id), HttpStatus.OK);
     }
 
     @PostMapping("add")
     public ResponseEntity<Moderation> addModeration(@RequestBody Moderation moderation) {
+        LOGGER.info("addModeration()");
         Moderation createdModeration = moderationService.save(moderation);
         return new ResponseEntity<>(createdModeration, HttpStatus.CREATED);
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<Moderation>> findAll() {
+    public ResponseEntity<List<Moderation>> findAllModeration() {
+        LOGGER.info("findAllModeration()");
         LOGGER.log(Level.FINE, "findAll()");
         return new ResponseEntity<>(moderationService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("update")
-    public ResponseEntity<Moderation> update(@RequestBody Moderation moderation) {
+    public ResponseEntity<Moderation> updateModeration(@RequestBody Moderation moderation) {
+        LOGGER.info("updateModeration()");
         boolean isUpdated = moderationService.update(moderation);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -46,7 +50,8 @@ public class ModerationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@PathVariable int id) {
+    public ResponseEntity<Long> deleteModeration(@PathVariable int id) {
+        LOGGER.info("deleteModeration()");
         boolean isRemoved = moderationService.delete(id);
         if (!isRemoved) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -106,8 +106,8 @@ def getAddressFromBranch(branchName) {
     switch(branchName) {
         case 'main': // PROD
             return "cgl-prod@172.31.252.155"
-
         case 'preprod': // PRE-PROD
+            return "cgl-preprod@172.31.250.67"
         case 'dev':
             return "cgl-preprod@172.31.250.67"
         default:
@@ -120,6 +120,7 @@ def getParamFromBranch(branchName) {
         case 'main':
             return "build:prod"
         case 'dev':
+            return "build:preprod"
         case 'preprod':
             return "build:preprod"
         default:

@@ -14,10 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("client")
 public class ClientController {
+    Logger LOGGER = Logger.getLogger(ClientController.class.getName());
 
     @Autowired
     private ClientService clientService;
@@ -29,23 +31,27 @@ public class ClientController {
     private TagService tagService;
 
     @GetMapping("/id")
-    public ResponseEntity<Client> getClient(@RequestParam("id") int id) {
+    public ResponseEntity<Client> findClientById(@RequestParam("id") int id) {
+        LOGGER.info("findClientById()");
         return new ResponseEntity<>(clientService.findById(id), HttpStatus.OK);
     }
 
     @PostMapping("add")
     public ResponseEntity<Client> addClient(@RequestBody Client client) {
+        LOGGER.info("addClient()");
         Client createdClient = clientService.save(client);
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<Client>> findAll() {
+    public ResponseEntity<List<Client>> findAllClients() {
+        LOGGER.info("findAll()");
         return new ResponseEntity<>(clientService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("update")
-    public ResponseEntity<Client> update(@RequestBody Client client) {
+    public ResponseEntity<Client> updateClient(@RequestBody Client client) {
+        LOGGER.info("updateClient()");
         boolean isUpdated = clientService.update(client);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -54,7 +60,8 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Client> delete(@PathVariable int id) {
+    public ResponseEntity<Client> deleteClient(@PathVariable int id) {
+        LOGGER.info("deleteClient()");
         boolean isRemoved = clientService.delete(id);
         if (!isRemoved) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -64,12 +71,14 @@ public class ClientController {
 
     @GetMapping("profile")
     public ResponseEntity<String> buildClientProfiles() {
+        LOGGER.info("buildClientProfiles()");
         ClientProfileImplementation clientProfileImplementation = new ClientProfileImplementation(clientService, clientTagService);
         return new ResponseEntity<>(clientProfileImplementation.getClientsData(), HttpStatus.OK);
     }
 
     @GetMapping("generate")
     public ResponseEntity<String> generateClient(@RequestParam(required = false) Integer amount, @RequestParam(required = false) Integer delay) {
+        LOGGER.info("generateClient()");
         if (amount == null) {
             amount = 1;
         }
