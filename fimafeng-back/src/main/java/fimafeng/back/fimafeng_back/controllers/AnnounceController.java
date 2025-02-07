@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RestController
@@ -25,24 +24,27 @@ public class AnnounceController {
     private AnnounceTagService announceTagService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Announce> findById(@PathVariable int id) {
+    public ResponseEntity<Announce> findAnnounceById(@PathVariable int id) {
+        LOGGER.info("findAnnounceById()");
         return new ResponseEntity<>(announceService.findById(id), HttpStatus.OK);
     }
 
     @PostMapping("add")
     public ResponseEntity<Announce> addAnnounce(@RequestBody Announce announce) {
+        LOGGER.info("addAnnounce()");
         Announce createdAnnounce = announceService.save(announce);
         return new ResponseEntity<>(createdAnnounce, HttpStatus.CREATED);
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<Announce>> findAll() {
-        LOGGER.log(Level.FINE, "findAll()");
+    public ResponseEntity<List<Announce>> findAllAnnounces() {
+        LOGGER.info("findAllAnnounces()");
         return new ResponseEntity<>(announceService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("update")
-    public ResponseEntity<Announce> update(@RequestBody Announce announce) {
+    public ResponseEntity<Announce> updateAnnounce(@RequestBody Announce announce) {
+        LOGGER.info("updateAnnounce()");
         boolean isUpdated = announceService.update(announce, false);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -51,7 +53,8 @@ public class AnnounceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@PathVariable int id) {
+    public ResponseEntity<Long> deleteAnnounce(@PathVariable int id) {
+        LOGGER.info("deleteAnnounce()");
         boolean isRemoved = announceService.delete(id);
         if (!isRemoved) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -62,6 +65,7 @@ public class AnnounceController {
 
     @GetMapping("profile")
     public ResponseEntity<String> buildClientProfiles() {
+        LOGGER.info("buildClientProfiles()");
         AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);
         return new ResponseEntity<>(announceProfileImplementation.getAnnouncesData(), HttpStatus.OK);
     }
