@@ -1,6 +1,6 @@
 */target/
 .vscode/
-proto-front/node_modules/
-proto-front/build/
+fimafeng-front/node_modules/
+fimafeng-front/build/
 */.idea/
 .idea/
