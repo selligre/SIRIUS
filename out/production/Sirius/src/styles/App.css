@@ -1,0 +1,35 @@
+    .App {
+    text-align: center;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.App-header {
+    background-color: #282c34;
+    padding: 20px;
+    color: white;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.App-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.App-main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Reset any bootstrap container styles */
+.container, 
+.container-fluid {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+}

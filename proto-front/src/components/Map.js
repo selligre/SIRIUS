@@ -1,17 +1,22 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {MapContainer, TileLayer, Marker, Polygon, useMap} from 'react-leaflet';
+// proto-front/src/components/Map.js
+import React, { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Polygon, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 import polygones from './data/polygones.json';
 import deli from './data/deli.json';
-import {GET_LOCATIONS, GET_COUNT} from '../constants/back';
-import customPin from './PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
+import { GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_FILTERED } from '../constants/back';
+import customPin from './PNG/broche-de-localisation.png';
+import Overlay from './Overlay'; // Import the Overlay component
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
     const [counts, setCounts] = useState([]);
+    const [countsDis, setCountsDIs] = useState([]);
     const [zoomLevel, setZoomLevel] = useState(14);
+    const [announces, setAnnounces] = useState([]);
+    const [showOverlay, setShowOverlay] = useState(false); // State to control modal visibility
     const mapRef = useRef();
 
     const fetchData = () => {
@@ -24,28 +29,45 @@ const OSMMap = () => {
             .then(response => response.json())
             .then(data => setCounts(data))
             .catch(error => console.error('Erreur lors de la récupération des counts:', error));
+
+        fetch(GET_COUNTDIS)
+            .then(response => response.json())
+            .then(data => setCountsDIs(data))
+            .catch(error => console.error('Erreur lors de la récupération des counts:', error));
     };
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 1000);
+        const interval = setInterval(fetchData, 100000);
         return () => clearInterval(interval);
     }, []);
 
+    const fetchFilteredAnnounces = (refLocationId) => {
+        const url = `${GET_ANNOUNCES_FILTERED}?page=0&size=10&sortBy=publicationDate&refLocationId=${refLocationId}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Filtered Announces:', data);
+                setAnnounces(data.content);
+            })
+            .catch(error => console.error('Error fetching filtered announces:', error));
+    };
+
     const customIcon = L.icon({
-        iconUrl: customPin, iconSize: [50, 50], // Adjust the size as needed
-        iconAnchor: [35, 70], // Adjust the icon anchor point as needed
-        popupAnchor: [0, -70] // Adjust the popup anchor point as needed
+        iconUrl: customPin, iconSize: [50, 50],
+        iconAnchor: [35, 70],
+        popupAnchor: [0, -70]
     });
 
-    const handleMarkerClick = (lat, lng) => {
+    const handleMarkerClick = (lat, lng, locationId) => {
         const map = mapRef.current;
         if (map) {
             map.setView([lat, lng], 18);
+            fetchFilteredAnnounces(locationId);
+            setShowOverlay(true); // Show the modal when a marker is clicked
+            console.log('Marker clicked:', lat, lng, locationId);
         }
     };
-
-    const colors = ['blue', 'red', 'green', 'purple', 'orange', 'yellow', 'pink', 'cyan', 'magenta', 'lime'];
 
     const MapEventHandler = () => {
         const map = useMap();
@@ -77,70 +99,83 @@ const OSMMap = () => {
     const getOpacity = (count, minCount, maxCount) => {
         if (maxCount === minCount) return 0.9;
         const opacity = (count - minCount) / (maxCount - minCount);
-        return Math.max(0.2, Math.min(0.9, opacity)); // Clamp between 0 and 1
+        return Math.max(0.2, Math.min(0.9, opacity));
     };
 
     useEffect(() => {
-        if (counts.length > 0) {
-            const minCount = Math.min(...counts.map(c => c.count));
-            const maxCount = Math.max(...counts.map(c => c.count));
+        if (countsDis.length > 0) {
+            const minCount = Math.min(...countsDis.map(c => c.count));
+            const maxCount = Math.max(...countsDis.map(c => c.count));
             console.log('Min Count:', minCount, 'Max Count:', maxCount);
         }
-    }, [counts]);
+    }, [countsDis]);
 
-    const minCount = counts.length > 0 ? Math.min(...counts.map(c => c.count)) : 0;
-    const maxCount = counts.length > 0 ? Math.max(...counts.map(c => c.count)) : 1;
+    const minCount = countsDis.length > 0 ? Math.min(...countsDis.map(c => c.count)) : 0;
+    const maxCount = countsDis.length > 0 ? Math.max(...countsDis.map(c => c.count)) : 1;
+
+    const locationsWithAnnounces = locations.filter(location =>
+        counts.some(count => count.location === location.idLocation)
+    );
 
     return (
-        <MapContainer
-            center={[48.7856883564271, 2.4577914299514134]} // Centré sur Créteil L'Échat
-            zoom={14}
-            minZoom={14}
-            maxZoom={18}
-            maxBounds={deli.zone}
-            style={{height: '100vh', width: '100%'}}
-            ref={mapRef}
-        >
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="© OpenStreetMap contributors"
-            />
-
-            <MapEventHandler />
-
-            {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
-                const center = calculateCenter(zone.coordinates);
-                const count = counts.find(c => c.district === zone.id)?.count || 0;
-                const opacity = getOpacity(count, minCount, maxCount);
-                console.log('Zone:', zone.id, 'Count:', count, 'Opacity:', opacity);
-                return (
-                    <React.Fragment key={index}>
-                        <Polygon
-                            key={index}
-                            positions={zone.coordinates}
-                            pathOptions={{
-                                color: colors[index % colors.length],
-                                fillColor: 'magenta',
-                                fillOpacity: opacity,
-                            }}
-                        />
-
-                        <Marker position={center} icon={L.divIcon({className: 'count-marker', html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`})} />
-                    </React.Fragment>
-                );
-            })}
-
-            {zoomLevel >= 16 && locations.map(location => (
-                <Marker
-                    key={location.location_id}
-                    position={[location.latitude, location.longitude]}
-                    icon={customIcon}
-                    eventHandlers={{
-                        click: () => handleMarkerClick(location.latitude, location.longitude),
-                    }}
+        <>
+            <MapContainer
+                center={[48.7856883564271, 2.4577914299514134]}
+                zoom={14}
+                minZoom={14}
+                maxZoom={18}
+                maxBounds={deli.zone}
+                style={{ height: '100vh', width: '100%' }}
+                ref={mapRef}
+            >
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution="© OpenStreetMap contributors"
                 />
-            ))}
-        </MapContainer>
+
+                <MapEventHandler />
+
+                {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
+                    const center = calculateCenter(zone.coordinates);
+                    const count = countsDis.find(c => c.district === zone.id)?.count || 0;
+                    const opacity = getOpacity(count, minCount, maxCount);
+                    console.log('Zone:', zone.id, 'Count:', count, 'Opacity:', opacity);
+                    return (
+                        <React.Fragment key={index}>
+                            <Polygon
+                                key={index}
+                                positions={zone.coordinates}
+                                pathOptions={{
+                                    color: 'black',
+                                    fillColor: 'magenta',
+                                    fillOpacity: opacity,
+                                }}
+                            />
+
+                            <Marker position={center} icon={L.divIcon({
+                                className: 'count-marker',
+                                html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`
+                            })} />
+                        </React.Fragment>
+                    );
+                })}
+
+                {zoomLevel >= 16 && locationsWithAnnounces.map(location => (
+                    <Marker
+                        key={location.idLocation}
+                        position={[location.latitude, location.longitude]}
+                        icon={customIcon}
+                        eventHandlers={{
+                            click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation),
+                        }}
+                    >
+                    </Marker>
+                ))}
+            </MapContainer>
+
+            <Overlay show={showOverlay} onClose={() => setShowOverlay(false)} announces={announces}>
+            </Overlay>
+        </>
     );
 };
 

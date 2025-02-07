@@ -25,7 +25,7 @@ public class LocationController {
         return new ResponseEntity<>(locationService.findByIdLocation(id), HttpStatus.OK);
     }
 
-        @PostMapping("add")
+    @PostMapping("add")
     public ResponseEntity<Location> addLocation(@RequestBody Location location) {
         Location createdLocation = locationService.saveLocation(location);
         return new ResponseEntity<>(createdLocation, HttpStatus.CREATED);
@@ -37,8 +37,8 @@ public class LocationController {
     }
 
     @GetMapping("count")
-    public ResponseEntity<List<LocationCountProjection>> countOfLocation(){
-        return new ResponseEntity<>(locationService.countOfLocation(), HttpStatus.OK);
+    public ResponseEntity<List<LocationCountProjection>> countAnnouncesByLocation(){
+        return new ResponseEntity<>(locationService.countAnnouncesByLocation(), HttpStatus.OK);
     }
 
     @GetMapping("countDis")
