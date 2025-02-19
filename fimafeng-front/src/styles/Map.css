@@ -3,12 +3,10 @@
     width: 100%;
     margin: 0;
     padding: 0;
-}
-
-#map {
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
 }
 
 .leaflet-control-attribution {
@@ -24,4 +22,8 @@
     #map {
         height: 80vh;
     }
+}
+
+.no-scroll {
+    overflow: hidden;
 }

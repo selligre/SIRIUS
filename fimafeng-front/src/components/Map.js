@@ -7,7 +7,7 @@ import polygones from './data/polygones.json';
 import deli from './data/deli.json';
 import { GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_FILTERED } from '../constants/back';
 import customPin from './PNG/broche-de-localisation.png';
-import Overlay from './Overlay'; // Import the Overlay component
+import OverlayLocation from './OverlayLocation'; // Import the OverlayLocation component
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
@@ -15,8 +15,17 @@ const OSMMap = () => {
     const [countsDis, setCountsDIs] = useState([]);
     const [zoomLevel, setZoomLevel] = useState(14);
     const [announces, setAnnounces] = useState([]);
+    const [totalPages, setTotalPages] = useState(0);
     const [showOverlay, setShowOverlay] = useState(false);
     const mapRef = useRef();
+
+
+    useEffect(() => {
+        document.body.classList.add('no-scroll');
+        return () => {
+            document.body.classList.remove('no-scroll');
+        };
+    }, []);
 
     const fetchData = () => {
         fetch(GET_LOCATIONS)
@@ -46,8 +55,8 @@ const OSMMap = () => {
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log('Filtered Announces:', data);
                 setAnnounces(data.content);
+                setTotalPages(data.totalPages);
             })
             .catch(error => console.error('Error fetching filtered announces:', error));
     };
@@ -87,30 +96,13 @@ const OSMMap = () => {
         return null;
     };
 
-    const calculateCenter = (coordinates) => {
-        const latitudes = coordinates.map(coord => coord[0]);
-        const longitudes = coordinates.map(coord => coord[1]);
-        const latSum = latitudes.reduce((a, b) => a + b, 0);
-        const lngSum = longitudes.reduce((a, b) => a + b, 0);
-        return [latSum / latitudes.length, lngSum / longitudes.length];
-    };
-
-    const getOpacity = (count, minCount, maxCount) => {
+    const getOpacity = (count) => {
+        const minCount = countsDis.length > 0 ? Math.min(...countsDis.map(c => c.count)) : 0;
+        const maxCount = countsDis.length > 0 ? Math.max(...countsDis.map(c => c.count)) : 1;
         if (maxCount === minCount) return 0.9;
         const opacity = (count - minCount) / (maxCount - minCount);
         return Math.max(0.2, Math.min(0.9, opacity));
     };
-
-    useEffect(() => {
-        if (countsDis.length > 0) {
-            const minCount = Math.min(...countsDis.map(c => c.count));
-            const maxCount = Math.max(...countsDis.map(c => c.count));
-            console.log('Min Count:', minCount, 'Max Count:', maxCount);
-        }
-    }, [countsDis]);
-
-    const minCount = countsDis.length > 0 ? Math.min(...countsDis.map(c => c.count)) : 0;
-    const maxCount = countsDis.length > 0 ? Math.max(...countsDis.map(c => c.count)) : 1;
 
     const locationsWithAnnounces = locations.filter(location =>
         counts.some(count => count.location === location.idLocation)
@@ -135,9 +127,8 @@ const OSMMap = () => {
                 <MapEventHandler />
 
                 {zoomLevel >= 14 && zoomLevel <= 17 && polygones.zones.map((zone, index) => {
-                    const center = calculateCenter(zone.coordinates);
                     const count = countsDis.find(c => c.district === zone.id)?.count || 0;
-                    const opacity = getOpacity(count, minCount, maxCount);
+                    const opacity = getOpacity(count);
                     console.log('Zone:', zone.id, 'Count:', count, 'Opacity:', opacity);
                     return (
                         <React.Fragment key={index}>
@@ -150,11 +141,6 @@ const OSMMap = () => {
                                     fillOpacity: opacity,
                                 }}
                             />
-
-                            <Marker position={center} icon={L.divIcon({
-                                className: 'count-marker',
-                                html: `<div style=" font-size: 20px; font-weight: bold;">${count}</div>`
-                            })} />
                         </React.Fragment>
                     );
                 })}
@@ -172,8 +158,8 @@ const OSMMap = () => {
                 ))}
             </MapContainer>
 
-            <Overlay show={showOverlay} onClose={() => setShowOverlay(false)} announces={announces}>
-            </Overlay>
+            <OverlayLocation show={showOverlay} onClose={() => setShowOverlay(false)} announces={announces} totalPages={totalPages}>
+            </OverlayLocation>
         </>
     );
 };
