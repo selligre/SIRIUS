@@ -50,6 +50,11 @@ public class Moderation {
     @Column(name = "latest_action")
     private boolean latestAction;
 
+    @Transient
+    // Transient (not persistent field)
+    // source: https://stackoverflow.com/questions/64304416/make-certain-fields-in-entity-not-be-saved-to-the-database
+    private ModerationAnalysis analysis;
+
     // Getters and Setters
     public int getId() {
         return id;
@@ -145,6 +150,14 @@ public class Moderation {
 
     public void setLatestAction(boolean isLatest) {
         latestAction = isLatest;
+    }
+
+    public ModerationAnalysis getAnalysis() {
+        return analysis;
+    }
+
+    public void setAnalysis(ModerationAnalysis analysis) {
+        this.analysis = analysis;
     }
 
     @Override
