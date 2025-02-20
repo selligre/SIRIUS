@@ -42,6 +42,7 @@ public class AnnounceController {
     @PostMapping("add")
     public ResponseEntity<Announce> addAnnounce(@RequestBody Announce announce) {
         LOGGER.info("addAnnounce()");
+        announce.setRefLocationId(1);
         Announce createdAnnounce = announceService.save(announce);
         return new ResponseEntity<>(createdAnnounce, HttpStatus.CREATED);
     }
