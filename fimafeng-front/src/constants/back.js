@@ -3,12 +3,10 @@ export const LOCAL_HOST_ANNOUNCE = LOCAL_HOST + '/announce';
 export const GET_ANNOUNCES = LOCAL_HOST_ANNOUNCE + '/all';
 export const ADD_ANNOUNCE = LOCAL_HOST_ANNOUNCE + '/add';
 export const UPDATE_ANNOUNCES = LOCAL_HOST_ANNOUNCE + '/update';
-export const GET_ANNOUNCES_FILTERED = LOCAL_HOST_ANNOUNCE + '/announces';
+export const GET_ANNOUNCES_SEARCH = LOCAL_HOST_ANNOUNCE + '/search';
 
 export const LOCAL_HOST_LOCATION = LOCAL_HOST + '/location';
 export const GET_LOCATIONS = LOCAL_HOST_LOCATION + '/all';
-export const ADD_LOCATION = LOCAL_HOST_LOCATION + '/add';
-export const UPDATE_LOCATIONS = LOCAL_HOST_LOCATION + '/update';
 export const GET_COUNT = LOCAL_HOST_LOCATION + '/count';
 export const GET_COUNTDIS = LOCAL_HOST_LOCATION + '/countDis';
 
