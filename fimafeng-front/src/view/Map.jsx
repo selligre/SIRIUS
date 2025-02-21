@@ -3,10 +3,10 @@ import {MapContainer, Marker, Polygon, TileLayer, useMap} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
-import polygones from './data/polygones.json';
-import deli from './data/deli.json';
+import polygones from '../components/data/polygones.json';
+import deli from '../components/data/deli.json';
 import {GET_COUNT, GET_LOCATIONS} from '../constants/back';
-import customPin from './PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
+import customPin from '../components/PNG/broche-de-localisation.png'; // Adjust the path to your custom pin image
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);

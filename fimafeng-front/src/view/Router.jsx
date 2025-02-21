@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import App from "./App";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import Announce from './Announce';
 import Map from './Map';
 import Client from './Client';
