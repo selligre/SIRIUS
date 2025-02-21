@@ -7,7 +7,6 @@ import fimafeng.back.fimafeng_back.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,33 +29,29 @@ public class LocationService {
         return locationRepository.findAll();
     }
 
-    public List<LocationCountProjection> countOfLocation(){
-        return locationRepository.countOfLocation();
+    public List<LocationCountProjection> countAnnouncesByLocation(){
+        return locationRepository.countAnnouncesByLocation();
     }
 
     public List<DistrictAnnounceCountProjection> countOfAnnounceByDistrict(){return locationRepository.countOfAnnounceByDistrict();}
 
     public boolean updateLocation(Location updatedLocation) {
-        // Vérifiez si l'objet ou son ID est null
         if (updatedLocation == null || updatedLocation.getIdLocation() == null) {
             throw new IllegalArgumentException("The updated announce or its ID must not be null");
         }
 
         Long id = updatedLocation.getIdLocation();
 
-        // Vérifiez si l'annonce existe
         Optional<Location> optionalLocation = locationRepository.findById(id);
         if (optionalLocation.isEmpty()) {
-            return false; // Si l'annonce n'existe pas, retournez false
+            return false;
         }
 
-        // Mise à jour des champs de l'entité existante
         Location location = optionalLocation.get();
         location.setName(updatedLocation.getName());
         location.setLongitude(updatedLocation.getLongitude());
         location.setLatitude(updatedLocation.getLatitude());
 
-        // Sauvegardez les modifications
         locationRepository.saveAndFlush(location);
 
         return true;

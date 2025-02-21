@@ -13,7 +13,7 @@
 
 
   <name>fimafeng-back</name>
-  <description>Back side of the project</description>
+  <description>Back side of the fimafeng project</description>
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>

@@ -35,13 +35,8 @@ public class AnnounceService {
         return announceRepository.save(announce);
     }
 
-    public Page<Announce> getAnnounces(int page, int size, String sortBy, Integer refLocationId) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-        if (refLocationId != null) {
-            return announceRepository.findByRefLocationId(refLocationId, pageable);
-        } else {
-            return announceRepository.findAll(pageable);
-        }
+    public Page<Announce> searchAnnounces(String keyword, Integer refLocationId, Pageable pageable) {
+        return announceRepository.searchByKeyword(keyword, refLocationId, pageable);
     }
 
     public Announce findById(int idAnnounce) {
@@ -54,20 +49,17 @@ public class AnnounceService {
     }
 
     public boolean update(Announce updatedAnnounce, boolean fromModeration) {
-        // Check if object is null
         if (updatedAnnounce == null) {
             throw new IllegalArgumentException("The updated announce must not be null");
         }
 
         int id = updatedAnnounce.getId();
 
-        // Check if announce exists
         Optional<Announce> optionalAnnounce = announceRepository.findById(id);
         if (optionalAnnounce.isEmpty()) {
-            return false; // If it doesn't, then return false
+            return false;
         }
 
-        // Update announce fields
         Announce announce = optionalAnnounce.get();
         announce.setPublicationDate(updatedAnnounce.getPublicationDate());
         announce.setType(updatedAnnounce.getType());

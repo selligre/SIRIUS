@@ -4,9 +4,14 @@ import fimafeng.back.fimafeng_back.models.Announce;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface AnnounceRepository extends JpaRepository<Announce, Integer> {
-    Page<Announce> findByRefLocationId(int refLocationId, Pageable pageable);
+    @Query("SELECT a FROM Announce a WHERE (:keyword IS NULL OR a.title LIKE %:keyword% OR a.description LIKE %:keyword%) AND (:refLocationId IS NULL OR a.refLocationId = :refLocationId)")
+    Page<Announce> searchByKeyword(@Param("keyword") String keyword, @Param("refLocationId") Integer refLocationId, Pageable pageable);
 }

@@ -6,6 +6,8 @@ import fimafeng.back.fimafeng_back.services.AnnounceService;
 import fimafeng.back.fimafeng_back.services.AnnounceTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +32,15 @@ public class AnnounceController {
         return new ResponseEntity<>(announceService.findById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/announces")
-    public Page<Announce> getAnnounces(
+    @GetMapping("/search")
+    public Page<Announce> searchAnnounces(@RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer refLocationId,
             @RequestParam(defaultValue = "publicationDate") String sortBy,
-            @RequestParam(required = false) Integer refLocationId) {
-        return announceService.getAnnounces(page, size, sortBy, refLocationId);
+            @RequestParam(required = false) String sortDirection) {
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+        return announceService.searchAnnounces(keyword, refLocationId, PageRequest.of(page, size, Sort.by(direction, sortBy)));
     }
 
     @PostMapping("add")

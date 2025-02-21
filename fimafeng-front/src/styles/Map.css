@@ -1,32 +1,199 @@
-/* Assurez-vous que la carte occupe tout l'espace disponible */
 #map {
-    height: 100vh; /* Hauteur de la carte à 100% de la hauteur de la fenêtre */
-    width: 100%; /* Largeur à 100% */
-    margin: 0; /* Supprime les marges */
-    padding: 0; /* Supprime les paddings */
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
 }
 
-/* Ajouter une bordure fine autour de la carte */
-#map {
-    border: 1px solid #ddd; /* Une bordure légère pour délimiter la carte */
-    border-radius: 10px; /* Coins arrondis pour un effet moderne */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre subtile autour de la carte */
-}
-
-/* Si vous avez des éléments superposés (ex: boutons), les ajuster */
 .leaflet-control-attribution {
-    font-size: 14px; /* Taille de police plus petite pour l'attribution */
-    color: rgba(0, 0, 0, 0.5); /* Couleur plus discrète pour l'attribution */
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
 }
 
-/* Style pour les éléments interactifs de la carte (comme les marqueurs ou polylignes) */
 .leaflet-interactive {
-    cursor: pointer; /* Modifie le curseur lorsqu'on survole les éléments interactifs */
+    cursor: pointer;
 }
 
-/* Styles responsives pour les petits écrans */
 @media (max-width: 768px) {
     #map {
-        height: 80vh; /* Ajuste la hauteur de la carte sur petits écrans */
+        height: 80vh;
     }
+}
+
+.no-scroll {
+    overflow: hidden;
+}
+
+.search-form {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.search-input {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-right: 10px;
+    width: 400px;
+}
+
+.search-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+.clear-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #ff003b;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.clear-button:hover {
+    background-color: rgb(162, 0, 39);
+}
+
+.zoom-button {
+    position: absolute;
+    top: 83px;
+    left: 71%;
+    z-index: 1000;
+    display: flex;
+    transform: translateX(-50%);
+    align-items: center;
+    background: white;
+    padding: 0px;
+    border-radius: 5px;
+    font-size: 30px;
+    border-color: #ddd;
+}
+
+.zoom-button:hover {
+    background-color: #313131;
+}
+
+.overlay-announce {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.overlay-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    max-height: calc(100vh - 63px);
+    height: 100%;
+    width: 30%;
+    overflow: auto;
+    pointer-events: auto;
+}
+
+.overlay-district {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.overlay-district-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    max-height: calc(100vh - 63px);
+    height: 50%;
+    width: 25%;
+    overflow: auto;
+    pointer-events: auto;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.announce-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.announce-table th, .announce-table td {
+    border: 1px solid rgba(168, 168, 168, 0.87);
+    padding: 8px;
+}
+
+.announce-table th {
+    background-color: #c2c2c2;
+    text-align: left;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #f2f2f2;
+    margin: 0 5px;
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.9;
 }
