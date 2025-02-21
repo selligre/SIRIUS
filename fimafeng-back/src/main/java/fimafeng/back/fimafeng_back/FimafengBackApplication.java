@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class ProtoBackApplication {
+public class FimafengBackApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ProtoBackApplication.class, args);
+        SpringApplication.run(FimafengBackApplication.class, args);
     }
 
 }
