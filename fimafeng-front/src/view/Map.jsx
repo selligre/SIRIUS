@@ -3,11 +3,15 @@ import {MapContainer, TileLayer, Marker, Polygon, useMap} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
-import polygones from './data/polygones.json';
-import deli from './data/deli.json';
+import polygones from '../components/data/polygones.json';
+import deli from '../components/data/deli.json';
 import {GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_SEARCH} from '../constants/back';
-import customPin from './PNG/broche-de-localisation.png';
-import customPin2 from './PNG/ezgif-2-711d1a5a58.gif';
+import customPin from '../components/PNG/broche-de-localisation.png';
+import customPin2 from '../components/PNG/ezgif-2-711d1a5a58.gif';
+import SearchForm from '../components/map/SearchForm';
+import ZoomButton from '../components/map/ZoomButton';
+import OverlayAnnounce from '../components/map/OverlayAnnounce';
+import OverlayDistrict from '../components/map/OverlayDistrict';
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
@@ -20,7 +24,7 @@ const OSMMap = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [showOverlayAnnounce, setShowOverlayAnnounce] = useState(false);
-    const[showOverlayDistrict, setShowOverlayDistrict] = useState(false);
+    const [showOverlayDistrict, setShowOverlayDistrict] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
     const mapRef = useRef();
 
@@ -72,7 +76,7 @@ const OSMMap = () => {
     });
 
     const customIconSelected = L.icon({
-        iconUrl: customPin2, iconSize: [50, 50],
+        iconUrl: customPin2, iconSize: [60, 60],
         iconAnchor: [25, 50],
         popupAnchor: [0, -50]
     });
@@ -81,6 +85,7 @@ const OSMMap = () => {
         const map = mapRef.current;
         if (map) {
             setCurrentPage(1);
+            map.setMaxBounds(deli.zone);
             map.setView([lat, lng], 18);
             fetchFilteredAnnounces('', locationId, 1);
             setRefLocationId(locationId)
@@ -128,7 +133,7 @@ const OSMMap = () => {
         event.preventDefault();
         setCurrentPage(1);
         setRefLocationId('');
-        fetchFilteredAnnounces(searchKeyword,'', 1);
+        fetchFilteredAnnounces(searchKeyword, '', 1);
         setShowOverlayAnnounce(true);
     };
 
@@ -137,8 +142,7 @@ const OSMMap = () => {
         setAnnounces([]);
         setCurrentPage(1);
         setRefLocationId('');
-        const map = mapRef.current;
-        map.setMaxBounds(deli.zone);
+        mapRef.current.setMaxBounds(deli.zone);
         setSelectedDistrict([]);
         setShowOverlayDistrict(false)
         setShowOverlayAnnounce(false);
@@ -187,19 +191,14 @@ const OSMMap = () => {
 
     return (
         <>
-            <form onSubmit={handleSearchSubmit} className="search-form">
-                <input
-                    type="text"
-                    value={searchKeyword}
-                    onChange={handleSearchChange}
-                    placeholder="Rechercher une annonce..."
-                    className="search-input"
-                />
-                <button type="submit" className="search-button">Recherche</button>
-                <button type="button" className="clear-button" onClick={handleClearSearch}>Effacer</button>
-            </form>
+            <SearchForm
+                searchKeyword={searchKeyword}
+                handleSearchChange={handleSearchChange}
+                handleSearchSubmit={handleSearchSubmit}
+                handleClearSearch={handleClearSearch}
+            />
 
-            <button type="button" className="zoom-button" onClick={handleZoom}>🔍</button>
+            <ZoomButton handleZoom={handleZoom}/>
 
             <MapContainer
                 center={[48.7856883564271, 2.4577914299514134]}
@@ -277,104 +276,30 @@ const OSMMap = () => {
             </MapContainer>
 
             {showOverlayDistrict && (
-                <div className={"overlay-district"}>
-                    <div className={"overlay-district-content"}>
-                        <button className="close-button" onClick={() => {setShowOverlayDistrict(false); setSelectedDistrict([])}}>X</button>
-                        <h2>Quartier</h2>
-                            <table className="announce-table">
-                                <thead>
-                                <tr>
-                                    <th colSpan="2">{selectedDistrict.name}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>Nombre d'annonces</td>
-                                    <td>{countsDis.find(c => c.district === selectedDistrict.id)?.count || 0}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                    </div>
-                </div>
+                <OverlayDistrict
+                    selectedDistrict={selectedDistrict}
+                    countsDis={countsDis}
+                    setShowOverlayDistrict={setShowOverlayDistrict}
+                    setSelectedDistrict={setSelectedDistrict}
+                    mapRef={mapRef}
+                />
             )}
 
             {showOverlayAnnounce && (
-                <div className="overlay-announce">
-                    <div className="overlay-content">
-                        <button className="close-button" onClick={() => {setShowOverlayAnnounce(false); setSearchKeyword(''); setRefLocationId('')}}>X</button>
-                        <h2>Annonces</h2>
-                        {announces.map(announce => (
-                            <table key={announce.id} className="announce-table" onClick={() => handleAnnounceClick(announce)}>
-                                <thead>
-                                <tr>
-                                    <th colSpan="2">{announce.title}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td colSpan="2">{announce.description}</td>
-                                </tr>
-                                <tr>
-                                    <td>Type</td>
-                                    <td>{mapType(announce.type)}</td>
-                                </tr>
-                                <tr>
-                                    <td>Débute</td>
-                                    <td>Le {formatDate(announce.dateTimeStart)} à {formatTime(announce.dateTimeStart)}</td>
-                                </tr>
-                                <tr>
-                                    <td>Fini</td>
-                                    <td>Le {formatDate(announce.dateTimeEnd)} à {formatTime(announce.dateTimeEnd)}</td>
-                                </tr>
-                                <tr>
-                                    <td>Durée</td>
-                                    <td>{formatDuration(announce.duration)}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        ))}
-                        <div className="pagination">
-                            <button onClick={handlePreviousPage} disabled={currentPage === 1}>&lt;</button>
-                            <span>Page {currentPage} sur {totalPages}</span>
-                            <button onClick={handleNextPage} disabled={currentPage === totalPages}>&gt;</button>
-                        </div>
-                    </div>
-                </div>
+                <OverlayAnnounce
+                    announces={announces}
+                    handleAnnounceClick={handleAnnounceClick}
+                    handlePreviousPage={handlePreviousPage}
+                    handleNextPage={handleNextPage}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    setShowOverlayAnnounce={setShowOverlayAnnounce}
+                    setSearchKeyword={setSearchKeyword}
+                    setRefLocationId={setRefLocationId}
+                />
             )}
         </>
     );
-
-    function mapType(type) {
-        const typeMapping = {
-            'EVENT': 'évènement',
-            'LOAN': 'prêt',
-            'SERVICE': 'service',
-        };
-        return typeMapping[type] || type;
-    }
-
-    function formatDate(date) {
-        const options = {year: 'numeric', month: 'numeric', day: 'numeric'};
-        return new Date(date).toLocaleDateString(undefined, options);
-    }
-
-    function formatTime(date) {
-        const options = {hour: '2-digit', minute: '2-digit'};
-        return new Date(date).toLocaleTimeString(undefined, options);
-    }
-
-    function formatDuration(duration) {
-        const totalMinutes = Math.round(duration * 60);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        if (hours === 0) {
-            return `${minutes} min`;
-        }
-        if (minutes === 0) {
-            return `${hours} h`;
-        }
-        return `${hours}h ${minutes}min`;
-    }
 
     function handleNextPage() {
         setCurrentPage(currentPage + 1);
