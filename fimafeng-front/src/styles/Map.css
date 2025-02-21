@@ -94,7 +94,7 @@
     background-color: #313131;
 }
 
-.overlay {
+.overlay-announce {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -117,6 +117,33 @@
     max-height: calc(100vh - 63px);
     height: 100%;
     width: 30%;
+    overflow: auto;
+    pointer-events: auto;
+}
+
+.overlay-district {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.overlay-district-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    max-height: calc(100vh - 63px);
+    height: 50%;
+    width: 25%;
     overflow: auto;
     pointer-events: auto;
 }

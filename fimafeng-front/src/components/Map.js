@@ -7,9 +7,11 @@ import polygones from './data/polygones.json';
 import deli from './data/deli.json';
 import {GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_SEARCH} from '../constants/back';
 import customPin from './PNG/broche-de-localisation.png';
+import customPin2 from './PNG/ezgif-2-711d1a5a58.gif';
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
+    const [selectedDistrict, setSelectedDistrict] = useState([]);
     const [refLocationId, setRefLocationId] = useState('');
     const [counts, setCounts] = useState([]);
     const [countsDis, setCountsDIs] = useState([]);
@@ -17,7 +19,8 @@ const OSMMap = () => {
     const [announces, setAnnounces] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
-    const [showOverlay, setShowOverlay] = useState(false);
+    const [showOverlayAnnounce, setShowOverlayAnnounce] = useState(false);
+    const[showOverlayDistrict, setShowOverlayDistrict] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
     const mapRef = useRef();
 
@@ -68,6 +71,12 @@ const OSMMap = () => {
         popupAnchor: [0, -50]
     });
 
+    const customIconSelected = L.icon({
+        iconUrl: customPin2, iconSize: [50, 50],
+        iconAnchor: [25, 50],
+        popupAnchor: [0, -50]
+    });
+
     const handleMarkerClick = (lat, lng, locationId) => {
         const map = mapRef.current;
         if (map) {
@@ -75,9 +84,41 @@ const OSMMap = () => {
             map.setView([lat, lng], 18);
             fetchFilteredAnnounces('', locationId, 1);
             setRefLocationId(locationId)
-            setShowOverlay(true);
+            setShowOverlayAnnounce(true);
         }
     };
+
+    const handleAnnounceClick = (announce) => {
+        const location = locations.find(loc => loc.idLocation === announce.refLocationId);
+        if (location) {
+            const map = mapRef.current;
+            if (map) {
+                map.setView([location.latitude, location.longitude], 18);
+                setRefLocationId(announce.refLocationId);
+            }
+        }
+    };
+
+    const handleDistrictClick = (districtId) => {
+        const district = polygones.zones.find(zone => zone.id === districtId);
+        if (district) {
+            const map = mapRef.current;
+            if (map) {
+                const margin = 0.001;
+                const bounds = L.latLngBounds(district.coordinates);
+                const southWest = bounds.getSouthWest();
+                const northEast = bounds.getNorthEast();
+                const adjustedBounds = L.latLngBounds(
+                    [southWest.lat - margin, southWest.lng - margin],
+                    [northEast.lat + margin, northEast.lng + margin]
+                );
+                setSelectedDistrict(district);
+                map.setMaxBounds(adjustedBounds);
+                map.setZoom(15);
+                setShowOverlayDistrict(true);
+            }
+        }
+    }
 
     const handleSearchChange = (event) => {
         setSearchKeyword(event.target.value);
@@ -88,7 +129,7 @@ const OSMMap = () => {
         setCurrentPage(1);
         setRefLocationId('');
         fetchFilteredAnnounces(searchKeyword,'', 1);
-        setShowOverlay(true);
+        setShowOverlayAnnounce(true);
     };
 
     const handleClearSearch = () => {
@@ -96,7 +137,11 @@ const OSMMap = () => {
         setAnnounces([]);
         setCurrentPage(1);
         setRefLocationId('');
-        setShowOverlay(false);
+        const map = mapRef.current;
+        map.setMaxBounds(deli.zone);
+        setSelectedDistrict([]);
+        setShowOverlayDistrict(false)
+        setShowOverlayAnnounce(false);
     };
 
     const handleZoom = () => {
@@ -175,7 +220,15 @@ const OSMMap = () => {
                 {zoomLevel >= 13 && polygones.zones.map((zone, index) => {
                     const count = countsDis.find(c => c.district === zone.id)?.count || 0;
                     const opacity = getOpacity(count);
-                    const fillOpacity = zoomLevel > 14 ? 0 : opacity;
+                    const fillColor = zone.id === selectedDistrict.id ? 'blue' : 'magenta';
+                    let fillOpacity;
+                    if (selectedDistrict.id === zone.id) {
+                        fillOpacity = 0.4;
+                    } else if (zoomLevel > 14) {
+                        fillOpacity = 0;
+                    } else {
+                        fillOpacity = opacity;
+                    }
                     return (
                         <React.Fragment key={index}>
                             <Polygon
@@ -183,10 +236,14 @@ const OSMMap = () => {
                                 positions={zone.coordinates}
                                 pathOptions={{
                                     color: 'black',
-                                    fillColor: 'magenta',
+                                    fillColor: fillColor,
                                     fillOpacity: fillOpacity,
                                 }}
-                            />
+                                eventHandlers={{
+                                    click: () => handleDistrictClick(zone.id),
+                                }}
+                            >
+                            </Polygon>
                         </React.Fragment>
                     );
                 })}
@@ -195,7 +252,7 @@ const OSMMap = () => {
                     <Marker
                         key={location.idLocation}
                         position={[location.latitude, location.longitude]}
-                        icon={customIcon}
+                        icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
                         eventHandlers={{
                             click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation),
                         }}
@@ -208,7 +265,7 @@ const OSMMap = () => {
                         <Marker
                             key={location.idLocation}
                             position={[location.latitude, location.longitude]}
-                            icon={customIcon}
+                            icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
                             eventHandlers={{
                                 click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation),
                             }}
@@ -219,13 +276,35 @@ const OSMMap = () => {
                 })}
             </MapContainer>
 
-            {showOverlay && (
-                <div className="overlay">
+            {showOverlayDistrict && (
+                <div className={"overlay-district"}>
+                    <div className={"overlay-district-content"}>
+                        <button className="close-button" onClick={() => {setShowOverlayDistrict(false); setSelectedDistrict([])}}>X</button>
+                        <h2>Quartier</h2>
+                            <table className="announce-table">
+                                <thead>
+                                <tr>
+                                    <th colSpan="2">{selectedDistrict.name}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Nombre d'annonces</td>
+                                    <td>{countsDis.find(c => c.district === selectedDistrict.id)?.count || 0}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                    </div>
+                </div>
+            )}
+
+            {showOverlayAnnounce && (
+                <div className="overlay-announce">
                     <div className="overlay-content">
-                        <button className="close-button" onClick={() => setShowOverlay(false)}>X</button>
-                        <h2>Announces</h2>
+                        <button className="close-button" onClick={() => {setShowOverlayAnnounce(false); setSearchKeyword(''); setRefLocationId('')}}>X</button>
+                        <h2>Annonces</h2>
                         {announces.map(announce => (
-                            <table key={announce.id} className="announce-table">
+                            <table key={announce.id} className="announce-table" onClick={() => handleAnnounceClick(announce)}>
                                 <thead>
                                 <tr>
                                     <th colSpan="2">{announce.title}</th>
