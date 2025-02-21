@@ -1,16 +1,29 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
-import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import fr.bnare.frenchverbslib.Verbe;
+import fr.bnare.frenchverbslib.ModeEnum;
+import fr.bnare.frenchverbslib.TempsEnum;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service
@@ -40,21 +53,99 @@ public class IntentionImplemention {
      */
 
     private static List<String> listIrrelevantWords = null;
+    private static Map<String,String> conjugaisonMap = new HashMap<>();
 
     public IntentionImplemention() {
         // Load data from files if not already existing
         if (listIrrelevantWords == null) {
-            LOGGER.info("Initializing Moderation Service");
+            LOGGER.info("Initializing listIrrelevantWords");
             try {
                 listIrrelevantWords = new ArrayList<>();
-                ClassPathResource resource = new ClassPathResource(ModerationConfiguration.CLEAR_IRRELEVANT_WORDS_FILE_NAME);
+                ClassPathResource resource = new ClassPathResource(ModerationConfiguration.CLEAR_IRRELEVANT_WORDS_FILE);
                 File file = resource.getFile();
                 listIrrelevantWords = Files.readAllLines(file.toPath());
             } catch (IOException e) {
                 LOGGER.severe(e.getMessage());
             }
         }
+        if (conjugaisonMap.isEmpty()) {
+            LOGGER.info("Initializing conjugaisonMap");
+            List<String> infinitivVerbsList = extractInfinitivVerbs(ModerationConfiguration.VERBS_FILE);
+            generateConjugaisons(infinitivVerbsList);
+        }
+
     }
+
+    private List<String> extractInfinitivVerbs(String filePath){
+        List<String> infinitivList = new ArrayList<>();
+        // Duration calculation: https://docs.vultr.com/java/examples/calculate-difference-between-two-time-periods
+        LocalTime start = LocalTime.now();
+        // XML loading: https://www.tutorialspoint.com/java_xml/java_dom_parse_document.htm
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+            ClassPathResource resource = new ClassPathResource(filePath);
+            File xmlFile = resource.getFile();
+            Document xmlDoc = docBuilder.parse(xmlFile);
+
+            Element root = xmlDoc.getDocumentElement();
+            NodeList nl = root.getChildNodes();
+            LOGGER.info("Loading " + nl.getLength() + " elements (~half verbs)");
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node v = nl.item(i);
+                if(v.getNodeType() == Node.ELEMENT_NODE) {
+                    Element e = (Element) v;
+                    infinitivList.add(e.getElementsByTagName("i").item(0).getTextContent());
+                }
+            }
+
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            LOGGER.severe(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        LOGGER.info("Final list size: "+infinitivList.size());
+        LocalTime end = LocalTime.now();
+        Duration duration = Duration.between(start, end);
+        LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms");
+        return infinitivList;
+    }
+
+     private void generateConjugaisons(List<String> infinitivVerbsList) {
+         ModeEnum[] modesList = ModeEnum.values();
+         LOGGER.info("Modes: " + Arrays.toString(modesList));
+         TempsEnum[] tempsList = TempsEnum.values();
+         LOGGER.info("Temps: " + Arrays.toString(tempsList));
+
+         ClassPathResource verbesResource = new ClassPathResource(ModerationConfiguration.VERBS_FILE);
+         ClassPathResource conjugaisonResource = new ClassPathResource(ModerationConfiguration.CONJUGAISONS_FILE);
+
+         LOGGER.info("Generating conjugaisons");
+         LocalTime start = LocalTime.now();
+         try {
+             //Verbe conjugueur = new Verbe(verbesResource.getFile() , conjugaisonResource.getFile());
+             Verbe conjugueur = new Verbe();
+             for (String verbe : infinitivVerbsList) {
+                 for (ModeEnum mode : modesList) {
+                     for (TempsEnum temps : tempsList) {
+                         List<String> conjugaisons = conjugueur.conjuguer(verbe, mode, temps);
+                         if (conjugaisons != null) {
+                             for (String conjugaison : conjugaisons) {
+                                 conjugaisonMap.put(conjugaison, verbe);
+                             }
+                         }
+                     }
+                 }
+             }
+         } catch (Exception e) {
+             LOGGER.severe(e.getMessage());
+         }
+         LocalTime end = LocalTime.now();
+         Duration duration = Duration.between(start, end);
+         LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms");
+
+     }
+
+
 
     private String cleanText(String message) {
         List<String> words = new ArrayList<>(Arrays.stream(message.split(" ")).toList());
@@ -70,10 +161,10 @@ public class IntentionImplemention {
         return result.toString();
     }
 
-    public ModerationAnalysis run(ModerationAnalysis analysis) {
+    public void analyseIntention(ModerationAnalysis analysis) {
         analysis.setTitle(cleanText(analysis.getTitle()));
         analysis.setDescription(cleanText(analysis.getDescription()));
-        return analysis;
+
     }
 
 

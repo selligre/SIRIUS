@@ -39,7 +39,7 @@ public class ModerationImplementation extends ModerationService {
             LOGGER.info("Initializing Moderation Service");
             try {
                 listBanWords = new ArrayList<>();
-                ClassPathResource resource = new ClassPathResource(ModerationConfiguration.CLEAR_BAD_WORDS_FILE_NAME);
+                ClassPathResource resource = new ClassPathResource(ModerationConfiguration.CLEAR_BAD_WORDS_FILE);
                 File file = resource.getFile();
                 listBanWords = Files.readAllLines(file.toPath());
             } catch (IOException e) {
