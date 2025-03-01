@@ -80,6 +80,7 @@ pipeline {
                 sh '''
                     ssh ${SCP_ADR} rm -r /var/www/html/*
                     ssh ${SCP_ADR} cp -r build/* /var/www/html/
+                    ssh ${SCP_ADR} sh restart-front.sh
                     '''
                 
                 echo "Mise à jour du back"
