@@ -124,6 +124,6 @@ def getParamFromBranch(branchName) {
         case 'preprod':
             return "build:preprod"
         default:
-            return null
+            return "build"
     }
 }
