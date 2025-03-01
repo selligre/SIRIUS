@@ -1,15 +1,16 @@
 {
-  "name": "proto-front",
+  "name": "fimafeng-front",
   "version": "0.1.0",
   "private": true,
+
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
-    "fimafeng-front": "file:",
     "leaflet": "^1.9.4",
+    "fimafeng-front": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
@@ -18,8 +19,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "cross-env REACT_APP_BACKEND_URL=http://localhost:8080/ react-scripts start",
+    "start:preprod": "cross-env REACT_APP_BACKEND_URL=http://172.31.250.67/ react-scripts start",
+    "start:prod": "cross-env REACT_APP_BACKEND_URL=http://172.31.252.155/ react-scripts start",
+    "build": "cross-env REACT_APP_BACKEND_URL=http://localhost:8080/ react-scripts build",
+    "build:preprod": "cross-env REACT_APP_BACKEND_URL=http://172.31.250.67/ react-scripts build",
+    "build:prod": "cross-env REACT_APP_BACKEND_URL=http://172.31.252.155/ react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -45,6 +50,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "cross-env": "^7.0.3"
   }
 }
