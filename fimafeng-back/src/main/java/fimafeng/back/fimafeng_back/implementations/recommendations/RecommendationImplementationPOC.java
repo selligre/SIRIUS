@@ -34,12 +34,6 @@ public class RecommendationImplementationPOC {
         // Think about what parameters are needed
     }
 
-    /**
-     * Returns the 10 announces that are best suited for the client.
-     *
-     * @param clientId the client id
-     * @return the list of announces
-     */
     public List<Announce> generateRecommendations(int clientId) {
         // 1. Get client tags from clientId
         List<Integer> clientTags = new ArrayList<>();

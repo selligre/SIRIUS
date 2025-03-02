@@ -5,31 +5,31 @@
 ## CICD
 
 - ### Projet
-- [x] Plus de “proto-front”
-- [x] Plus de dossiers inutiles “target, node_modules, etc”
+- [ ] Plus de “proto-front”
+- [ ] Plus de dossiers inutiles “target, node_modules, etc”
 - ### Integration
-- [x] Pas de branche par personne
-- [x] Pas de demo local sinon 0
+- [ ] Pas de branche par personne
+- [ ] Pas de demo local sinon 0
     - #### Gestion de prod
-        - [x] Branche de prod (chaque commit est une release)
+        - [ ] Branche de prod (chaque commit est une release)
 
 ## Code
 
 - ### Git
 - [ ] La review aura lieu sur la branche de prod
-- [x] Pas de branche avec nom de personne
-- [x] Utiliser des branches feature
-- [x] Commits reguliers avec des messages clairs
+- [ ] Pas de branche avec nom de personne
+- [ ] Utiliser des branches feature
+- [ ] Commits reguliers avec des messages clairs
 - ### Decoupage tech termine
-- [x] Back = controller service repo
-- [x] Front = views components api
+- [ ] Back = controller service repo
+- [ ] Front = views components api
 - ### Implementer une regle metier
 - [ ] Presenter la doc fonctionnelle
-- [x] Fonction pure qui contient l’algo
-- [x] Commentaires javadoc sur les fonctions metier
+- [ ] Fonction pure qui contient l’algo
+- [ ] Commentaires javadoc sur les fonctions metier
 - ### …ou une brique technique
-- [x] Implementer un design pattern
-- [x] Documentation technique detaillant la reflexion accompagné d’un diagramme technique
+- [ ] Implementer un design pattern
+- [ ] Documentation technique detaillant la reflexion accompagné d’un diagramme technique
 
 ## Organisation du frontend = reutiliser les components
 
