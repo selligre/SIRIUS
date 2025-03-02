@@ -1,4 +1,4 @@
-package fr.bnare.frenchverbslib;
+package frenchverbslib;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,8 +28,8 @@ public class Verbe
 	{
 		try
 		{
-			verbes = ChargerFichier("/xml/verbes.xml");
-			conjugaison = ChargerFichier("/xml/conjugaison.xml");
+			verbes = ChargerFichier("/moderation-files/verbes.xml");
+			conjugaison = ChargerFichier("/moderation-files/conjugaison.xml");
 		}
 		catch(Exception e)
         {

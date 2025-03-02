@@ -1,4 +1,4 @@
-package fr.bnare.frenchverbslib;
+package frenchverbslib;
 
 public enum TempsEnum
 {

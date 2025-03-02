@@ -1,4 +1,4 @@
-package fr.bnare.frenchverbslib;
+package frenchverbslib;
 
 import java.util.ArrayList;
 import java.util.Iterator;

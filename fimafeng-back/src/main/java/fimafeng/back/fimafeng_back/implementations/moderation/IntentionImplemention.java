@@ -4,9 +4,9 @@ import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import fr.bnare.frenchverbslib.Verbe;
-import fr.bnare.frenchverbslib.ModeEnum;
-import fr.bnare.frenchverbslib.TempsEnum;
+import frenchverbslib.Verbe;
+import frenchverbslib.ModeEnum;
+import frenchverbslib.TempsEnum;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
