@@ -18,7 +18,7 @@ export default function Router() {
                     <Route path="/announce" element={<Announce />}/>
                     <Route path="/map" element={<Map />}/>
                     <Route path="/client" element={<Client />}/>
-                    <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/profiles" element={<Profile/>}/>
                     <Route path="/moderation" element={<Moderation />}/>
                 </Routes>
             </div>
