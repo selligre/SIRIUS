@@ -6,10 +6,7 @@ import fimafeng.back.fimafeng_back.models.ClientTag;
 import fimafeng.back.fimafeng_back.models.Consultation;
 import fimafeng.back.fimafeng_back.services.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,13 +26,11 @@ public class RecommendationImplementationPOC {
         this.consultationService = consultationService;
         this.announceTagService = announceTagService;
         this.tagService = tagService;
-        // TODO: Setup PostMan request
-        // Think about what path to use for the request
-        // Think about what parameters are needed
     }
 
     /**
      * Returns the 10 announces that are best suited for the client.
+     * Triggered on http://localhost:8080/client/recommendations/{id} using Postman.
      *
      * @param clientId the client id
      * @return the list of announces
@@ -49,8 +44,7 @@ public class RecommendationImplementationPOC {
         // 2. Get tags popularity from tags
         // Values are determined arbitrarily (based on personal judgement)
         // https://www.baeldung.com/java-initialize-hashmap
-        Map<Integer, Integer> tagPopularity = Stream.of(new Object[][]{
-                {1, 1}, // Enfants
+        Map<Integer, Integer> tagPopularity = Stream.of(new Object[][]{{1, 1}, // Enfants
                 {2, 7}, // Séniors
                 {3, 6}, // Coup de main
                 {4, 8}, // Animalerie
@@ -96,7 +90,8 @@ public class RecommendationImplementationPOC {
         // For each Announce
         List<Announce> announceList = new ArrayList<>(announceService.findAll());
         List<Consultation> consultations = new ArrayList<>(consultationService.findAll());
-        List<Integer> announcesScores = new ArrayList<>();
+        // List<Integer> announcesScores = new ArrayList<>();
+        Map<Integer, Integer> announcesScores = new HashMap<>();
         for (Announce announce : announceList) {
             // 3. Get announce number of consultations
             int numberOfConsultations = 0;
@@ -117,12 +112,21 @@ public class RecommendationImplementationPOC {
             }
             int consultationsImportance = 1;
             int score = (popularityTag1 + popularityTag2) * popularityImportance + (numberOfConsultations) * consultationsImportance;
-            announcesScores.add(announce.getId(), score);
+            // announcesScores.add(announce.getId(), score);
+            announcesScores.put(announce.getId(), score);
         }
-        announcesScores.sort(Collections.reverseOrder());
         // Return 10 best scores
-        List<Announce> bestAnnounces = new ArrayList<>();
-
+        ArrayList<Announce> bestAnnounces = new ArrayList<>();
+        while (bestAnnounces.size() < 10) {
+            int max = Collections.max(announcesScores.values());
+            for (Integer key : announcesScores.keySet()) {
+                if (announcesScores.get(key) == max) {
+                    bestAnnounces.add(announceService.findById(key));
+                    announcesScores.remove(key);
+                    break;
+                }
+            }
+        }
         return bestAnnounces;
     }
 }

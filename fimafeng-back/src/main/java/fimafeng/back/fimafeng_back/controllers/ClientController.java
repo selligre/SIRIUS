@@ -2,12 +2,11 @@ package fimafeng.back.fimafeng_back.controllers;
 
 import fimafeng.back.fimafeng_back.implementations.mocks.ClientFactory;
 import fimafeng.back.fimafeng_back.implementations.profiles.ClientProfileImplementation;
+import fimafeng.back.fimafeng_back.implementations.recommendations.RecommendationImplementationPOC;
+import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.models.Client;
 import fimafeng.back.fimafeng_back.models.ClientTag;
-import fimafeng.back.fimafeng_back.services.ClientService;
-import fimafeng.back.fimafeng_back.services.ClientTagService;
-import fimafeng.back.fimafeng_back.services.DistrictService;
-import fimafeng.back.fimafeng_back.services.TagService;
+import fimafeng.back.fimafeng_back.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,12 @@ public class ClientController {
     private DistrictService districtService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private AnnounceTagService announceTagService;
+    @Autowired
+    private ConsultationService consultationService;
+    @Autowired
+    private AnnounceService announceService;
 
     @GetMapping("/id")
     public ResponseEntity<Client> findClientById(@RequestParam("id") int id) {
@@ -69,7 +74,7 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("profile")
+    @GetMapping("profiles")
     public ResponseEntity<String> buildClientProfiles() {
         LOGGER.info("buildClientProfiles()");
         ClientProfileImplementation clientProfileImplementation = new ClientProfileImplementation(clientService, clientTagService);
@@ -127,6 +132,13 @@ public class ClientController {
         // Otherwise, returning Http Success and amount generated
         String msg = String.format("Success: %d / %d", savedAmount, amount);
         return new ResponseEntity<>(msg, HttpStatus.CREATED);
+    }
+
+    @GetMapping("recommendations/{id}")
+    public ResponseEntity<List<Announce>> buildClientRecommendations(@PathVariable int id) {
+        LOGGER.info("buildClientRecommendations()");
+        RecommendationImplementationPOC recommendationImplementationPOC = new RecommendationImplementationPOC(clientTagService, announceService, consultationService, announceTagService, tagService);
+        return new ResponseEntity<>(recommendationImplementationPOC.generateRecommendations(id), HttpStatus.OK);
     }
 
 }
