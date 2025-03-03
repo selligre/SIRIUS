@@ -20,7 +20,7 @@ public class Verbe
 	private static Map<String,String> templates;
 	private static Map<String,Element> conjugaisonTemplates;
 
-	private static Logger LOGGER = Logger.getLogger(Verbe.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Verbe.class.getName());
 
 	// Took ~3min05s that way
 	public Verbe () {
