@@ -34,11 +34,11 @@ public class AnnounceController {
 
     @GetMapping("/search")
     public Page<Announce> searchAnnounces(@RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Integer refLocationId,
-            @RequestParam(defaultValue = "publicationDate") String sortBy,
-            @RequestParam(required = false) String sortDirection) {
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(required = false) Integer refLocationId,
+                                          @RequestParam(defaultValue = "publicationDate") String sortBy,
+                                          @RequestParam(required = false) String sortDirection) {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
         return announceService.searchAnnounces(keyword, refLocationId, PageRequest.of(page, size, Sort.by(direction, sortBy)));
     }
@@ -78,7 +78,7 @@ public class AnnounceController {
 
     }
 
-    @GetMapping("profile")
+    @GetMapping("profiles")
     public ResponseEntity<String> buildClientProfiles() {
         LOGGER.info("buildClientProfiles()");
         AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);

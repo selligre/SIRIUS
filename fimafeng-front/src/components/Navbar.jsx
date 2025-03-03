@@ -18,7 +18,7 @@ export default function Navbar() {
                 <Link className="nav-link" to="/client">Clients</Link>
             </li>
             <li className="nav-item">
-                <Link className="nav-link" to="/profile">Profils</Link>
+                <Link className="nav-link" to="/profiles">Profils</Link>
             </li>
             <li className="nav-item">
                 <Link className="nav-link" to="/map">Carte</Link>
