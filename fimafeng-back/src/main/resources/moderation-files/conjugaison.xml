@@ -6187,7 +6187,7 @@
 <template name="ass:oir">
 	<infinitif>
 		<present>
-			<p><i>eoir</i><i>oir</i></p>
+			<p><i>oir</i></p>
 		</present>
 	</infinitif>
 	<indicatif>
