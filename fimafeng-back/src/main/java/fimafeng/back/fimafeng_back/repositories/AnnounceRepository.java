@@ -12,6 +12,8 @@ import java.util.List;
 
 @Repository
 public interface AnnounceRepository extends JpaRepository<Announce, Integer> {
-    @Query("SELECT a FROM Announce a WHERE (:keyword IS NULL OR a.title LIKE %:keyword% OR a.description LIKE %:keyword%) AND (:refLocationId IS NULL OR a.refLocationId = :refLocationId)")
+    @Query("SELECT a FROM Announce a " +
+            "WHERE (:keyword IS NULL OR a.title LIKE %:keyword% OR a.description LIKE %:keyword%) " +
+            "AND (:refLocationId IS NULL OR a.refLocationId = :refLocationId)")
     Page<Announce> searchByKeyword(@Param("keyword") String keyword, @Param("refLocationId") Integer refLocationId, Pageable pageable);
 }

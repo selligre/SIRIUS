@@ -2,6 +2,7 @@ package fimafeng.back.fimafeng_back.controllers;
 
 import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfileImplementation;
 import fimafeng.back.fimafeng_back.models.Announce;
+import fimafeng.back.fimafeng_back.repositories.TagCountProjection;
 import fimafeng.back.fimafeng_back.services.AnnounceService;
 import fimafeng.back.fimafeng_back.services.AnnounceTagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class AnnounceController {
     public ResponseEntity<Announce> findAnnounceById(@PathVariable int id) {
         LOGGER.info("findAnnounceById()");
         return new ResponseEntity<>(announceService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/district/{districtId}")
+    public ResponseEntity<List<TagCountProjection>> countTagsByDistrict(@PathVariable int districtId) {
+        LOGGER.info("countTagsByDistrict()");
+        return new ResponseEntity<>(announceTagService.countTagsByDistrict(districtId), HttpStatus.OK);
     }
 
     @GetMapping("/search")
