@@ -2,6 +2,7 @@ package frenchverbslib;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -14,19 +15,14 @@ import org.jdom.input.SAXBuilder;
 public class Verbe
 {
 	private static List<Element> verbes;
-	private Iterator<Element> verbesIterator;
 	private static List<Element> conjugaison;
-	private Iterator<Element> conjugaisonIterator;
-
-	private Element VerbEle;
-	private String radical;
 
 	private static Map<String,String> templates;
 	private static Map<String,Element> conjugaisonTemplates;
 
-
 	private static Logger LOGGER = Logger.getLogger(Verbe.class.getName());
 
+	// Took ~3min05s that way
 	public Verbe () {
 		try {
 			verbes = ChargerFichier("/"+ModerationConfiguration.VERBS_FILE);
@@ -36,9 +32,34 @@ public class Verbe
 			generateTemplates(verbes);
 			generatesConjugaisonsTemplates(conjugaison);
 		} catch(Exception e) {
-			e.printStackTrace();
+			LOGGER.severe("Exception: "+e.getLocalizedMessage());
 		}
 	}
+
+	// Took ~2min35s that way (best so far)
+	public Verbe(InputStream isVerbs, InputStream isConjugaison) {
+		verbes = chargerStream(isVerbs);
+		conjugaison = chargerStream(isConjugaison);
+		templates = new HashMap<>();
+		conjugaisonTemplates = new HashMap<>();
+		generateTemplates(verbes);
+		generatesConjugaisonsTemplates(conjugaison);
+	}
+
+	private List<Element> chargerStream(InputStream stream) {
+		List<Element> verbes = null;
+		SAXBuilder sxb = new SAXBuilder();
+        try {
+            Document doc = sxb.build(stream);
+			Element root = doc.getRootElement();
+			verbes = root.getChildren();
+        } catch (JDOMException e) {
+			LOGGER.severe("JDOMException: "+e.getLocalizedMessage());
+        } catch (IOException e) {
+			LOGGER.severe("IOException: "+e.getLocalizedMessage());
+        }
+		return verbes;
+    }
 
 	@SuppressWarnings("unchecked")
 	private List<Element> ChargerFichier(String fichier) {
@@ -70,92 +91,11 @@ public class Verbe
 	}
 
 	private void generatesConjugaisonsTemplates(List<Element> c) {
-		conjugaisonIterator = conjugaison.listIterator();
-		while (conjugaisonIterator.hasNext()) {
-			Element verbe = conjugaisonIterator.next();
-			String att = verbe.getAttributeValue("name");
-			if(att != null) {
-				conjugaisonTemplates.put(att, verbe);
+		for (Element template : c) {
+			String att = template.getAttributeValue("name");
+			if (att != null) {
+				conjugaisonTemplates.put(att, template);
 			}
-		}
-
-	}
-
-	private Element getElemConjugaison(final String verb)
-	{
-		LOGGER.info("getElemConjugaison: "+verb);
-		//String template = getTemplate(verb);
-		String template = templates.get(verb);
-		LOGGER.info("verb: "+verb+", template: "+template);
-		if(template != null)
-		{
-			Element result = null;
-
-			while(conjugaisonIterator.hasNext() && result == null)
-			{
-				Element verbe = conjugaisonIterator.next();
-				String att = verbe.getAttributeValue("name");
-				if(att.equals(template))
-				{
-					result = verbe;
-				}
-			}
-			LOGGER.info("getElemConjugaison END: "+verb+", res: "+result);
-			return result;
-		}
-		else
-		{
-			LOGGER.info("getElemConjugaison END: null");
-			return null;
-		}
-	}
-
-	/**
-	 * Fonction cherchant la forme <t> du verbe <i> donné
-	 * @param infinitivVerb verbe à l'infinitif, semblable à "abaisser" dans verbes.xml
-	 * @return forme du verbe, semblable à aim:er
-	 */
-	@SuppressWarnings("unused")
-	private String getTemplate(final String infinitivVerb)
-	{
-		LOGGER.info("Looking for: "+infinitivVerb);
-		String groupe = null;
-		while(verbesIterator.hasNext() && groupe == null)
-		{
-			Element verbe = verbesIterator.next();
-			String verbeinf = verbe.getChildText("i");
-			if(verbeinf.equals(infinitivVerb))
-			{
-				groupe = verbe.getChildText("t");
-			}
-		}
-		if(groupe == null) {
-			LOGGER.warning("NOTHING FOUND!");
-		} else {
-			LOGGER.warning("FOUND: "+groupe);
-		}
-		return groupe;
-	}
-
-	private String initConjugue(String verbe)
-	{
-		LOGGER.info("initConjugue: "+verbe);
-		verbesIterator = verbes.listIterator();
-		conjugaisonIterator = conjugaison.listIterator();
-		VerbEle = getElemConjugaison(verbe);
-		if(VerbEle != null)
-		{
-			Element term = VerbEle.getChild("infinitif");
-			String EndOfVerb = term.getChild("present").getChild("p").getChild("i").getText();
-			int radpos = verbe.lastIndexOf(EndOfVerb);
-			radical = verbe.substring(0, radpos);
-			LOGGER.info("initConjugue END: "+verbe);
-			return "parfait";
-		}
-		else
-		{
-			LOGGER.info("initConjugue END: null");
-			return null;
 		}
 	}
 
@@ -196,100 +136,4 @@ public class Verbe
 		return conjugaisons;
 	}
 
-	/**
-	 * Conjuguer un verbe
-	 * @param verbe le verbe à conjuguer
-	 * @param mode le mode de la conjugaison
-	 * @param temps le temps de la conjugaison
-	 * @return la liste du verbe conjugué ou null si le verbe n'existe pas dans le dictionnaire
-	 */
-	@SuppressWarnings("unchecked")
-	public ArrayList<String> conjuguer(final String verbe, final ModeEnum mode, final TempsEnum temps)
-	{
-		if(initConjugue(verbe) != null)
-		{
-			String template = templates.get(verbe);
-			LOGGER.info("Template de ["+verbe+"]: "+template);
-
-			ArrayList<String> verbeConjugue = new ArrayList<String>();
-			// TODO : pb ici (GetChildren)
-			LOGGER.info("Does "+template+" in map? (expected true): "+conjugaisonTemplates.containsKey(template));
-			Element templateElem = conjugaisonTemplates.get(template);
-			LOGGER.info("templateElem: "+templateElem);
-			Element modeElem = templateElem.getChild(mode.getValue());
-			LOGGER.info("modeElem: "+modeElem);
-			for (Object attribut : modeElem.getChildren()) {
-				LOGGER.info("attribut: "+attribut);
-			}
-			Element tempsElem = modeElem.getChild(temps.getValue());
-			LOGGER.info("tempsElem: "+tempsElem);
-			List<Element> conjigaison = tempsElem.getChildren();
-			//List<Element> conjigaison = conjugaisonTemplates.get(verbe).getChild(mode.getValue()).getChild(temps.getValue()).getChildren();
-			//List<Element> conjigaison = VerbEle.getChild(mode.getValue()).getChild(temps.getValue()).getChildren();
-			LOGGER.info("conjigaison: "+ conjigaison);
-			// Element elMode = VerbEle.getChild(mode.getValue());
-			// LOGGER.info("mode: "+elMode.toString());
-			// Element elTemps = elMode.getChild(temps.getValue());
-			// LOGGER.info("temps: "+elTemps.toString());
-
-			Iterator<Element> it = conjigaison.iterator();
-			while(it.hasNext())
-			{
-				Element item = (Element)it.next();
-				String ter = item.getChildText("i");
-				verbeConjugue.add(radical + ter);
-			}
-			return verbeConjugue;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	/**
-	 * Conjuguer un verbe
-	 * @param verbe le verbe � conjuguer
-	 * @param mode le mode de la conjugaison
-	 * @param temps le temps de la conjugaison
-	 * @param pronom la personne � conjuguer
-	 * @return le verbe conjugu� ou null si le verbe n'existe pas dans le dictionnaire
-	 */
-	@SuppressWarnings("unchecked")
-	public String conjuguer(final String verbe, final ModeEnum mode, final TempsEnum temps, final PronomEnum pronom)
-	{
-		if(initConjugue(verbe) != null)
-		{
-			String verbeConjugue = null;
-			List<Element> conjigaison = VerbEle.getChild(mode.getValue()).getChild(temps.getValue()).getChildren();
-			Iterator<Element> it = conjigaison.iterator();
-			int i = 0;
-			while(it.hasNext() && verbeConjugue == null)
-			{
-				Element item = (Element)it.next();
-				if(pronom.getValue() == i)
-				{
-					String ter = item.getChildText("i");
-					verbeConjugue = radical + ter;
-				}
-				i++;
-			}
-			return verbeConjugue;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	public ArrayList<String> getListeVerbes()
-	{
-		verbesIterator = verbes.listIterator();
-		ArrayList<String> listeVerbes = new ArrayList<String>();
-		while(verbesIterator.hasNext())
-		{
-			listeVerbes.add(verbesIterator.next().getChildText("i"));
-		}
-		return listeVerbes;
-	}
 }

@@ -122,9 +122,10 @@ public class IntentionImplemention {
          LOGGER.info("Generating conjugaisons");
          LocalTime start = LocalTime.now();
          try {
+             Verbe conjugueur = new Verbe(verbesResource.getInputStream(), conjugaisonResource.getInputStream());
              for (String verbe : infinitivVerbsList) {
                  LOGGER.info("Conjugaison: " + verbe);
-                 Verbe conjugueur = new Verbe();
+
                  List<String> conjugaisons = conjugueur.conjuguerToutMode(verbe);
                  if (conjugaisons != null) {
                      for (String conjugaison : conjugaisons) {
