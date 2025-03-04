@@ -31,6 +31,9 @@ public class ModerationImplementation extends ModerationService {
     // Source: https://medium.com/@tuananhbk1996/how-to-handle-cyclic-dependency-between-beans-in-spring-754d1a56e297
     private AnnounceService announceService;
 
+    @Autowired
+    IntentionImplementation intentionImplementation;
+
     private static List<String> listBanWords = null;
 
     public ModerationImplementation() {
@@ -104,6 +107,7 @@ public class ModerationImplementation extends ModerationService {
         }
 
         LOGGER.info("Moderation analyse: title=" + analysis.getTitleStatus()+ ", desc=" + analysis.getDescriptionStatus());
+        intentionImplementation.prepareAnalysis(analysis);
         moderation.setAnalysis(analysis);
     }
 

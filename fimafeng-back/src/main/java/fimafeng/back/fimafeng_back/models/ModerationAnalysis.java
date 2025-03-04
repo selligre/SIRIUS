@@ -3,14 +3,17 @@ package fimafeng.back.fimafeng_back.models;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class ModerationAnalysis {
 
-    private String title;
+    private ArrayList<String> title;
     private ModerationReason titleStatus;
     private String titleReason;
     private String titleRejectedWord;
 
-    private String description;
+    private ArrayList<String> description;
     private ModerationReason descriptionStatus;
     private String descriptionReason;
     private String descriptionRejectedWord;
@@ -18,11 +21,11 @@ public class ModerationAnalysis {
     private ModerationReason intention;
     private AnnounceStatus moderationStatus;
 
-    public String getTitle() {
+    public ArrayList<String> getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(ArrayList<String> title) {
         this.title = title;
     }
 
@@ -50,11 +53,11 @@ public class ModerationAnalysis {
         this.titleRejectedWord = titleRejectedWord;
     }
 
-    public String getDescription() {
+    public ArrayList<String> getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(ArrayList<String> description) {
         this.description = description;
     }
 
@@ -115,9 +118,9 @@ public class ModerationAnalysis {
     }
 
     public ModerationAnalysis(Moderation moderation) {
-        this.title = moderation.getAnnounceTitle();
+        this.title = new ArrayList<String>(Arrays.asList(moderation.getAnnounceTitle().split(" ")));
         this.titleStatus = ModerationReason.NOT_MODERATED_YET;
-        this.description = moderation.getAnnounceDescription();
+        this.description = new ArrayList<String>(Arrays.asList(moderation.getAnnounceDescription().split(" ")));
         this.descriptionStatus = ModerationReason.NOT_MODERATED_YET;
         this.intention = ModerationReason.UNDEFINED;
         this.moderationStatus = AnnounceStatus.TO_ANALYSE;

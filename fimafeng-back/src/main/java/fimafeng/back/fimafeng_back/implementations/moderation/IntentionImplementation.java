@@ -25,9 +25,9 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @Service
-public class IntentionImplemention {
+public class IntentionImplementation {
 
-    Logger LOGGER = Logger.getLogger(IntentionImplemention.class.getName());
+    Logger LOGGER = Logger.getLogger(IntentionImplementation.class.getName());
 
     /**
      * We want to implement an algorithm that detect intention in text section
@@ -36,8 +36,8 @@ public class IntentionImplemention {
      * 1. Text cleaning
      * A simple step that resume as removing any irrelevant words such as "le", "la", "les", etc.
      *
-     * 2. Text transforming
-     * A more complex step to transform words to their root, in order to reduce cases into more common ones.
+     * 2. Text simplifying
+     * A more complex step to transform each recognized verb to their infinitive form, in order to reduce cases into more common ones.
      * For example, we want to transform "couru", "courront" into "courir"
      *
      * 3. Intention detection
@@ -53,7 +53,7 @@ public class IntentionImplemention {
     private static List<String> listIrrelevantWords = null;
     private static Map<String,String> conjugaisonMap = new HashMap<>();
 
-    public IntentionImplemention() {
+    public IntentionImplementation() {
         // Load data from files if not already existing
         if (listIrrelevantWords == null) {
             LOGGER.info("Initializing listIrrelevantWords");
@@ -122,8 +122,6 @@ public class IntentionImplemention {
          try {
              Verbe conjugueur = new Verbe(verbesResource.getInputStream(), conjugaisonResource.getInputStream());
              for (String verbe : infinitivVerbsList) {
-                 LOGGER.info("Conjugaison: " + verbe);
-
                  List<String> conjugaisons = conjugueur.conjuguerToutMode(verbe);
                  if (conjugaisons != null) {
                      for (String conjugaison : conjugaisons) {
@@ -136,30 +134,59 @@ public class IntentionImplemention {
          }
          LocalTime end = LocalTime.now();
          Duration duration = Duration.between(start, end);
+         LOGGER.info(conjugaisonMap.size() + " conjugaisons generated");
          LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms");
 
      }
 
-
-
-    private String cleanText(String message) {
-        List<String> words = new ArrayList<>(Arrays.stream(message.split(" ")).toList());
-        for (String word : words) {
+    /**
+     * #1 Text cleaning:
+     * Retrieving irrelevant words from given array if present in listIrrelevantWords
+     * @param message list of words
+     * @return the same words list but without its irrelevant words if found
+     */
+    private ArrayList<String> cleanText(ArrayList<String> message) {
+        LOGGER.info("From: " + message);
+        for (String word : message) {
             if(listIrrelevantWords.contains(word)) {
-                words.remove(word);
+                message.remove(word);
             }
         }
-        StringBuilder result = new StringBuilder();
-        for (String word : words) {
-            result.append(word).append(" ");
-        }
-        return result.toString();
+        LOGGER.info("To: " + message);
+        return message;
     }
 
-    public void analyseIntention(ModerationAnalysis analysis) {
+    /**
+     * #2 Text simplifying
+     * Switching conjugated verbs to their infinitive form if conjugated form present in conjugaisonMap
+     * @param message list of words
+     * @return the same words list but with verbs to their infinitive form
+     */
+    private ArrayList<String> simplifyText(ArrayList<String> message) {
+        LOGGER.info("From: " + message);
+        for (int i = 0; i < message.size(); i++) {
+            String word = message.get(i);
+            if(conjugaisonMap.containsKey(word)) {
+                message.set(i, conjugaisonMap.get(word));
+            }
+        }
+        LOGGER.info("To: " + message);
+        return message;
+    }
+
+
+    public void prepareAnalysis(ModerationAnalysis analysis) {
+        LOGGER.info("Preparing analysis");
+        LOGGER.info("Clearing...");
         analysis.setTitle(cleanText(analysis.getTitle()));
         analysis.setDescription(cleanText(analysis.getDescription()));
+        LOGGER.info("Simplifying...");
+        analysis.setTitle(simplifyText(analysis.getTitle()));
+        analysis.setDescription(simplifyText(analysis.getDescription()));
+    }
 
+    public void detectIntention(ModerationAnalysis analysis) {
+        LOGGER.info("Detecting intention");
     }
 
 

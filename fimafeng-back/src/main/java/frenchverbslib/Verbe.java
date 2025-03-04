@@ -118,7 +118,7 @@ public class Verbe
 		String terminaison = templateElement.getChild(ModeEnum.INFINITIF.getValue()).getChild(TempsEnum.PRESENT.getValue())
 				.getChild("p").getChild("i").getText();
 		int radpos = verb.lastIndexOf(terminaison);
-		LOGGER.info("verb: "+verb+", terminaison: "+terminaison+", radpos: "+radpos);
+		LOGGER.fine("verb: "+verb+", terminaison: "+terminaison+", radpos: "+radpos);
 		String radicalVerb = verb.substring(0, radpos);
 
 		ArrayList<String> conjugaisons = new ArrayList<>();
