@@ -1,6 +1,11 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
+import java.util.logging.Logger;
 
 public class ModerationConfiguration {
     public static final String BASE_RESOURCES_DIRECTORY = "moderation-files"+ FileSystems.getDefault().getSeparator();
@@ -18,4 +23,17 @@ public class ModerationConfiguration {
     public static final String SYSTEM_MODERATOR_NAME = "SYSTEM";
     public static final String MODERATION_DEFAULT_MESSAGE = "Votre annonce a été modérée car elle a été détectée ne relevant pas d'un bon comportement.";
 
+
+    static Logger LOGGER = Logger.getLogger(ModerationConfiguration.class.getName());
+
+    public static InputStream loadFile(String fileName) {
+        InputStream result = null;
+        try {
+            result = new ClassPathResource(fileName).getInputStream();
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
 }

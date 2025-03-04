@@ -9,12 +9,9 @@ import fimafeng.back.fimafeng_back.services.AnnounceService;
 import fimafeng.back.fimafeng_back.services.ModerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,9 +39,11 @@ public class ModerationImplementation extends ModerationService {
             LOGGER.info("Initializing Moderation Service");
             try {
                 listBanWords = new ArrayList<>();
-                ClassPathResource resource = new ClassPathResource(ModerationConfiguration.CLEAR_BAD_WORDS_FILE);
-                File file = resource.getFile();
-                listBanWords = Files.readAllLines(file.toPath());
+                InputStream file = ModerationConfiguration.loadFile(ModerationConfiguration.CLEAR_BAD_WORDS_FILE);
+                BufferedReader br = new BufferedReader(new InputStreamReader(file));
+                for (String line = br.readLine(); line != null; line = br.readLine()) {
+                    listBanWords.add(line);
+                }
             } catch (IOException e) {
                 LOGGER.severe(e.getMessage());
             }
