@@ -1,7 +1,6 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import frenchverbslib.Verbe;
@@ -16,9 +15,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.*;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
@@ -57,11 +54,14 @@ public class IntentionImplementation {
         // Load data from files if not already existing
         if (listIrrelevantWords == null) {
             LOGGER.info("Initializing listIrrelevantWords");
+
             try {
                 listIrrelevantWords = new ArrayList<>();
-                ClassPathResource resource = new ClassPathResource(ModerationConfiguration.CLEAR_IRRELEVANT_WORDS_FILE);
-                File file = resource.getFile();
-                listIrrelevantWords = Files.readAllLines(file.toPath());
+                InputStream file = ModerationConfiguration.loadFile(ModerationConfiguration.CLEAR_IRRELEVANT_WORDS_FILE);
+                BufferedReader br = new BufferedReader(new InputStreamReader(file));
+                for (String line = br.readLine(); line != null; line = br.readLine()) {
+                    listIrrelevantWords.add(line);
+                }
             } catch (IOException e) {
                 LOGGER.severe(e.getMessage());
             }
@@ -82,13 +82,14 @@ public class IntentionImplementation {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-            ClassPathResource resource = new ClassPathResource(filePath);
-            File xmlFile = resource.getFile();
+            //ClassPathResource resource = new ClassPathResource(filePath);
+            //File xmlFile = ModerationConfiguration.loadFile(filePath);
+            InputStream xmlFile = ModerationConfiguration.loadFile(filePath);
             Document xmlDoc = docBuilder.parse(xmlFile);
 
             Element root = xmlDoc.getDocumentElement();
             NodeList nl = root.getChildNodes();
-            LOGGER.info("Loading " + nl.getLength() + " elements (~half verbs)");
+            LOGGER.info("Loading " + filePath);
             for (int i = 0; i < nl.getLength(); i++) {
                 Node v = nl.item(i);
                 if(v.getNodeType() == Node.ELEMENT_NODE) {
@@ -101,26 +102,23 @@ public class IntentionImplementation {
             LOGGER.severe(e.getMessage());
             throw new RuntimeException(e);
         }
-        LOGGER.info("Final list size: "+infinitivList.size());
         LocalTime end = LocalTime.now();
         Duration duration = Duration.between(start, end);
-        LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms");
+        LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms ("+infinitivList.size()+" verbs loaded)" );
         return infinitivList;
     }
 
      private void generateConjugaisons(List<String> infinitivVerbsList) {
          ModeEnum[] modesList = ModeEnum.values();
-         LOGGER.info("Modes: " + Arrays.toString(modesList));
          TempsEnum[] tempsList = TempsEnum.values();
-         LOGGER.info("Temps: " + Arrays.toString(tempsList));
 
-         ClassPathResource verbesResource = new ClassPathResource(ModerationConfiguration.VERBS_FILE);
-         ClassPathResource conjugaisonResource = new ClassPathResource(ModerationConfiguration.CONJUGAISONS_FILE);
+         InputStream verbesStream = ModerationConfiguration.loadFile(ModerationConfiguration.VERBS_FILE);
+         InputStream conjugaisonStream = ModerationConfiguration.loadFile(ModerationConfiguration.CONJUGAISONS_FILE);
 
          LOGGER.info("Generating conjugaisons");
          LocalTime start = LocalTime.now();
          try {
-             Verbe conjugueur = new Verbe(verbesResource.getInputStream(), conjugaisonResource.getInputStream());
+             Verbe conjugueur = new Verbe(verbesStream, conjugaisonStream);
              for (String verbe : infinitivVerbsList) {
                  List<String> conjugaisons = conjugueur.conjuguerToutMode(verbe);
                  if (conjugaisons != null) {
@@ -134,8 +132,7 @@ public class IntentionImplementation {
          }
          LocalTime end = LocalTime.now();
          Duration duration = Duration.between(start, end);
-         LOGGER.info(conjugaisonMap.size() + " conjugaisons generated");
-         LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms");
+         LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms ("+conjugaisonMap.size()+" conjugaisons generated)");
 
      }
 
