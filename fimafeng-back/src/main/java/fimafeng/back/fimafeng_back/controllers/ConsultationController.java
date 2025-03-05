@@ -79,6 +79,7 @@ public class ConsultationController {
         int savedAmount = 0;
         ConsultationFactory factory = new ConsultationFactory(clientService, clientTagService, announceService, announceTagService);
         for (int i = 0; i < amount; i++) {
+            LOGGER.info("generateConsultation(): " + i + "/" + amount);
             // Generates a consultation
             try {
                 consultationService.save(factory.generateConsultation());
