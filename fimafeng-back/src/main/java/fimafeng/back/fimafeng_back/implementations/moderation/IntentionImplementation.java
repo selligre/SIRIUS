@@ -82,8 +82,6 @@ public class IntentionImplementation {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-            //ClassPathResource resource = new ClassPathResource(filePath);
-            //File xmlFile = ModerationConfiguration.loadFile(filePath);
             InputStream xmlFile = ModerationConfiguration.loadFile(filePath);
             Document xmlDoc = docBuilder.parse(xmlFile);
 
@@ -109,9 +107,6 @@ public class IntentionImplementation {
     }
 
      private void generateConjugaisons(List<String> infinitivVerbsList) {
-         ModeEnum[] modesList = ModeEnum.values();
-         TempsEnum[] tempsList = TempsEnum.values();
-
          InputStream verbesStream = ModerationConfiguration.loadFile(ModerationConfiguration.VERBS_FILE);
          InputStream conjugaisonStream = ModerationConfiguration.loadFile(ModerationConfiguration.CONJUGAISONS_FILE);
 
@@ -143,14 +138,16 @@ public class IntentionImplementation {
      * @return the same words list but without its irrelevant words if found
      */
     private ArrayList<String> cleanText(ArrayList<String> message) {
+        // Anti ConcurrentModificationException: https://stackoverflow.com/questions/8104692/how-to-avoid-java-util-concurrentmodificationexception-when-iterating-through-an
+        ArrayList<String> simplifiedMessage = new ArrayList<>();
         LOGGER.info("From: " + message);
         for (String word : message) {
-            if(listIrrelevantWords.contains(word)) {
-                message.remove(word);
+            if(!listIrrelevantWords.contains(word)) {
+                simplifiedMessage.add(word);
             }
         }
-        LOGGER.info("To: " + message);
-        return message;
+        LOGGER.info("To: " + simplifiedMessage);
+        return simplifiedMessage;
     }
 
     /**
@@ -160,17 +157,19 @@ public class IntentionImplementation {
      * @return the same words list but with verbs to their infinitive form
      */
     private ArrayList<String> simplifyText(ArrayList<String> message) {
+        ArrayList<String> simplifiedMessage = new ArrayList<>();
         LOGGER.info("From: " + message);
         for (int i = 0; i < message.size(); i++) {
             String word = message.get(i);
             if(conjugaisonMap.containsKey(word)) {
-                message.set(i, conjugaisonMap.get(word));
+                simplifiedMessage.add(conjugaisonMap.get(word));
+            } else {
+                simplifiedMessage.add(word);
             }
         }
-        LOGGER.info("To: " + message);
-        return message;
+        LOGGER.info("To: " + simplifiedMessage);
+        return simplifiedMessage;
     }
-
 
     public void prepareAnalysis(ModerationAnalysis analysis) {
         LOGGER.info("Preparing analysis");

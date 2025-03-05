@@ -5,6 +5,7 @@ import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class ModerationAnalysis {
 
@@ -117,10 +118,19 @@ public class ModerationAnalysis {
                 '}';
     }
 
+
+    Logger LOGGER = Logger.getLogger(ModerationAnalysis.class.getName());
+
     public ModerationAnalysis(Moderation moderation) {
-        this.title = new ArrayList<String>(Arrays.asList(moderation.getAnnounceTitle().split(" ")));
+        String tempTitle = moderation.getAnnounceTitle().replaceAll(",","");
+        LOGGER.info("Title: " + tempTitle);
+        this.title = new ArrayList<String>(Arrays.asList(tempTitle.split(" ")));
+        LOGGER.info(this.title.toString());
         this.titleStatus = ModerationReason.NOT_MODERATED_YET;
-        this.description = new ArrayList<String>(Arrays.asList(moderation.getAnnounceDescription().split(" ")));
+        String tempDescription = moderation.getAnnounceDescription().replaceAll(",","");
+        LOGGER.info("Description: " + tempDescription);
+        this.description = new ArrayList<String>(Arrays.asList(tempDescription.split(" ")));
+        LOGGER.info(this.description.toString());
         this.descriptionStatus = ModerationReason.NOT_MODERATED_YET;
         this.intention = ModerationReason.UNDEFINED;
         this.moderationStatus = AnnounceStatus.TO_ANALYSE;
