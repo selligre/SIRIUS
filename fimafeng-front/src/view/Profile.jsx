@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Profile.css';
-import {GET_ANNOUNCES_PROFILES, GET_CLIENTS_PROFILES} from "../constants/back";
+import {GET_ANNOUNCES_PROFILES, GET_CLIENTS_PROFILES} from "../api/constants/back";
 
 export default function Profile() {
 

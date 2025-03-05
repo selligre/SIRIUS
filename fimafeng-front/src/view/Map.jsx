@@ -5,11 +5,10 @@ import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 import polygones from '../components/data/polygones.json';
 import deli from '../components/data/deli.json';
-import {GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_SEARCH, GET_ANNOUNCE_TAG_COUNT} from '../constants/back';
+import {GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_SEARCH, GET_ANNOUNCE_TAG_COUNT, GET_ALL_TAGS} from '../api/constants/back';
 import customPin from '../components/PNG/broche-de-localisation.png';
 import customPin2 from '../components/PNG/ezgif-2-711d1a5a58.gif';
 import SearchForm from '../components/map/SearchForm';
-import ZoomButton from '../components/map/ZoomButton';
 import OverlayAnnounce from '../components/map/OverlayAnnounce';
 import OverlayDistrict from '../components/map/OverlayDistrict';
 
@@ -22,11 +21,13 @@ const OSMMap = () => {
     const [tagCounts, setTagCounts] = useState([]);
     const [zoomLevel, setZoomLevel] = useState(14);
     const [announces, setAnnounces] = useState([]);
+    const [tags, setTags] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [showOverlayAnnounce, setShowOverlayAnnounce] = useState(false);
     const [showOverlayDistrict, setShowOverlayDistrict] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
+    const [selectedTags, setSelectedTags] = useState([]);
     const mapRef = useRef();
 
     useEffect(() => {
@@ -34,6 +35,13 @@ const OSMMap = () => {
         return () => {
             document.body.classList.remove('no-scroll');
         };
+    }, []);
+
+    useEffect(() => {
+        fetch(GET_ALL_TAGS)
+        .then(response => response.json())
+        .then(data => setTags(data))
+        .catch(error => console.error('Erreur lors de la récupération des locations:', error));
     }, []);
 
     const fetchData = () => {
@@ -59,8 +67,8 @@ const OSMMap = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const fetchFilteredAnnounces = (keyword, refLocationId, currentPage, size = 10) => {
-        const url = `${GET_ANNOUNCES_SEARCH}?keyword=${keyword}&page=${currentPage - 1}&size=${size}&sortBy=publicationDate&sortDirection=desc&refLocationId=${refLocationId}`;
+    const fetchFilteredAnnounces = (keyword, refLocationId, tagIds, currentPage, size = 10) => {
+        const url = `${GET_ANNOUNCES_SEARCH}?keyword=${keyword}&page=${currentPage - 1}&size=${size}&sortBy=publication_date&sortDirection=desc&refLocationId=${refLocationId}&tagIds=${tagIds}`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -88,7 +96,7 @@ const OSMMap = () => {
             setCurrentPage(1);
             map.setMaxBounds(deli.zone);
             map.setView([lat, lng], 18);
-            fetchFilteredAnnounces('', locationId, 1);
+            fetchFilteredAnnounces('', locationId, '', 1);
             handleDistrictClick(ref_district)
             setRefLocationId(locationId)
             setShowOverlayAnnounce(true);
@@ -142,8 +150,17 @@ const OSMMap = () => {
         event.preventDefault();
         setCurrentPage(1);
         setRefLocationId('');
-        fetchFilteredAnnounces(searchKeyword, '', 1);
+        fetchFilteredAnnounces(searchKeyword, '', selectedTags, 1);
         setShowOverlayAnnounce(true);
+    };
+
+    const handleTagSelect = (event) => {
+        const tagId = parseInt(event.target.value, 10);
+        setSelectedTags(prevSelectedTags =>
+            prevSelectedTags.includes(tagId)
+                ? prevSelectedTags.filter(id => id !== tagId)
+                : [...prevSelectedTags, tagId]
+        );
     };
 
     const handleClearSearch = () => {
@@ -155,6 +172,7 @@ const OSMMap = () => {
         setSelectedDistrict([]);
         setShowOverlayDistrict(false)
         setShowOverlayAnnounce(false);
+        setSelectedTags([]);
     };
 
     const handleZoom = () => {
@@ -162,6 +180,16 @@ const OSMMap = () => {
         if (map) {
             map.setZoom(13);
         }
+    }
+
+    function handleNextPage() {
+        setCurrentPage(currentPage + 1);
+        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage + 1);
+    }
+
+    function handlePreviousPage() {
+        setCurrentPage(currentPage - 1);
+        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage - 1);
     }
 
     const MapEventHandler = () => {
@@ -201,13 +229,15 @@ const OSMMap = () => {
     return (
         <>
             <SearchForm
+                handleZoom={handleZoom}
                 searchKeyword={searchKeyword}
                 handleSearchChange={handleSearchChange}
                 handleSearchSubmit={handleSearchSubmit}
                 handleClearSearch={handleClearSearch}
+                tags={tags}
+                handleTagSelect={handleTagSelect}
+                selectedTags={selectedTags}
             />
-
-            <ZoomButton handleZoom={handleZoom}/>
 
             <MapContainer
                 center={[48.7856883564271, 2.4577914299514134]}
@@ -299,14 +329,12 @@ const OSMMap = () => {
                 <OverlayAnnounce
                     announces={announces}
                     handleAnnounceClick={handleAnnounceClick}
-                    fetchFilteredAnnounces = {fetchFilteredAnnounces}
-                    searchKeyword = {searchKeyword}
+                    handleNextPage = {handleNextPage}
+                    handlePreviousPage = {handlePreviousPage}
                     currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
                     totalPages={totalPages}
                     setShowOverlayAnnounce={setShowOverlayAnnounce}
                     setSearchKeyword={setSearchKeyword}
-                    refLocationId = {refLocationId}
                     setRefLocationId={setRefLocationId}
                 />
             )}

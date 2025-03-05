@@ -20,3 +20,5 @@ export const UPDATE_MODERATION = LOCAL_HOST_MODERATIONS + '/update';
 
 export const GET_CLIENTS_PROFILES = LOCAL_HOST_CLIENTS + '/profile';
 export const GET_ANNOUNCES_PROFILES = LOCAL_HOST_ANNOUNCE + '/profile';
+
+export const GET_ALL_TAGS = LOCAL_HOST + '/tag/all';

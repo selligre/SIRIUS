@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Client.css';
-import {GET_CLIENTS} from "../constants/back";
+import {GET_CLIENTS} from "../api/constants/back";
 
 
 export default function Client() {

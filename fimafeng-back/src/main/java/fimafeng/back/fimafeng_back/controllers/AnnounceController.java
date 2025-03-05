@@ -44,10 +44,11 @@ public class AnnounceController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Integer refLocationId,
+            @RequestParam(required = false) List<Long> tagIds,
             @RequestParam(defaultValue = "publicationDate") String sortBy,
             @RequestParam(required = false) String sortDirection) {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-        return announceService.searchAnnounces(keyword, refLocationId, PageRequest.of(page, size, Sort.by(direction, sortBy)));
+        return announceService.searchAnnounces(keyword, refLocationId, tagIds, PageRequest.of(page, size, Sort.by(direction, sortBy)));
     }
 
     @PostMapping("add")

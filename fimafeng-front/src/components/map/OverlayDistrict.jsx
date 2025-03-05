@@ -38,12 +38,14 @@ const OverlayDistrict = ({
                     <th>Nombre</th>
                 </tr>
                 </thead>
-                {tagCounts.map(tagCount => (
-                    <tr>
+                <tbody>
+                {tagCounts.map((tagCount, index) => (
+                    <tr key={index}>
                         <td>{tagCount.name}</td>
                         <td>{tagCount.count}</td>
                     </tr>
                 ))}
+                </tbody>
             </table>
         </div>
     </div>

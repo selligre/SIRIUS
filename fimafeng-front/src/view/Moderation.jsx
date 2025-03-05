@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
-import {GET_MODERATION, UPDATE_MODERATION} from "../constants/back";
+import {GET_MODERATION, UPDATE_MODERATION} from "../api/constants/back";
 
 
 export default function Moderation() {

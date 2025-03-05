@@ -3,6 +3,7 @@ package fimafeng.back.fimafeng_back.services;
 import fimafeng.back.fimafeng_back.models.Tag;
 import fimafeng.back.fimafeng_back.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,6 @@ public class TagService {
     }
 
     public List<Tag> findAll() {
-        return tagRepository.findAll();
+        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
     }
 }
