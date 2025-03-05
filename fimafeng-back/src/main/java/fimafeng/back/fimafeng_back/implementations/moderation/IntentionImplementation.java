@@ -183,6 +183,7 @@ public class IntentionImplementation {
 
     public void detectIntention(ModerationAnalysis analysis) {
         LOGGER.info("Detecting intention");
+
     }
 
 
