@@ -3,6 +3,8 @@ package fimafeng.back.fimafeng_back.services;
 import fimafeng.back.fimafeng_back.models.Client;
 import fimafeng.back.fimafeng_back.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +27,10 @@ public class ClientService {
 
     public List<Client> findAll() {
         return clientRepository.findAll();
+    }
+
+    public Page<Client> findSearch(Pageable pageable) {
+        return clientRepository.findSearch(pageable);
     }
 
     public boolean update(Client updatedClient) {

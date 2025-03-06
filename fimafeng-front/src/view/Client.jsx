@@ -1,29 +1,39 @@
-import React, {useEffect, useState} from "react";
-import axios from "axios";
+import React, {useCallback, useEffect, useState} from "react";
 import '../styles/Client.css';
-import {GET_CLIENTS} from "../api/constants/back";
-
+import {GET_CLIENTS_SEARCH} from "../api/constants/back";
 
 export default function Client() {
 
     const [clients, setClients] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [notification] = useState({show: false, message: '', type: ''});
-
-
     const [sortConfig, setSortConfig] = useState({key: 'id', direction: 'desc'});
+
+    const setClientData = useCallback(async () => {
+        const url = `${GET_CLIENTS_SEARCH}?page=${currentPage - 1}&size=10`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setClients(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error loading announces:', error);
+                alert("Error occurred while loading data:" + error);
+            });
+    }, [currentPage]);
 
     useEffect(() => {
         setClientData();
-    }, []);
+    }, [currentPage, setClientData]);
 
-    const setClientData = async () => {
-        axios.get(GET_CLIENTS).then((response) => {
-            console.log('Received clients:', response.data);
-            setClients(response.data || []);
-        }).catch(error => {
-            console.error('Error loading clients:', error);
-            alert("Error occurred while loading data:" + error);
-        });
+    function handleNextPage() {
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    }
+
+    function handlePreviousPage() {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
     }
 
     const handleSort = (key) => {
@@ -92,6 +102,11 @@ export default function Client() {
                         </div>
                     )}
                 </div>
+            </div>
+            <div className="pagination">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>&lt;</button>
+                <span>Page {currentPage} sur {totalPages}</span>
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>&gt;</button>
             </div>
         </div>
     );
