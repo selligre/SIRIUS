@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SCP_ADR = getAdressFromBranch(env.BRANCH_NAME)
+        SCP_ADR = getAddressFromBranch(env.BRANCH_NAME)
+        NPM_BUILD_PARAM = getParamFromBranch(env.BRANCH_NAME)
     }
 
     stages {
@@ -12,8 +13,7 @@ pipeline {
                 echo "Environment: ${SCP_ADR}"
                 sh '''
                     cd ${WORKSPACE}
-                    chmod -R 755 ./proto-front
-                    # chmod -R 755 ./proto-back
+                    chmod -R 755 ./fimafeng-front
                 '''
             }
         }
@@ -22,21 +22,21 @@ pipeline {
             steps {
                 echo "Lancement des tests BACK"
                 sh '''
-                    cd ${WORKSPACE}/proto-back/
-                    # mvn test
+                    cd ${WORKSPACE}/fimafeng-back/
+                    mvn test
                 '''
 
+                /*
                 echo "Lancement des tests FRONT"
                 sh '''
-                    cd ${WORKSPACE}/proto-front
-                    chmod +x ./node_modules/.bin/react-scripts
+                    cd ${WORKSPACE}/fimafeng-front
+                    npm install
                     chmod -R 755 ./node_modules
                     rm -rf node_modules
-                    npm install
                     npx update-browserslist-db@latest
                     npm install --save-dev @babel/plugin-proposal-private-property-in-object
-                    # npm test --passWithNoTests
                 '''
+                */
             }
         }
 
@@ -45,14 +45,16 @@ pipeline {
 
                 echo "Compilation du BACK"
                 sh '''
-                    cd ${WORKSPACE}/proto-back
-                    mvn clean package
+                    cd ${WORKSPACE}/fimafeng-back
+                    mvn clean install
                 '''
 
                 echo "Compilation du FRONT"
                 sh '''
-                    cd ${WORKSPACE}/proto-front
-                    npm run build
+                    cd ${WORKSPACE}/fimafeng-front
+                    npm install
+                    npm install react-scripts --save
+                    npm run ${NPM_BUILD_PARAM}
                 '''
                 
             }
@@ -63,9 +65,9 @@ pipeline {
                 echo "Livraison des fichiers"
                 sh '''
                     cd ${WORKSPACE}
-                    scp ./proto-back/target/*.jar ${SCP_ADR}:
+                    scp ./fimafeng-back/target/*.jar ${SCP_ADR}:
                     ssh ${SCP_ADR} rm -r ./build/
-                    scp -r ./proto-front/build/ ${SCP_ADR}:
+                    scp -r ./fimafeng-front/build/ ${SCP_ADR}:
                 '''
             }
         }
@@ -78,36 +80,51 @@ pipeline {
                 sh '''
                     ssh ${SCP_ADR} rm -r /var/www/html/*
                     ssh ${SCP_ADR} cp -r build/* /var/www/html/
+                    ssh ${SCP_ADR} sh restart-front.sh
                     '''
                 
                 echo "Mise à jour du back"
                 script {
-                    def backend_pid = sh "ssh ${SCP_ADR} pgrep java"
-                    echo backend_pid
+                    try {
+                        def result = sh(script: 'ssh ${SCP_ADR} "pgrep java"', returnStdout: true).trim()
+                        echo "result: [$result]"
+                        if (result.size() != '') {
+                            env.BACKEND_PID = result
+                            sh (script: 'ssh ${SCP_ADR} "kill ${BACKEND_PID}"')
+                        }
+                    } catch (Exception e) {
+                        echo "Echec de l'étape, il n'y avait probablement pas de serveur de lancé"
+                    }
                 }
-                
-                echo "${env.backend_pid}"
-                sh '''
-                    if [ ! -n "${env.backend_pid}" ]; then
-                        echo "Backend PID: ${env.backend_pid}"
-                        ssh ${SCP_ADR} kill ${env.backend_pid}
-                    fi
-                    ls -l
-                    ssh ${SCP_ADR} java -jar *.jar &
-                '''
+                sh "ssh ${SCP_ADR} ls -l"
+                sh "ssh ${SCP_ADR} java -jar fimafeng-back-1.0-SNAPSHOT.jar &"
             }
         }
     }
 }
 
-def getAdressFromBranch(branchName) {
+def getAddressFromBranch(branchName) {
     switch(branchName) {
         case 'main': // PROD
             return "cgl-prod@172.31.252.155"
-
-        case 'dev': // PRE-PROD
+        case 'preprod': // PRE-PROD
+            return "cgl-preprod@172.31.250.67"
+        case 'dev':
             return "cgl-preprod@172.31.250.67"
         default:
             return null
+    }
+}
+
+def getParamFromBranch(branchName) {
+    switch(branchName) {
+        case 'main':
+            return "build:prod"
+        case 'dev':
+            return "build:preprod"
+        case 'preprod':
+            return "build:preprod"
+        default:
+            return "build"
     }
 }
