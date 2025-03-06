@@ -1,5 +1,6 @@
 package fimafeng.back.fimafeng_back.controllers;
 
+import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfile;
 import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfileImplementation;
 import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.repositories.TagCountProjection;
@@ -87,7 +88,7 @@ public class AnnounceController {
     }
 
     @GetMapping("profile")
-    public ResponseEntity<String> buildClientProfiles() {
+    public ResponseEntity<List<AnnounceProfile>> buildClientProfiles() {
         LOGGER.info("buildClientProfiles()");
         AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);
         return new ResponseEntity<>(announceProfileImplementation.getAnnouncesData(), HttpStatus.OK);

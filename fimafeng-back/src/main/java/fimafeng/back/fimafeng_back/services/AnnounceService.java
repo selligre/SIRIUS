@@ -5,6 +5,7 @@ import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.repositories.AnnounceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class AnnounceService {
     private AnnounceRepository announceRepository;
 
     @Autowired
+    @Lazy
     private ModerationImplementation moderationImplementation;
 
     public Announce save(Announce announce) {
