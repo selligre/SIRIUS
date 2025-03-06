@@ -13,6 +13,8 @@
     - R1-US1 : Profil de l'utilisateur avec ses données
     - R1-US2 : Profil de l'annonce avec ses données
     - R2-US1 : Mock Consultation
+    - R2-US2 : Proof Of Concept du processus de recommandation
+    - R2-US3 : Profil de l'utilisateur avec ses consultations
 
 - Étudiant 3 : TRAN Louis
     - R1-US1 : Afficher la carte
