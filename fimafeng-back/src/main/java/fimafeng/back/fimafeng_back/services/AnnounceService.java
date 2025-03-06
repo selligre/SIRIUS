@@ -21,6 +21,9 @@ public class AnnounceService {
     private AnnounceRepository announceRepository;
 
     @Autowired
+    private ModerationService moderationService;
+
+    @Autowired
     private ModerationImplementation moderationImplementation;
 
     public Announce save(Announce announce) {
@@ -54,6 +57,7 @@ public class AnnounceService {
         }
 
         int id = updatedAnnounce.getId();
+        moderationService.updatePreviousModeration(id);
 
         Optional<Announce> optionalAnnounce = announceRepository.findById(id);
         if (optionalAnnounce.isEmpty()) {

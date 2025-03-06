@@ -3,12 +3,18 @@ package fimafeng.back.fimafeng_back.implementations.moderation;
 import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class IntentionDetection {
-    public ModerationReason detect(ArrayList<String> message) {
+
+    static Logger LOGGER = Logger.getLogger(IntentionDetection.class.getName());
+
+    public static ModerationReason detect(ArrayList<String> message) {
+        ModerationReason reason = ModerationReason.INTENTION_OK;
         for (int i = 0; i < message.size()-1; i++) {
             String expression = message.get(i)+" "+message.get(i+1);
             expression = expression.toLowerCase();
+
             switch (expression) {
                 // hate
                 case "retourner pays":
@@ -29,32 +35,36 @@ public class IntentionDetection {
                 case "devoir bruler":
                 case "etre voleurs":
                 case "etre violents":
-                    return ModerationReason.HATE;
+                    LOGGER.info(expression+": "+ModerationReason.HATE);
+                    reason = ModerationReason.HATE;
+                    break;
                 // Violence
                 case "aller tuer":
                 case "casser gueule":
                 case "faire mal":
-                case "aller détruire":
+                case "aller detruire":
                 case "faire payer":
                 case "aller regretter":
-                case "avoir problèmes":
+                case "avoir problemes":
                 case "aller exploser":
                 case "chercher arme":
                 case "faire exploser":
-                case "aller découper":
+                case "aller decouper":
                 case "aller tabasser":
                 case "aller torturer":
                 case "aller violer":
                 case "aller noyer":
-                case "aller brûler":
+                case "aller bruler":
                 case "passer action":
-                case "préparer coup":
-                    return ModerationReason.VIOLENCE;
+                case "preparer coup":
+                    LOGGER.info(expression+": "+ModerationReason.VIOLENCE);
+                    reason = ModerationReason.VIOLENCE;
+                    break;
                 // Pornography
                 case "contenu adultes":
                 case "films x":
-                case "vidéos chaudes":
-                case "photos dénudées":
+                case "videos chaudes":
+                case "photos denudees":
                 case "cam girl":
                 case "contenu exclusif":
                 case "contenu coquin":
@@ -63,10 +73,12 @@ public class IntentionDetection {
                 case "plan cul":
                 case "rencontre coquine":
                 case "chercher partenaire":
-                case "soirée libertine":
-                    return ModerationReason.PORNOGRAPHY;
+                case "soiree libertine":
+                    LOGGER.info(expression+": "+ModerationReason.PORNOGRAPHY);
+                    reason = ModerationReason.PORNOGRAPHY;
+                    break;
             }
         }
-        return ModerationReason.HATE;
+        return reason;
     }
 }

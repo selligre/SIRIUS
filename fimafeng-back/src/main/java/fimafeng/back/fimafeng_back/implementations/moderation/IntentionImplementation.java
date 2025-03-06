@@ -1,6 +1,7 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
+import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 import org.springframework.stereotype.Service;
 
 import frenchverbslib.Verbe;
@@ -16,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
@@ -162,7 +164,11 @@ public class IntentionImplementation {
         for (int i = 0; i < message.size(); i++) {
             String word = message.get(i);
             if(conjugaisonMap.containsKey(word)) {
-                simplifiedMessage.add(conjugaisonMap.get(word));
+                // source : https://stackoverflow.com/questions/4122170/java-change-%c3%a1%c3%a9%c5%91%c5%b1%c3%ba-to-aeouu?noredirect=1&lq=1
+                String infinitive = Normalizer
+                        .normalize(conjugaisonMap.get(word), Normalizer.Form.NFD)
+                        .replaceAll("[^\\p{ASCII}]", "");
+                simplifiedMessage.add(infinitive);
             } else {
                 simplifiedMessage.add(word);
             }
@@ -183,6 +189,17 @@ public class IntentionImplementation {
 
     public void detectIntention(ModerationAnalysis analysis) {
         LOGGER.info("Detecting intention");
+        ModerationReason intentionTitle = IntentionDetection.detect(analysis.getTitle());
+        if(intentionTitle != ModerationReason.INTENTION_OK) {
+            analysis.setTitleStatus(intentionTitle);
+            analysis.setIntention(intentionTitle);
+        }
+        ModerationReason intentionDescription = IntentionDetection.detect(analysis.getDescription());
+        if(intentionDescription != ModerationReason.INTENTION_OK) {
+            analysis.setDescriptionStatus(intentionDescription);
+            analysis.setIntention(intentionDescription);
+        }
+        LOGGER.info("Title: "+analysis.getTitleStatus()+", Description: "+analysis.getDescriptionStatus());
 
     }
 

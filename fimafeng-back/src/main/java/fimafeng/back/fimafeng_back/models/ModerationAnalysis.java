@@ -128,16 +128,16 @@ public class ModerationAnalysis {
         String normalizedTitle = Normalizer
                 .normalize(moderation.getAnnounceTitle(), Normalizer.Form.NFD)
                 .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","");
-        LOGGER.info("Title: " + normalizedTitle);
+        LOGGER.fine("Title: " + normalizedTitle);
         this.title = new ArrayList<String>(Arrays.asList(normalizedTitle.split(" ")));
-        LOGGER.info(this.title.toString());
+        LOGGER.info("Title: " +this.title.toString());
         this.titleStatus = ModerationReason.NOT_MODERATED_YET;
         String normalizedDescription = Normalizer
                 .normalize(moderation.getAnnounceDescription(), Normalizer.Form.NFD)
                 .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","");
-        LOGGER.info("Description: " + normalizedDescription);
+        LOGGER.fine("Description: " + normalizedDescription);
         this.description = new ArrayList<String>(Arrays.asList(normalizedDescription.split(" ")));
-        LOGGER.info(this.description.toString());
+        LOGGER.info("Description: "+this.description.toString());
         this.descriptionStatus = ModerationReason.NOT_MODERATED_YET;
         this.intention = ModerationReason.UNDEFINED;
         this.moderationStatus = AnnounceStatus.TO_ANALYSE;

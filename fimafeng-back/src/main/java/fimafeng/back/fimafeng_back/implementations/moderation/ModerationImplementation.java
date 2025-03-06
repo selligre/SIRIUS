@@ -106,24 +106,43 @@ public class ModerationImplementation extends ModerationService {
         }
 
         LOGGER.info("Moderation analyse: title=" + analysis.getTitleStatus()+ ", desc=" + analysis.getDescriptionStatus());
+        LOGGER.info("Moderation reason: " + moderation.getReason());
         intentionImplementation.prepareAnalysis(analysis);
+        intentionImplementation.detectIntention(analysis);
+        LOGGER.info("Title status: " + analysis.getTitleStatus()+ ", Description stats : " + analysis.getDescriptionStatus());
         moderation.setAnalysis(analysis);
+        updateModerationStatus(moderation, analysis);
+        LOGGER.info("Moderation reason: " + moderation.getReason());
+
     }
 
     private String generateModerationDescription(ModerationAnalysis analysis) {
         StringBuilder sb = new StringBuilder();
         sb.append(ModerationConfiguration.MODERATION_DEFAULT_MESSAGE);
         if(analysis.getTitleStatus() != ModerationReason.NOT_MODERATED_YET) {
+            sb.append(" ");
             sb.append(analysis.getTitleReason());
-            sb.append(analysis.getTitleRejectedWord());
+            sb.append(analysis.getTitleRejectedWord() != null ? analysis.getTitleRejectedWord() : "");
         }
         if(analysis.getDescriptionStatus() != ModerationReason.NOT_MODERATED_YET) {
+            sb.append(" ");
             sb.append(analysis.getDescriptionReason());
-            sb.append(analysis.getDescriptionRejectedWord());
+            sb.append(analysis.getDescriptionRejectedWord() != null ? analysis.getDescriptionRejectedWord() : "");
         }
+        sb.append(" ");
         sb.append("Intention détectée : ");
         sb.append(analysis.getIntention());
         return sb.toString();
+    }
+
+    private void updateModerationStatus(Moderation moderation, ModerationAnalysis analysis) {
+        if (analysis.getTitleStatus() != ModerationReason.INTENTION_OK) {
+            moderation.setReason(analysis.getTitleStatus());
+
+        }
+        if (analysis.getDescriptionStatus() != ModerationReason.INTENTION_OK) {
+            moderation.setReason(analysis.getDescriptionStatus());
+        }
     }
 
     public void run(Announce announceToAnalyse) {
