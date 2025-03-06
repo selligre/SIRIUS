@@ -87,7 +87,7 @@ public class AnnounceController {
 
     }
 
-    @GetMapping("profile")
+    @GetMapping("profiles")
     public ResponseEntity<List<AnnounceProfile>> buildClientProfiles() {
         LOGGER.info("buildClientProfiles()");
         AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);
