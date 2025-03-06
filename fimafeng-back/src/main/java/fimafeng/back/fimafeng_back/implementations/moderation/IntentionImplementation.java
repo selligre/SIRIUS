@@ -1,6 +1,7 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
+import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 import org.springframework.stereotype.Service;
 
 import frenchverbslib.Verbe;
@@ -16,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
@@ -82,8 +84,6 @@ public class IntentionImplementation {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-            //ClassPathResource resource = new ClassPathResource(filePath);
-            //File xmlFile = ModerationConfiguration.loadFile(filePath);
             InputStream xmlFile = ModerationConfiguration.loadFile(filePath);
             Document xmlDoc = docBuilder.parse(xmlFile);
 
@@ -109,9 +109,6 @@ public class IntentionImplementation {
     }
 
      private void generateConjugaisons(List<String> infinitivVerbsList) {
-         ModeEnum[] modesList = ModeEnum.values();
-         TempsEnum[] tempsList = TempsEnum.values();
-
          InputStream verbesStream = ModerationConfiguration.loadFile(ModerationConfiguration.VERBS_FILE);
          InputStream conjugaisonStream = ModerationConfiguration.loadFile(ModerationConfiguration.CONJUGAISONS_FILE);
 
@@ -143,14 +140,16 @@ public class IntentionImplementation {
      * @return the same words list but without its irrelevant words if found
      */
     private ArrayList<String> cleanText(ArrayList<String> message) {
+        // Anti ConcurrentModificationException: https://stackoverflow.com/questions/8104692/how-to-avoid-java-util-concurrentmodificationexception-when-iterating-through-an
+        ArrayList<String> simplifiedMessage = new ArrayList<>();
         LOGGER.info("From: " + message);
         for (String word : message) {
-            if(listIrrelevantWords.contains(word)) {
-                message.remove(word);
+            if(!listIrrelevantWords.contains(word)) {
+                simplifiedMessage.add(word);
             }
         }
-        LOGGER.info("To: " + message);
-        return message;
+        LOGGER.info("To: " + simplifiedMessage);
+        return simplifiedMessage;
     }
 
     /**
@@ -160,17 +159,23 @@ public class IntentionImplementation {
      * @return the same words list but with verbs to their infinitive form
      */
     private ArrayList<String> simplifyText(ArrayList<String> message) {
+        ArrayList<String> simplifiedMessage = new ArrayList<>();
         LOGGER.info("From: " + message);
         for (int i = 0; i < message.size(); i++) {
             String word = message.get(i);
             if(conjugaisonMap.containsKey(word)) {
-                message.set(i, conjugaisonMap.get(word));
+                // source : https://stackoverflow.com/questions/4122170/java-change-%c3%a1%c3%a9%c5%91%c5%b1%c3%ba-to-aeouu?noredirect=1&lq=1
+                String infinitive = Normalizer
+                        .normalize(conjugaisonMap.get(word), Normalizer.Form.NFD)
+                        .replaceAll("[^\\p{ASCII}]", "");
+                simplifiedMessage.add(infinitive);
+            } else {
+                simplifiedMessage.add(word);
             }
         }
-        LOGGER.info("To: " + message);
-        return message;
+        LOGGER.info("To: " + simplifiedMessage);
+        return simplifiedMessage;
     }
-
 
     public void prepareAnalysis(ModerationAnalysis analysis) {
         LOGGER.info("Preparing analysis");
@@ -184,6 +189,18 @@ public class IntentionImplementation {
 
     public void detectIntention(ModerationAnalysis analysis) {
         LOGGER.info("Detecting intention");
+        ModerationReason intentionTitle = IntentionDetection.detect(analysis.getTitle());
+        if(intentionTitle != ModerationReason.INTENTION_OK) {
+            analysis.setTitleStatus(intentionTitle);
+            analysis.setIntention(intentionTitle);
+        }
+        ModerationReason intentionDescription = IntentionDetection.detect(analysis.getDescription());
+        if(intentionDescription != ModerationReason.INTENTION_OK) {
+            analysis.setDescriptionStatus(intentionDescription);
+            analysis.setIntention(intentionDescription);
+        }
+        LOGGER.info("Title: "+analysis.getTitleStatus()+", Description: "+analysis.getDescriptionStatus());
+
     }
 
 

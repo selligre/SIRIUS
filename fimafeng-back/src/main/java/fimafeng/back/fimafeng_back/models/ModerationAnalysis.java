@@ -3,8 +3,10 @@ package fimafeng.back.fimafeng_back.models;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class ModerationAnalysis {
 
@@ -117,10 +119,25 @@ public class ModerationAnalysis {
                 '}';
     }
 
+
+    Logger LOGGER = Logger.getLogger(ModerationAnalysis.class.getName());
+
     public ModerationAnalysis(Moderation moderation) {
-        this.title = new ArrayList<String>(Arrays.asList(moderation.getAnnounceTitle().split(" ")));
+        // Text normalization, i.e. convert accent letters to non-accent letters
+        // source : https://stackoverflow.com/questions/4122170/java-change-%c3%a1%c3%a9%c5%91%c5%b1%c3%ba-to-aeouu?noredirect=1&lq=1
+        String normalizedTitle = Normalizer
+                .normalize(moderation.getAnnounceTitle(), Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","");
+        LOGGER.fine("Title: " + normalizedTitle);
+        this.title = new ArrayList<String>(Arrays.asList(normalizedTitle.split(" ")));
+        LOGGER.info("Title: " +this.title.toString());
         this.titleStatus = ModerationReason.NOT_MODERATED_YET;
-        this.description = new ArrayList<String>(Arrays.asList(moderation.getAnnounceDescription().split(" ")));
+        String normalizedDescription = Normalizer
+                .normalize(moderation.getAnnounceDescription(), Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","");
+        LOGGER.fine("Description: " + normalizedDescription);
+        this.description = new ArrayList<String>(Arrays.asList(normalizedDescription.split(" ")));
+        LOGGER.info("Description: "+this.description.toString());
         this.descriptionStatus = ModerationReason.NOT_MODERATED_YET;
         this.intention = ModerationReason.UNDEFINED;
         this.moderationStatus = AnnounceStatus.TO_ANALYSE;

@@ -24,6 +24,9 @@ a
 au
 aux
 y
+ce
+ces
+c'
 absolument
 actuellement
 ailleurs

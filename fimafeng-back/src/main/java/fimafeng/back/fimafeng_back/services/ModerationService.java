@@ -74,6 +74,14 @@ public class ModerationService {
         return false;
     }
 
+    public void updatePreviousModeration(int idAnnounce) {
+        List<Moderation> moderations = moderationRepository.searchPreviousModeration(idAnnounce);
+        for (Moderation moderation : moderations) {
+            moderation.setLatestAction(false);
+        }
+        moderationRepository.saveAll(moderations);
+    }
+
 
 
 
