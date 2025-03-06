@@ -35,8 +35,8 @@ public class ModerationController {
     @GetMapping("all")
     public ResponseEntity<List<Moderation>> findAllModeration() {
         LOGGER.info("findAllModeration()");
-        LOGGER.log(Level.FINE, "findAll()");
-        return new ResponseEntity<>(moderationService.findAll(), HttpStatus.OK);
+        LOGGER.log(Level.FINE, "findAllLatestAction()");
+        return new ResponseEntity<>(moderationService.findAllLatestAction(), HttpStatus.OK);
     }
 
     @PostMapping("update")
@@ -58,6 +58,12 @@ public class ModerationController {
         }
         return new ResponseEntity<>((long) id, HttpStatus.OK);
 
+    }
+
+    @GetMapping("history/{announceId}")
+    public ResponseEntity<List<Moderation>> findModerationByAnnounceId(@PathVariable int announceId) {
+        LOGGER.info("findModerationByAnnounceId()");
+        return new ResponseEntity<>(moderationService.findModerationByAnnounceId(announceId), HttpStatus.OK);
     }
 
 

@@ -13,4 +13,10 @@ public interface ModerationRepository extends JpaRepository<Moderation, Integer>
     // SELECT * FROM moderation WHERE ref_announce_id = 62 AND latest_action = TRUE;
     @Query("SELECT m FROM Moderation m WHERE m.announceId = :id_announce AND m.latestAction = true")
     List<Moderation> searchPreviousModeration(@Param("id_announce") int idAnnonce);
+
+    @Query("SELECT m FROM Moderation m WHERE m.latestAction = true")
+    List<Moderation> findAllLatestActions();
+
+    
+    List<Moderation> findByAnnounceIdOrderByModerationDateDesc(int announceId);
 }

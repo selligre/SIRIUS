@@ -1,16 +1,17 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
-import {GET_MODERATION, UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
-import {Link} from "react-router-dom";
+import {UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
+import {useParams} from "react-router-dom";
 
 
-export default function Moderation() {
+export default function ModerationHistory() {
 
     const [moderations, setModerations] = useState([]);
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [editingId, setEditingId] = useState(null);
 
+    const announceId = useParams();
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
 
@@ -19,9 +20,19 @@ export default function Moderation() {
         setTimeout(() => setNotification({show: false, message: '', type: ''}), 3000);
     };
 
-    useEffect(() => {
-        setModerationData();
-    }, []);
+    const setModerationData = async () => {
+        console.log("test id")
+        console.log(announceId);
+        console.log("end")
+        axios.get(GET_MODERATION_HISTORY+`/${announceId}`).then((response) => {
+            console.log('Received moderations:', response.data);
+            setModerations(response.data || []);
+        }).catch(error => {
+            console.error('Error loading moderations:', error);
+            alert("Error occurred while loading data:" + error);
+        });
+    }
+
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';
@@ -46,15 +57,12 @@ export default function Moderation() {
         }
     };
 
-    const setModerationData = async () => {
-        axios.get(GET_MODERATION).then((response) => {
-            console.log('Received moderations:', response.data);
-            setModerations(response.data || []);
-        }).catch(error => {
-            console.error('Error loading moderations:', error);
-            alert("Error occurred while loading data:" + error);
-        });
-    }
+    console.log(announceId);
+
+    useEffect(() => {
+        console.log(announceId);
+        setModerationData();
+    }, [announceId, setModerationData()]);
 
     const sortedModerations = [...moderations].sort((a, b) => {
         if (!sortConfig.key) return 0;
@@ -142,13 +150,12 @@ export default function Moderation() {
                         </button>
                     </div>
                     <div>
-                        <Link
+                        <a
                             type="button"
                             className="btn btn-primary"
-                            //to={GET_MODERATION_HISTORY+'/'+moderation.announceId}
-                            to={`/moderation/history/${moderation.announceId}`}
+                            href={GET_MODERATION_HISTORY+'/'+moderation.announceId}
                         >Voir l'historique
-                        </Link>
+                        </a>
                     </div>
                     <div>
                         <button
@@ -286,4 +293,5 @@ export default function Moderation() {
             </div>
         </div>
     );
+
 }

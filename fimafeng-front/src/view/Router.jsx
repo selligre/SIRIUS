@@ -7,6 +7,8 @@ import Map from './Map';
 import Client from './Client';
 import Profile from "./Profile";
 import Moderation from './Moderation';
+import ModerationHistory from "./ModerationHistory";
+
 
 export default function Router() {
     return (
@@ -20,6 +22,8 @@ export default function Router() {
                     <Route path="/client" element={<Client />}/>
                     <Route path="/profiles" element={<Profile/>}/>
                     <Route path="/moderation" element={<Moderation />}/>
+                    <Route path="/moderation/history " element={<ModerationHistory/>}/>
+                    <Route path="/moderation/history/:announceId " element={<ModerationHistory/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

@@ -30,6 +30,8 @@ public class ModerationService {
         return moderationRepository.findAll();
     }
 
+    public List<Moderation> findAllLatestAction() { return moderationRepository.findAllLatestActions(); }
+
     public boolean update(Moderation updatedModeration) {
         if (updatedModeration == null) throw new IllegalArgumentException("moderation is null");
         int id = updatedModeration.getId();
@@ -80,6 +82,10 @@ public class ModerationService {
             moderation.setLatestAction(false);
         }
         moderationRepository.saveAll(moderations);
+    }
+
+    public List<Moderation> findModerationByAnnounceId(int idAnnounce) {
+        return moderationRepository.findByAnnounceIdOrderByModerationDateDesc(idAnnounce);
     }
 
 
