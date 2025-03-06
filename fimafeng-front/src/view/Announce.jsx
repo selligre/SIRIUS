@@ -1,7 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Announce.css';
-import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../api/constants/back";
+import {
+    ADD_ANNOUNCE,
+    GET_ANNOUNCES_SEARCH,
+    LOCAL_HOST_ANNOUNCE,
+    UPDATE_ANNOUNCES
+} from "../api/constants/back";
 
 export default function Announce() {
     const getCurrentDateTime = () => {
@@ -16,6 +21,8 @@ export default function Announce() {
     };
 
     const [announces, setAnnounces] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [editingId, setEditingId] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
@@ -53,13 +60,25 @@ export default function Announce() {
     };
 
     const setAnnounceData = async () => {
-        axios.get(GET_ANNOUNCES).then((response) => {
-            console.log('Received announces:', response.data);
-            setAnnounces(response.data || []);
-        }).catch(error => {
-            console.error('Error loading announces:', error);
-            alert("Error occurred while loading data:" + error);
-        });
+        const url = `${GET_ANNOUNCES_SEARCH}?keyword=&refLocationId=&tagIds=&page=${currentPage - 1}&size=10&sortBy=publication_date&sortDirection=desc`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setAnnounces(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error loading announces:', error);
+                alert("Error occurred while loading data:" + error);
+            });
+    }
+
+    function handleNextPage() {
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    }
+
+    function handlePreviousPage() {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
     }
 
     const confirmRemoveAnnounce = (id) => {
@@ -161,7 +180,7 @@ export default function Announce() {
 
     useEffect(() => {
         setAnnounceData();
-    }, []);
+    }, [currentPage]);
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';
@@ -585,6 +604,11 @@ export default function Announce() {
                         </div>
                     )}
                 </div>
+            </div>
+            <div className="pagination">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>&lt;</button>
+                <span>Page {currentPage} sur {totalPages}</span>
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>&gt;</button>
             </div>
         </div>
     );

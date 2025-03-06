@@ -9,6 +9,8 @@ import fimafeng.back.fimafeng_back.models.Client;
 import fimafeng.back.fimafeng_back.models.ClientTag;
 import fimafeng.back.fimafeng_back.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +55,15 @@ public class ClientController {
     public ResponseEntity<List<Client>> findAllClients() {
         LOGGER.info("findAll()");
         return new ResponseEntity<>(clientService.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<Page<Client>> findAllClients(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LOGGER.info("findAll()");
+        return new ResponseEntity<>(clientService.findSearch(PageRequest.of(page, size)), HttpStatus.OK);
     }
 
     @PostMapping("update")
