@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Announce.css';
-import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../constants/back";
+import {ADD_ANNOUNCE, GET_ANNOUNCES, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../api/constants/back";
 
 export default function Announce() {
     const getCurrentDateTime = () => {

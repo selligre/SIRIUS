@@ -1,6 +1,7 @@
 package fimafeng.back.fimafeng_back.controllers;
 
 import fimafeng.back.fimafeng_back.implementations.mocks.ClientFactory;
+import fimafeng.back.fimafeng_back.implementations.profiles.ClientProfile;
 import fimafeng.back.fimafeng_back.implementations.profiles.ClientProfileImplementation;
 import fimafeng.back.fimafeng_back.implementations.recommendations.RecommendationImplementationPOC;
 import fimafeng.back.fimafeng_back.models.Announce;
@@ -75,10 +76,10 @@ public class ClientController {
     }
 
     @GetMapping("profiles")
-    public ResponseEntity<String> buildClientProfiles() {
+    public ResponseEntity<List<ClientProfile>> buildClientProfiles() {
         LOGGER.info("buildClientProfiles()");
-        ClientProfileImplementation clientProfileImplementation = new ClientProfileImplementation(clientService, clientTagService);
-        return new ResponseEntity<>(clientProfileImplementation.getClientsData(), HttpStatus.OK);
+        ClientProfileImplementation clientProfileImplementation = new ClientProfileImplementation(clientService, clientTagService, consultationService);
+        return new ResponseEntity<>(clientProfileImplementation.buildClientProfile(), HttpStatus.OK);
     }
 
     @GetMapping("generate")

@@ -5,10 +5,9 @@ import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.repositories.AnnounceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +23,7 @@ public class AnnounceService {
     private ModerationService moderationService;
 
     @Autowired
+    @Lazy
     private ModerationImplementation moderationImplementation;
 
     public Announce save(Announce announce) {
@@ -38,8 +38,9 @@ public class AnnounceService {
         return announceRepository.save(announce);
     }
 
-    public Page<Announce> searchAnnounces(String keyword, Integer refLocationId, Pageable pageable) {
-        return announceRepository.searchByKeyword(keyword, refLocationId, pageable);
+    public Page<Announce> searchAnnounces(String keyword, Integer refLocationId, List<Long> tagIds, Pageable pageable) {
+        Integer tagCount = tagIds != null ? tagIds.size() : 0;
+        return announceRepository.searchByKeyword(keyword, refLocationId, tagIds, tagCount, pageable);
     }
 
     public Announce findById(int idAnnounce) {
