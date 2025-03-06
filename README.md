@@ -20,3 +20,9 @@
     - R1-US3 : Recentrage de la carte sur le lieu sélectionné
     - R1-US4 : Afficher les quartiers
     - R1-US5 : Différents affichages selon le nombre d'annonces visibles
+    - R2-US6 : Afficher toutes les annonces
+    - R2-US7 : Affichage avec filtre (tag, quartier) des annonces
+    - R2-US8 : Ouverture d'une annonce depuis la carte
+    - R2-US9 : Déplacement automatique en fonction du filtre par quartier
+    - R2-US10 : Monter seulement les annonces filtrés
+    - R2-US11 : Afficher le nombre d'annonces
