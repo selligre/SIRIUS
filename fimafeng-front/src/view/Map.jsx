@@ -5,12 +5,12 @@ import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 import polygones from '../components/data/polygones.json';
 import deli from '../components/data/deli.json';
-import {GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_SEARCH, GET_ANNOUNCE_TAG_COUNT, GET_ALL_TAGS} from '../api/constants/back';
 import customPin from '../components/PNG/broche-de-localisation.png';
 import customPin2 from '../components/PNG/ezgif-2-711d1a5a58.gif';
 import SearchForm from '../components/map/SearchForm';
 import OverlayAnnounce from '../components/map/OverlayAnnounce';
 import OverlayDistrict from '../components/map/OverlayDistrict';
+import {fetchFilteredAnnounces, fetchData, fetchAnnounceTagCount, fetchAllTags} from '../api/services/MapServices';
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
@@ -38,45 +38,14 @@ const OSMMap = () => {
     }, []);
 
     useEffect(() => {
-        fetch(GET_ALL_TAGS)
-        .then(response => response.json())
-        .then(data => setTags(data))
-        .catch(error => console.error('Erreur lors de la récupération des locations:', error));
+        fetchAllTags(setTags);
     }, []);
 
-    const fetchData = () => {
-        fetch(GET_LOCATIONS)
-            .then(response => response.json())
-            .then(data => setLocations(data))
-            .catch(error => console.error('Erreur lors de la récupération des locations:', error));
-
-        fetch(GET_COUNT)
-            .then(response => response.json())
-            .then(data => setCounts(data))
-            .catch(error => console.error('Erreur lors de la récupération des counts:', error));
-
-        fetch(GET_COUNTDIS)
-            .then(response => response.json())
-            .then(data => setCountsDIs(data))
-            .catch(error => console.error('Erreur lors de la récupération des counts:', error));
-    };
-
     useEffect(() => {
-        fetchData();
+        fetchData(setLocations, setCounts, setCountsDIs);
         const interval = setInterval(fetchData, 100000);
         return () => clearInterval(interval);
     }, []);
-
-    const fetchFilteredAnnounces = (keyword, refLocationId, tagIds, currentPage, size = 10) => {
-        const url = `${GET_ANNOUNCES_SEARCH}?keyword=${keyword}&page=${currentPage - 1}&size=${size}&sortBy=publication_date&sortDirection=desc&refLocationId=${refLocationId}&tagIds=${tagIds}`;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                setAnnounces(data.content);
-                setTotalPages(data.totalPages);
-            })
-            .catch(error => console.error('Error fetching filtered announces:', error));
-    };
 
     const customIcon = L.icon({
         iconUrl: customPin, iconSize: [50, 50],
@@ -96,7 +65,7 @@ const OSMMap = () => {
             setCurrentPage(1);
             map.setMaxBounds(deli.zone);
             map.setView([lat, lng], 18);
-            fetchFilteredAnnounces('', locationId, '', 1);
+            fetchFilteredAnnounces('', locationId, '', 1, 10, setAnnounces, setTotalPages);
             handleDistrictClick(ref_district)
             setRefLocationId(locationId)
             setShowOverlayAnnounce(true);
@@ -129,12 +98,7 @@ const OSMMap = () => {
                     [northEast.lat + margin, northEast.lng + margin]
                 );
                 setSelectedDistrict(district);
-                const url = `${GET_ANNOUNCE_TAG_COUNT}/${districtId}`;
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        setTagCounts(data);
-                    })
+                fetchAnnounceTagCount(districtId, setTagCounts);
                 map.setMaxBounds(adjustedBounds);
                 map.setZoom(15);
                 setShowOverlayDistrict(true);
@@ -150,7 +114,7 @@ const OSMMap = () => {
         event.preventDefault();
         setCurrentPage(1);
         setRefLocationId('');
-        fetchFilteredAnnounces(searchKeyword, '', selectedTags, 1);
+        fetchFilteredAnnounces('', '', selectedTags, 1, 10, setAnnounces, setTotalPages);
         setShowOverlayAnnounce(true);
     };
 
@@ -184,12 +148,12 @@ const OSMMap = () => {
 
     function handleNextPage() {
         setCurrentPage(currentPage + 1);
-        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage + 1);
+        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage + 1, 10, setAnnounces, setTotalPages);
     }
 
     function handlePreviousPage() {
         setCurrentPage(currentPage - 1);
-        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage - 1);
+        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage - 1, 10, setAnnounces, setTotalPages);
     }
 
     const MapEventHandler = () => {
