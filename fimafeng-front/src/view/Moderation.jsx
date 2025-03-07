@@ -145,8 +145,7 @@ export default function Moderation() {
                         <Link
                             type="button"
                             className="btn btn-primary"
-                            //to={GET_MODERATION_HISTORY+'/'+moderation.announceId}
-                            to={`/moderation/history/${moderation.announceId}`}
+                            to={`/moderation/${moderation.announceId}`}
                         >Voir l'historique
                         </Link>
                     </div>

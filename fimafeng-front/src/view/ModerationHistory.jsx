@@ -11,9 +11,13 @@ export default function ModerationHistory() {
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [editingId, setEditingId] = useState(null);
 
-    const announceId = useParams();
+    const { announceId } = useParams();
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
+
+    useEffect(() => {
+        setModerationData();
+    }, [announceId]);
 
     const showNotification = (message, type = 'success') => {
         setNotification({show: true, message, type});
@@ -21,18 +25,14 @@ export default function ModerationHistory() {
     };
 
     const setModerationData = async () => {
-        console.log("test id")
-        console.log(announceId);
-        console.log("end")
         axios.get(GET_MODERATION_HISTORY+`/${announceId}`).then((response) => {
-            console.log('Received moderations:', response.data);
+            console.log('Received moderation\'s history:', response.data);
             setModerations(response.data || []);
         }).catch(error => {
-            console.error('Error loading moderations:', error);
+            console.error('Error loading history:', error);
             alert("Error occurred while loading data:" + error);
         });
     }
-
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';
@@ -56,13 +56,6 @@ export default function ModerationHistory() {
             return 'Invalid date';
         }
     };
-
-    console.log(announceId);
-
-    useEffect(() => {
-        console.log(announceId);
-        setModerationData();
-    }, [announceId, setModerationData()]);
 
     const sortedModerations = [...moderations].sort((a, b) => {
         if (!sortConfig.key) return 0;
@@ -131,42 +124,41 @@ export default function ModerationHistory() {
                         {moderation.description}
                     </div>
                 </div>
-                <div className="moderator-actions">
-                    <div className="moderator-actions-left">
-                        <button
-                            type="button"
-                            className="btn btn-danger"
-                            onClick={() => console.log("annonce delete event")}
-                            disabled
-                        >Supprimer l'annonce
-                        </button>
+                { moderation.latestAction ? (
+                    <div className="moderator-actions">
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => console.log("annonce delete event")}
+                                disabled
+                            >Supprimer l'annonce
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-warning"
+                                onClick={() => setEditingId(moderation.id)}
+                            >Modifier les raisons
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={() => console.log("annonce delete event")}
+                                disabled
+                            >Approuver l'annonce
+                            </button>
+                        </div>
                     </div>
-                    <div className="moderator-actions-right">
-                        <button
-                            type="button"
-                            className="btn btn-warning"
-                            onClick={() => setEditingId(moderation.id)}
-                        >Modifier les raisons
-                        </button>
-                    </div>
+                ) : (
                     <div>
-                        <a
-                            type="button"
-                            className="btn btn-primary"
-                            href={GET_MODERATION_HISTORY+'/'+moderation.announceId}
-                        >Voir l'historique
-                        </a>
+                        <i>Aller voir la dernière modération tout en haut pour intéragir sur l'annonce</i>
                     </div>
-                    <div>
-                        <button
-                            type="button"
-                            className="btn btn-success"
-                            onClick={() => console.log("annonce delete event")}
-                            disabled
-                        >Approuver l'annonce
-                        </button>
-                    </div>
-                </div>
+                )}
+
             </div>
             <div className="card-right">
                 <div className="card-subtitle">État de l'annonce lors de l'action</div>
@@ -265,6 +257,7 @@ export default function ModerationHistory() {
     );
 
     return (
+
         <div className="moderation-container">
             {notification.show && (
                 <div className={`alert alert-${notification.type} notification-popup`}>
@@ -280,13 +273,13 @@ export default function ModerationHistory() {
                     ) : (
 
                         <div>
-                        {sortedModerations.map((moderation, index) => (
-                            <div key={index}>
-                                {editingId === moderation.id
-                                    ? renderEditItem(moderation)
-                                    : renderReadOnlyItem(moderation)}
-                            </div>
-                        ))}
+                            {sortedModerations.map((moderation, index) => (
+                                <div key={index}>
+                                    {editingId === moderation.id
+                                        ? renderEditItem(moderation)
+                                        : renderReadOnlyItem(moderation)}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
