@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import axios from "axios";
+import React, {useCallback, useEffect, useState} from 'react';
 import '../styles/Announce.css';
 import {
     LOCAL_HOST_CLIENTS
@@ -10,11 +9,11 @@ export default function ClientAnnounce() {
     const [announces, setAnnounces] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [notification, setNotification] = useState({show: false, message: '', type: ''});
+    const [notification] = useState({show: false, message: '', type: ''});
 
     const { clientId } = useParams();
 
-    const setAnnounceData = async () => {
+    const setAnnounceData = useCallback( async () => {
         const url = `${LOCAL_HOST_CLIENTS}/${clientId}/announces?page=${currentPage - 1}`;
         fetch(url)
             .then(response => response.json())
@@ -26,7 +25,7 @@ export default function ClientAnnounce() {
                 console.error('Error loading announces:', error);
                 alert("Error occurred while loading data:" + error);
             });
-    }
+    }, [currentPage, clientId]);
 
     function handleNextPage() {
         setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
@@ -38,7 +37,7 @@ export default function ClientAnnounce() {
 
     useEffect(() => {
         setAnnounceData();
-    }, [currentPage]);
+    }, [currentPage, setAnnounceData]);
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';
