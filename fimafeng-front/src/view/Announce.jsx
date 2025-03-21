@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Announce.css';
 import {
@@ -59,7 +59,8 @@ export default function Announce() {
         });
     };
 
-    const setAnnounceData = async () => {
+
+    const setAnnounceData = useCallback(async () => {
         const url = `${GET_ANNOUNCES_SEARCH}?keyword=&refLocationId=&tagIds=&page=${currentPage - 1}&size=10&sortBy=publication_date&sortDirection=desc`;
         fetch(url)
             .then(response => response.json())
@@ -71,7 +72,7 @@ export default function Announce() {
                 console.error('Error loading announces:', error);
                 alert("Error occurred while loading data:" + error);
             });
-    }
+    }, [currentPage]);
 
     function handleNextPage() {
         setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
@@ -180,7 +181,7 @@ export default function Announce() {
 
     useEffect(() => {
         setAnnounceData();
-    }, [currentPage]);
+    }, [currentPage, setAnnounceData]);
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';

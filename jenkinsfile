@@ -106,7 +106,7 @@ pipeline {
 def getAddressFromBranch(branchName) {
     switch(branchName) {
         case 'main': // PROD
-            return "cgl-prod@172.31.252.155"
+            return "cgl-prod@172.31.250.70"
         case 'preprod': // PRE-PROD
             return "cgl-preprod@172.31.250.67"
         case 'dev':
