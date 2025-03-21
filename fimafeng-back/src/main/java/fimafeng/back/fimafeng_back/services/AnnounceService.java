@@ -43,6 +43,10 @@ public class AnnounceService {
         return announceRepository.searchByKeyword(keyword, refLocationId, tagIds, tagCount, pageable);
     }
 
+    public Page<Announce> findAllAnnouncesByClientId(int clientId, Pageable pageable) {
+        return announceRepository.findAllAnnouncesByClientId(clientId, pageable);
+    }
+
     public Announce findById(int idAnnounce) {
         Optional<Announce> optionalAnnounce = announceRepository.findById(idAnnounce);
         return optionalAnnounce.orElse(null);

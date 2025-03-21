@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Integer> {
-    @Query(value = "SELECT * FROM client", nativeQuery = true)
-    Page<Client> findSearch(Pageable pageable);
+
+    @Query(value = "select * from client order by client.id asc", nativeQuery = true)
+    Page<Client> findAll(Pageable pageable);
 }

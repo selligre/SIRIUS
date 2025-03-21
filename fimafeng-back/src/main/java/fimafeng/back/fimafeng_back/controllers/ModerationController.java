@@ -3,6 +3,8 @@ package fimafeng.back.fimafeng_back.controllers;
 import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.services.ModerationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,15 @@ public class ModerationController {
         return new ResponseEntity<>(moderationService.findAllLatestAction(), HttpStatus.OK);
     }
 
+    @GetMapping("search")
+    public ResponseEntity<Page<Moderation>> findAllModeraton(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LOGGER.info("findAllModeration() (pages)");
+        return new ResponseEntity<>(moderationService.findAllLatestAction(PageRequest.of(page, size)), HttpStatus.OK);
+    }
+
     @PostMapping("update")
     public ResponseEntity<Moderation> updateModeration(@RequestBody Moderation moderation) {
         LOGGER.info("updateModeration()");
@@ -60,11 +71,20 @@ public class ModerationController {
 
     }
 
-    @GetMapping("history/{announceId}")
+    //@GetMapping("history/{announceId}")
     public ResponseEntity<List<Moderation>> findModerationByAnnounceId(@PathVariable int announceId) {
         LOGGER.info("findModerationByAnnounceId()");
         return new ResponseEntity<>(moderationService.findModerationByAnnounceId(announceId), HttpStatus.OK);
     }
 
+    @GetMapping("history/{announceId}")
+    public ResponseEntity<Page<Moderation>> findModerationByAnnounceId(
+            @PathVariable int announceId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LOGGER.info("findModerationByAnnounceId() (pages)");
+        return new ResponseEntity<>(moderationService.findModerationByAnnounceId(announceId, PageRequest.of(page, size)), HttpStatus.OK);
+    }
 
 }

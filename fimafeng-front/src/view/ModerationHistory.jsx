@@ -11,6 +11,9 @@ export default function ModerationHistory() {
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [editingId, setEditingId] = useState(null);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
     const { announceId } = useParams();
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
@@ -25,13 +28,25 @@ export default function ModerationHistory() {
     };
 
     const setModerationData = async () => {
-        axios.get(GET_MODERATION_HISTORY+`/${announceId}`).then((response) => {
-            console.log('Received moderation\'s history:', response.data);
-            setModerations(response.data || []);
-        }).catch(error => {
-            console.error('Error loading history:', error);
-            alert("Error occurred while loading data:" + error);
-        });
+        const url = `${GET_MODERATION_HISTORY}/${announceId}?page=${currentPage - 1}`;
+        fetch(url)
+            .then(AuthenticatorResponse => AuthenticatorResponse.json())
+            .then(data => {
+                setModerations(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error loading history:', error);
+                alert("Error occurred while loading data:" + error);
+            });
+    }
+
+    function handleNextPage() {
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    }
+
+    function handlePreviousPage() {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
     }
 
     const formatDateTime = (dateString) => {
@@ -283,6 +298,11 @@ export default function ModerationHistory() {
                         </div>
                     )}
                 </div>
+            </div>
+            <div className="pagination">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>&lt;</button>
+                <span>Page {currentPage} sur {totalPages}</span>
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>&gt;</button>
             </div>
         </div>
     );

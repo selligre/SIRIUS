@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import '../styles/Client.css';
 import {GET_CLIENTS_SEARCH} from "../api/constants/back";
+import {Link} from "react-router-dom";
 
 export default function Client() {
 
@@ -62,6 +63,13 @@ export default function Client() {
             <td>{client.lastName}</td>
             <td>{client.email}</td>
             <td>{client.district}</td>
+            <td>
+                <Link type="button"
+                      className="btn btn-primary"
+                      to={`/client/${client.id}/announces`}>
+                    Voir les annonces
+                </Link>
+            </td>
         </>
     );
 
@@ -88,7 +96,7 @@ export default function Client() {
                                     <th onClick={() => handleSort('lastName')}>Nom</th>
                                     <th onClick={() => handleSort('email')}>Email</th>
                                     <th onClick={() => handleSort('refDistrict')}>Quartier</th>
-                                    {/*<th>Actions</th>*/}
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
