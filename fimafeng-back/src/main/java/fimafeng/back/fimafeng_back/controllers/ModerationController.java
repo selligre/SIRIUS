@@ -42,7 +42,7 @@ public class ModerationController {
     }
 
     @GetMapping("search")
-    public ResponseEntity<Page<Moderation>> findAllModeraton(
+    public ResponseEntity<Page<Moderation>> findAllModeration(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -69,12 +69,6 @@ public class ModerationController {
         }
         return new ResponseEntity<>((long) id, HttpStatus.OK);
 
-    }
-
-    //@GetMapping("history/{announceId}")
-    public ResponseEntity<List<Moderation>> findModerationByAnnounceId(@PathVariable int announceId) {
-        LOGGER.info("findModerationByAnnounceId()");
-        return new ResponseEntity<>(moderationService.findModerationByAnnounceId(announceId), HttpStatus.OK);
     }
 
     @GetMapping("history/{announceId}")
