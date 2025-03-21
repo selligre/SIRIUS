@@ -5,8 +5,6 @@ import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 import org.springframework.stereotype.Service;
 
 import frenchverbslib.Verbe;
-import frenchverbslib.ModeEnum;
-import frenchverbslib.TempsEnum;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -70,13 +68,13 @@ public class IntentionImplementation {
         }
         if (conjugaisonMap.isEmpty()) {
             LOGGER.info("Initializing conjugaisonMap");
-            List<String> infinitivVerbsList = extractInfinitivVerbs(ModerationConfiguration.VERBS_FILE);
+            List<String> infinitivVerbsList = extractInfinitiveVerbs(ModerationConfiguration.VERBS_FILE);
             generateConjugaisons(infinitivVerbsList);
         }
 
     }
 
-    private List<String> extractInfinitivVerbs(String filePath){
+    private List<String> extractInfinitiveVerbs(String filePath){
         List<String> infinitivList = new ArrayList<>();
         // Duration calculation: https://docs.vultr.com/java/examples/calculate-difference-between-two-time-periods
         LocalTime start = LocalTime.now();

@@ -1,27 +1,53 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
-import {GET_MODERATION, UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
-import {Link} from "react-router-dom";
+import {UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
+import {useParams} from "react-router-dom";
 
 
-export default function Moderation() {
+export default function ModerationHistory() {
 
     const [moderations, setModerations] = useState([]);
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [editingId, setEditingId] = useState(null);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const { announceId } = useParams();
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
+
+    useEffect(() => {
+        setModerationData();
+    }, [announceId]);
 
     const showNotification = (message, type = 'success') => {
         setNotification({show: true, message, type});
         setTimeout(() => setNotification({show: false, message: '', type: ''}), 3000);
     };
 
-    useEffect(() => {
-        setModerationData();
-    }, []);
+    const setModerationData = async () => {
+        const url = `${GET_MODERATION_HISTORY}/${announceId}?page=${currentPage - 1}`;
+        fetch(url)
+            .then(AuthenticatorResponse => AuthenticatorResponse.json())
+            .then(data => {
+                setModerations(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error loading history:', error);
+                alert("Error occurred while loading data:" + error);
+            });
+    }
+
+    function handleNextPage() {
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    }
+
+    function handlePreviousPage() {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
+    }
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';
@@ -45,16 +71,6 @@ export default function Moderation() {
             return 'Invalid date';
         }
     };
-
-    const setModerationData = async () => {
-        axios.get(GET_MODERATION).then((response) => {
-            console.log('Received moderations:', response.data);
-            setModerations(response.data || []);
-        }).catch(error => {
-            console.error('Error loading moderations:', error);
-            alert("Error occurred while loading data:" + error);
-        });
-    }
 
     const sortedModerations = [...moderations].sort((a, b) => {
         if (!sortConfig.key) return 0;
@@ -123,42 +139,41 @@ export default function Moderation() {
                         {moderation.description}
                     </div>
                 </div>
-                <div className="moderator-actions">
-                    <div className="moderator-actions-left">
-                        <button
-                            type="button"
-                            className="btn btn-danger"
-                            onClick={() => console.log("annonce delete event")}
-                            disabled
-                        >Supprimer l'annonce
-                        </button>
+                { moderation.latestAction ? (
+                    <div className="moderator-actions">
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => console.log("annonce delete event")}
+                                disabled
+                            >Supprimer l'annonce
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-warning"
+                                onClick={() => setEditingId(moderation.id)}
+                            >Modifier les raisons
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={() => console.log("annonce delete event")}
+                                disabled
+                            >Approuver l'annonce
+                            </button>
+                        </div>
                     </div>
-                    <div className="moderator-actions-right">
-                        <button
-                            type="button"
-                            className="btn btn-warning"
-                            onClick={() => setEditingId(moderation.id)}
-                        >Modifier les raisons
-                        </button>
-                    </div>
+                ) : (
                     <div>
-                        <Link
-                            type="button"
-                            className="btn btn-primary"
-                            to={`/moderation/${moderation.announceId}`}
-                        >Voir l'historique
-                        </Link>
+                        <i>Aller voir la dernière modération tout en haut pour intéragir sur l'annonce</i>
                     </div>
-                    <div>
-                        <button
-                            type="button"
-                            className="btn btn-success"
-                            onClick={() => console.log("annonce delete event")}
-                            disabled
-                        >Approuver l'annonce
-                        </button>
-                    </div>
-                </div>
+                )}
+
             </div>
             <div className="card-right">
                 <div className="card-subtitle">État de l'annonce lors de l'action</div>
@@ -257,6 +272,7 @@ export default function Moderation() {
     );
 
     return (
+
         <div className="moderation-container">
             {notification.show && (
                 <div className={`alert alert-${notification.type} notification-popup`}>
@@ -272,17 +288,23 @@ export default function Moderation() {
                     ) : (
 
                         <div>
-                        {sortedModerations.map((moderation, index) => (
-                            <div key={index}>
-                                {editingId === moderation.id
-                                    ? renderEditItem(moderation)
-                                    : renderReadOnlyItem(moderation)}
-                            </div>
-                        ))}
+                            {sortedModerations.map((moderation, index) => (
+                                <div key={index}>
+                                    {editingId === moderation.id
+                                        ? renderEditItem(moderation)
+                                        : renderReadOnlyItem(moderation)}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
             </div>
+            <div className="pagination">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>&lt;</button>
+                <span>Page {currentPage} sur {totalPages}</span>
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>&gt;</button>
+            </div>
         </div>
     );
+
 }

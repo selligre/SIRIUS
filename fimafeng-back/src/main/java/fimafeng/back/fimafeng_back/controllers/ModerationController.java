@@ -3,6 +3,8 @@ package fimafeng.back.fimafeng_back.controllers;
 import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.services.ModerationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +37,17 @@ public class ModerationController {
     @GetMapping("all")
     public ResponseEntity<List<Moderation>> findAllModeration() {
         LOGGER.info("findAllModeration()");
-        LOGGER.log(Level.FINE, "findAll()");
-        return new ResponseEntity<>(moderationService.findAll(), HttpStatus.OK);
+        LOGGER.log(Level.FINE, "findAllLatestAction()");
+        return new ResponseEntity<>(moderationService.findAllLatestAction(), HttpStatus.OK);
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<Page<Moderation>> findAllModeration(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LOGGER.info("findAllModeration() (pages)");
+        return new ResponseEntity<>(moderationService.findAllLatestAction(PageRequest.of(page, size)), HttpStatus.OK);
     }
 
     @PostMapping("update")
@@ -60,5 +71,14 @@ public class ModerationController {
 
     }
 
+    @GetMapping("history/{announceId}")
+    public ResponseEntity<Page<Moderation>> findModerationByAnnounceId(
+            @PathVariable int announceId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LOGGER.info("findModerationByAnnounceId() (pages)");
+        return new ResponseEntity<>(moderationService.findModerationByAnnounceId(announceId, PageRequest.of(page, size)), HttpStatus.OK);
+    }
 
 }

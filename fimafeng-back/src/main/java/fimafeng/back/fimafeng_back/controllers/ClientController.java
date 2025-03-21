@@ -153,4 +153,14 @@ public class ClientController {
         return new ResponseEntity<>(recommendationImplementationPOC.generateRecommendations(id), HttpStatus.OK);
     }
 
+    @GetMapping("{clientId}/announces")
+    public ResponseEntity<Page<Announce>> buildClientAnnounces(
+            @PathVariable int clientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LOGGER.info("findAllAnnouncesByClientId()");
+        return new ResponseEntity<>(announceService.findAllAnnouncesByClientId(clientId, PageRequest.of(page, size)), HttpStatus.OK);
+    }
+
 }

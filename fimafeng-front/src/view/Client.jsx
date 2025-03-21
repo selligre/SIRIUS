@@ -1,6 +1,7 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import '../styles/Client.css';
 import {GET_CLIENTS_SEARCH} from "../api/constants/back";
+import {Link} from "react-router-dom";
 
 export default function Client() {
 
@@ -26,7 +27,21 @@ export default function Client() {
 
     useEffect(() => {
         setClientData();
-    }, [currentPage, setClientData]);
+    }, [currentPage]);
+
+    const setClientData = async () => {
+        const url = `${GET_CLIENTS_SEARCH}?page=${currentPage - 1}&size=10`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setClients(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error loading announces:', error);
+                alert("Error occurred while loading data:" + error);
+            });
+    }
 
     function handleNextPage() {
         setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
@@ -62,6 +77,13 @@ export default function Client() {
             <td>{client.lastName}</td>
             <td>{client.email}</td>
             <td>{client.district}</td>
+            <td>
+                <Link type="button"
+                      className="btn btn-primary"
+                      to={`/client/${client.id}/announces`}>
+                    Voir les annonces
+                </Link>
+            </td>
         </>
     );
 
@@ -88,7 +110,7 @@ export default function Client() {
                                     <th onClick={() => handleSort('lastName')}>Nom</th>
                                     <th onClick={() => handleSort('email')}>Email</th>
                                     <th onClick={() => handleSort('refDistrict')}>Quartier</th>
-                                    {/*<th>Actions</th>*/}
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
