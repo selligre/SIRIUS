@@ -5,6 +5,7 @@ import fimafeng.back.fimafeng_back.services.ModerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@EnableSpringDataWebSupport
 @RestController
 @RequestMapping("moderation")
 public class ModerationController {
@@ -34,14 +36,14 @@ public class ModerationController {
         return new ResponseEntity<>(createdModeration, HttpStatus.CREATED);
     }
 
-    @GetMapping("all")
+    //@GetMapping("all")
     public ResponseEntity<List<Moderation>> findAllModeration() {
         LOGGER.info("findAllModeration()");
         LOGGER.log(Level.FINE, "findAllLatestAction()");
         return new ResponseEntity<>(moderationService.findAllLatestAction(), HttpStatus.OK);
     }
 
-    @GetMapping("search")
+    @GetMapping("all")
     public ResponseEntity<Page<Moderation>> findAllModeration(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

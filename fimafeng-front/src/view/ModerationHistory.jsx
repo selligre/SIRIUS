@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
 import {UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
@@ -18,16 +18,12 @@ export default function ModerationHistory() {
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
 
-    useEffect(() => {
-        setModerationData();
-    }, [announceId]);
-
     const showNotification = (message, type = 'success') => {
         setNotification({show: true, message, type});
         setTimeout(() => setNotification({show: false, message: '', type: ''}), 3000);
     };
 
-    const setModerationData = async () => {
+    const setModerationData = useCallback( async () => {
         const url = `${GET_MODERATION_HISTORY}/${announceId}?page=${currentPage - 1}`;
         fetch(url)
             .then(AuthenticatorResponse => AuthenticatorResponse.json())
@@ -39,7 +35,7 @@ export default function ModerationHistory() {
                 console.error('Error loading history:', error);
                 alert("Error occurred while loading data:" + error);
             });
-    }
+    }, [announceId, currentPage]);
 
     function handleNextPage() {
         setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
