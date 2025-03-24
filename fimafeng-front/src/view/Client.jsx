@@ -9,7 +9,7 @@ export default function Client() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [notification] = useState({show: false, message: '', type: ''});
-    const [sortConfig, setSortConfig] = useState({key: 'id', direction: 'desc'});
+    const [sortConfig, setSortConfig] = useState({key: 'id', direction: 'asc'});
 
     const setClientData = useCallback(async () => {
         const url = `${GET_CLIENTS_SEARCH}?page=${currentPage - 1}&size=10`;
@@ -17,13 +17,15 @@ export default function Client() {
             .then(response => response.json())
             .then(data => {
                 setClients(data.content);
+                console.log(data.totalPages);
                 setTotalPages(data.totalPages);
+                console.log(totalPages);
             })
             .catch(error => {
                 console.error('Error loading announces:', error);
                 alert("Error occurred while loading data:" + error);
             });
-    }, [currentPage]);
+    }, [currentPage, totalPages]);
 
     useEffect(() => {
         setClientData();
