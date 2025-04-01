@@ -5,7 +5,7 @@ import {
     ADD_ANNOUNCE,
     GET_ANNOUNCES_SEARCH,
     LOCAL_HOST_ANNOUNCE,
-    UPDATE_ANNOUNCES
+    UPDATE_ANNOUNCES,
 } from "../api/constants/back";
 
 export default function Announce() {

@@ -17,7 +17,7 @@ const OSMMap = () => {
     const [selectedDistrict, setSelectedDistrict] = useState([]);
     const [refLocationId, setRefLocationId] = useState('');
     const [counts, setCounts] = useState([]);
-    const [countsDis, setCountsDIs] = useState([]);
+    const [countsDis, setCountsDis] = useState([]);
     const [tagCounts, setTagCounts] = useState([]);
     const [zoomLevel, setZoomLevel] = useState(14);
     const [announces, setAnnounces] = useState([]);
@@ -42,8 +42,8 @@ const OSMMap = () => {
     }, []);
 
     useEffect(() => {
-        fetchData(setLocations, setCounts, setCountsDIs);
-        const interval = setInterval(fetchData, 100000);
+        fetchData(setLocations, setCounts, setCountsDis);
+        const interval = setInterval(fetchData(setLocations, setCounts, setCountsDis), 1000000);
         return () => clearInterval(interval);
     }, []);
 
@@ -162,7 +162,8 @@ const OSMMap = () => {
             const onZoomEnd = () => {
                 setZoomLevel(map.getZoom());
             };
-            const onClick = () => {
+            const onClick = (e) => {
+                console.log(`Clicked at latitude: ${e.latlng.lat}, longitude: ${e.latlng.lng}`);
             };
             map.on('zoomend', onZoomEnd);
             map.on('click', onClick);
@@ -241,16 +242,13 @@ const OSMMap = () => {
                                     fillColor: fillColor,
                                     fillOpacity: fillOpacity,
                                 }}
-                                eventHandlers={{
-                                    click: () => handleDistrictClick(zone.id),
-                                }}
                             >
                             </Polygon>
                         </React.Fragment>
                     );
                 })}
 
-                {zoomLevel >= 15 && locationsWithAnnounces.map(location => (
+                {zoomLevel >= 15 && locations.map(location => (
                     <Marker
                         key={location.idLocation}
                         position={[location.latitude, location.longitude]}

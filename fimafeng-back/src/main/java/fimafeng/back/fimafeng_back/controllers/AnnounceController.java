@@ -1,11 +1,11 @@
 package fimafeng.back.fimafeng_back.controllers;
 
+import fimafeng.back.fimafeng_back.implementations.mocks.AnnounceFactory;
 import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfile;
 import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfileImplementation;
-import fimafeng.back.fimafeng_back.models.Announce;
+import fimafeng.back.fimafeng_back.models.*;
 import fimafeng.back.fimafeng_back.repositories.TagCountProjection;
-import fimafeng.back.fimafeng_back.services.AnnounceService;
-import fimafeng.back.fimafeng_back.services.AnnounceTagService;
+import fimafeng.back.fimafeng_back.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -24,9 +25,14 @@ public class AnnounceController {
 
     @Autowired
     private AnnounceService announceService;
-
+    @Autowired
+    private TagService tagService;
     @Autowired
     private AnnounceTagService announceTagService;
+    @Autowired
+    private LocationService locationService;
+    @Autowired
+    private ClientService clientService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Announce> findAnnounceById(@PathVariable int id) {
@@ -92,5 +98,45 @@ public class AnnounceController {
         LOGGER.info("buildClientProfiles()");
         AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);
         return new ResponseEntity<>(announceProfileImplementation.getAnnouncesData(), HttpStatus.OK);
+    }
+
+    @GetMapping("generate")
+    public ResponseEntity<String> generateClient(@RequestParam(required = false) Integer amount, @RequestParam(required = false) Integer delay) {
+        LOGGER.info("generateClient()");
+        if (amount == null) {
+            amount = 1;
+        }
+        if (delay == null) {
+            delay = 0;
+        }
+
+        int savedAmount = 0;
+
+        List<Tag> tags = tagService.findAll();
+        List<Location> locations = locationService.findAllLocation();
+        List<Client> clients = clientService.findAll();
+
+        for (int i = 0; i < amount; i++) {
+            Collections.shuffle(tags);
+            List<Tag> selectedTags = tags.subList(0, Math.min(2, tags.size()));
+            Location location = locations.get((int) (Math.random() * locations.size()));
+            AnnounceFactory announceFactory = new AnnounceFactory();
+            Announce generatedAnnounce = announceService.save(announceFactory.generateAnnounce(selectedTags, location, clients));
+            for (Tag tag : selectedTags) {
+                AnnounceTag announceTag = new AnnounceTag();
+                announceTag.setRefTagId(tag.getId());
+                announceTag.setRefAnnounceId(generatedAnnounce.getId());
+                announceTagService.save(announceTag);
+            }
+            savedAmount += 1;
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        String msg = String.format("Success: %d / %d", savedAmount, amount);
+        return new ResponseEntity<>(msg, HttpStatus.CREATED);
     }
 }
