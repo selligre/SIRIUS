@@ -175,7 +175,7 @@ public class IntentionImplementation {
         return simplifiedMessage;
     }
 
-    public void prepareAnalysis(ModerationAnalysis analysis) {
+    private void prepareAnalysis(ModerationAnalysis analysis) {
         LOGGER.info("Preparing analysis");
         LOGGER.info("Clearing...");
         analysis.setTitle(cleanText(analysis.getTitle()));
@@ -186,6 +186,8 @@ public class IntentionImplementation {
     }
 
     public void detectIntention(ModerationAnalysis analysis) {
+        prepareAnalysis(analysis);
+
         LOGGER.info("Detecting intention");
         ModerationReason intentionTitle = IntentionDetection.detect(analysis.getTitle());
         if(intentionTitle != ModerationReason.INTENTION_OK) {

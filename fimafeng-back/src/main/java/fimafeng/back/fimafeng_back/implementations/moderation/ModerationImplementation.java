@@ -107,9 +107,8 @@ public class ModerationImplementation extends ModerationService {
 
         LOGGER.info("Moderation analyse: title=" + analysis.getTitleStatus()+ ", desc=" + analysis.getDescriptionStatus());
         LOGGER.info("Moderation reason: " + moderation.getReason());
-        intentionImplementation.prepareAnalysis(analysis);
         intentionImplementation.detectIntention(analysis);
-        LOGGER.info("Title status: " + analysis.getTitleStatus()+ ", Description stats : " + analysis.getDescriptionStatus());
+        LOGGER.info("[Analysis] Title status: " + analysis.getTitleStatus()+ ", Description stats : " + analysis.getDescriptionStatus());
         moderation.setAnalysis(analysis);
         updateModerationStatus(moderation, analysis);
         LOGGER.info("Moderation reason: " + moderation.getReason());

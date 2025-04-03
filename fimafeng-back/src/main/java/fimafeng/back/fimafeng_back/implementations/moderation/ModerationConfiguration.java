@@ -23,6 +23,7 @@ public class ModerationConfiguration {
     public static final String SYSTEM_MODERATOR_NAME = "SYSTEM";
     public static final String MODERATION_DEFAULT_MESSAGE = "Votre annonce a été modérée car elle a été détectée ne relevant pas d'un bon comportement.";
 
+    public static final int MAX_REPETITION_PATTERN = 3;
 
     static Logger LOGGER = Logger.getLogger(ModerationConfiguration.class.getName());
 
