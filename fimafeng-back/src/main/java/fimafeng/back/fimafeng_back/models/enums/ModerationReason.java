@@ -12,5 +12,6 @@ public enum ModerationReason {
     PORNOGRAPHY, // detectable
     INTIMIDATION, // complicated
     IDENTITY_STEALTH, // impossible
-    PRIVACY_VIOLATION // impossible
+    PRIVACY_VIOLATION, // impossible
+    VOCABULARY
 }

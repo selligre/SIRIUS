@@ -1,7 +1,9 @@
-package fimafeng.back.fimafeng_back.implementations.moderation;
+package fimafeng.back.fimafeng_back.implementations.moderation.detections;
 
+import fimafeng.back.fimafeng_back.implementations.moderation.ModerationConfiguration;
+import fimafeng.back.fimafeng_back.implementations.moderation.iDetection;
 import fimafeng.back.fimafeng_back.models.Moderation;
-import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
+import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
 import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 import org.springframework.stereotype.Service;
 
@@ -9,34 +11,36 @@ import java.text.Normalizer;
 import java.util.logging.Logger;
 
 @Service
-public class SpamDetection {
-    /**
-     * fonction detectSpam(msg: str): str
-     *  Pour taillePattern allant de 1 à taille(msg)/4:
-     *      Pour indexPattern allant de 0 à taille(msg)-taillePattern:
-     *          Expr = msg[indexPattern, taillePattern]
-     *          Repete = 0
-     *          Pour verif allant de indexPattern à taille(msg):
-     *              Si msg[verif, verif+taillePattern] == Expr:
-     *                  Repete += 1
-     *              Sinon : skip
-     *              Si Repete > 2:
-     *                  Retourner SPAM
-     */
-
+public class SpamDetection implements iDetection {
 
     Logger LOGGER = Logger.getLogger(SpamDetection.class.getName());
 
-    private String concatenatedTitle;
-    private int titlePatternRepetitionIndex;
-    private String titlePatternRepetition;
-
-    private String concatenatedDesc;
-    private int descPatternRepetitionIndex;
-    private String descPatternRepetition;
-
     private int repetitionFirstIndex;
     private int repetitionLastIndex;
+
+    public void run(Moderation moderation) {
+        LOGGER.info("Analysing spam");
+        ModerationAnalysis analysis = moderation.getAnalysis();
+
+        // Title
+        String concatenatedTitle = concatenateText(moderation.getAnnounceTitle());
+        ModerationReason titleStatus = detect(concatenatedTitle);
+        if (titleStatus == ModerationReason.SPAM) {
+            String subTitle = concatenatedTitle.substring(repetitionFirstIndex, repetitionLastIndex);
+            LOGGER.info("Title: repetition near "+repetitionFirstIndex+": "+subTitle);
+            analysis.addTitleInformations(subTitle, ModerationReason.SPAM);
+        }
+
+        // Description
+        String concatenatedDesc = concatenateText(moderation.getAnnounceDescription());
+        ModerationReason descStatus = detect(concatenatedDesc);
+        if (descStatus == ModerationReason.SPAM) {
+            String subDesc = concatenatedDesc.substring(repetitionFirstIndex, repetitionLastIndex);
+            LOGGER.info("Description: repetition near "+repetitionFirstIndex+": "+subDesc);
+            analysis.addDescriptionInformations(subDesc, ModerationReason.SPAM);
+        }
+    }
+
 
     // https://stackoverflow.com/questions/38116385/how-can-i-round-up-to-the-nearest-multiple-of-the-specified-number
     private int upperRound(int num, int base) {
@@ -48,6 +52,12 @@ public class SpamDetection {
         return num + base - temp;
     }
 
+    private String concatenateText(String text) {
+        return Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll(" ", "")
+                .replaceAll("[^\\p{ASCII}]", "").toLowerCase();
+    }
+
 
     /**
      *  Analyse the message by first clearing and simplifying it
@@ -56,11 +66,7 @@ public class SpamDetection {
      * @param message: the text to analyse
      * @return ModerationReason.SPAM if detected as spam, ModerationReason.IntentionOK otherwise
      */
-    private ModerationReason detect(String message) {
-        message = Normalizer.normalize(message, Normalizer.Form.NFD)
-                .replaceAll(" ", "")
-                .replaceAll("[^\\p{ASCII}]", "").toLowerCase();
-
+    protected ModerationReason detect(String message) {
         int messageLength = message.length();
         int maxPatternSize = upperRound(messageLength, ModerationConfiguration.MAX_REPETITION_PATTERN)/ModerationConfiguration.MAX_REPETITION_PATTERN;
         // Loop varying pattern size
@@ -107,24 +113,5 @@ public class SpamDetection {
     }
 
 
-    public void run(Moderation moderation) {
 
-        // Title
-        ModerationReason titleStatus = detect(moderation.getAnnounceTitle());
-        if (titleStatus == ModerationReason.SPAM) {
-            // Do something
-            LOGGER.info("Spam Detected in title at position "+repetitionFirstIndex+": ");
-            String subTitle = concatenatedTitle.substring(repetitionFirstIndex, repetitionLastIndex);
-            LOGGER.info(subTitle);
-        }
-
-
-
-    }
-
-    // code for debug
-    public static void main(String[] args) {
-        SpamDetection spamDetection = new SpamDetection();
-        spamDetection.detect("");
-    }
 }
