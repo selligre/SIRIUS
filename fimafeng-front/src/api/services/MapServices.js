@@ -4,7 +4,8 @@ import {
     GET_ANNOUNCES_SEARCH,
     GET_COUNT,
     GET_COUNTDIS,
-    GET_LOCATIONS
+    GET_LOCATIONS,
+    GET_ANNOUNCE_TAGS
 } from "../constants/back";
 
 export const fetchFilteredAnnounces = (keyword, refLocationId, tagIds, currentPage, size = 10, setAnnounces, setTotalPages) => {
@@ -50,3 +51,11 @@ export const fetchAllTags = (setTags) => {
         .then(data => setTags(data))
         .catch(error => console.error('Erreur lors de la récupération des locations:', error));
 }
+
+export const fetchAnnounceTags = (announceId, setAnnounceTags) => {
+    const url = `${GET_ANNOUNCE_TAGS}/${announceId}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => setAnnounceTags(data))
+        .catch(error => console.error('Erreur lors de la récupération des tags:', error));
+};

@@ -33,6 +33,8 @@ public class AnnounceController {
     private LocationService locationService;
     @Autowired
     private ClientService clientService;
+    @Autowired
+    private DistrictService districtService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Announce> findAnnounceById(@PathVariable int id) {
@@ -56,6 +58,12 @@ public class AnnounceController {
             @RequestParam(required = false) String sortDirection) {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
         return announceService.searchAnnounces(keyword, refLocationId, tagIds, PageRequest.of(page, size, Sort.by(direction, sortBy)));
+    }
+
+    @GetMapping("tagsfind/{announceId}")
+    public ResponseEntity<List<Tag>> findTagsByAnnounceId(@PathVariable Integer announceId) {
+        List<Tag> tags = announceTagService.findTagsByAnnounceId(announceId);
+        return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 
     @PostMapping("add")
@@ -101,8 +109,8 @@ public class AnnounceController {
     }
 
     @GetMapping("generate")
-    public ResponseEntity<String> generateClient(@RequestParam(required = false) Integer amount, @RequestParam(required = false) Integer delay) {
-        LOGGER.info("generateClient()");
+    public ResponseEntity<String> generateAnnounce(@RequestParam(required = false) Integer amount, @RequestParam(required = false) Integer delay) {
+        LOGGER.info("generateAnnounce()");
         if (amount == null) {
             amount = 1;
         }
@@ -115,12 +123,13 @@ public class AnnounceController {
         List<Tag> tags = tagService.findAll();
         List<Location> locations = locationService.findAllLocation();
         List<Client> clients = clientService.findAll();
+        List<District> districts = districtService.findAll();
 
         for (int i = 0; i < amount; i++) {
             Collections.shuffle(tags);
             List<Tag> selectedTags = tags.subList(0, Math.min(2, tags.size()));
-            Location location = locations.get((int) (Math.random() * locations.size()));
             AnnounceFactory announceFactory = new AnnounceFactory();
+            Location location = announceFactory.selectLocationBasedOnPopulation(locations, districts);
             Announce generatedAnnounce = announceService.save(announceFactory.generateAnnounce(selectedTags, location, clients));
             for (Tag tag : selectedTags) {
                 AnnounceTag announceTag = new AnnounceTag();

@@ -16,6 +16,7 @@ const OSMMap = () => {
     const [locations, setLocations] = useState([]);
     const [selectedDistrict, setSelectedDistrict] = useState([]);
     const [refLocationId, setRefLocationId] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState(null);
     const [counts, setCounts] = useState([]);
     const [countsDis, setCountsDis] = useState([]);
     const [tagCounts, setTagCounts] = useState([]);
@@ -68,6 +69,8 @@ const OSMMap = () => {
             fetchFilteredAnnounces('', locationId, '', 1, 10, setAnnounces, setTotalPages);
             handleDistrictClick(ref_district)
             setRefLocationId(locationId)
+            const location  = locations.find(loc => loc.idLocation === locationId);
+            setSelectedDistrict(location.name);
             setShowOverlayAnnounce(true);
         }
     };
@@ -80,6 +83,7 @@ const OSMMap = () => {
                 map.setView([location.latitude, location.longitude], 18);
                 handleDistrictClick(location.ref_district)
                 setRefLocationId(announce.refLocationId);
+                setSelectedDistrict(location.name);
             }
         }
     };
@@ -298,6 +302,7 @@ const OSMMap = () => {
                     setShowOverlayAnnounce={setShowOverlayAnnounce}
                     setSearchKeyword={setSearchKeyword}
                     setRefLocationId={setRefLocationId}
+                    selectedDistrict={selectedDistrict}
                 />
             )}
         </>

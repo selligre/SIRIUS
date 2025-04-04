@@ -1,24 +1,41 @@
 package fimafeng.back.fimafeng_back.implementations.mocks;
 
 import fimafeng.back.fimafeng_back.controllers.ClientController;
-import fimafeng.back.fimafeng_back.models.Announce;
-import fimafeng.back.fimafeng_back.models.Client;
-import fimafeng.back.fimafeng_back.models.Location;
-import fimafeng.back.fimafeng_back.models.Tag;
+import fimafeng.back.fimafeng_back.models.*;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceType;
 import org.springframework.stereotype.Service;
 import com.github.javafaker.Faker;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Logger;
 
- @Service
+@Service
 public class AnnounceFactory extends Announce {
     Logger LOGGER = Logger.getLogger(ClientController.class.getName());
+
+    public Location selectLocationBasedOnPopulation(List<Location> locations, List<District> districts) {
+        float randomValue = new Random().nextInt(100) + 1;
+
+        District selectedDistrict = null;
+        float cumulativePercentage = 0;
+        for (District district : districts) {
+            cumulativePercentage += district.getPopulationPercentile();
+            if (randomValue <= cumulativePercentage) {
+                selectedDistrict = district;
+                break;
+            }
+        }
+
+        List<Location> locationsInSelectedDistrict = new ArrayList<>();
+        for (Location location : locations) {
+            if (location.getRef_district() == selectedDistrict.getId()) {
+                locationsInSelectedDistrict.add(location);
+            }
+        }
+
+        return locationsInSelectedDistrict.get(new Random().nextInt(locationsInSelectedDistrict.size()));
+    }
 
     public Announce generateAnnounce(List<Tag> tags, Location location, List<Client> clients) {
         Announce announce = new Announce();

@@ -1,6 +1,7 @@
 package fimafeng.back.fimafeng_back.services;
 
 import fimafeng.back.fimafeng_back.models.AnnounceTag;
+import fimafeng.back.fimafeng_back.models.Tag;
 import fimafeng.back.fimafeng_back.repositories.AnnounceTagRepository;
 import fimafeng.back.fimafeng_back.repositories.TagCountProjection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,10 @@ public class AnnounceTagService {
 
     public List<TagCountProjection> countTagsByDistrict(int districtId) {
         return announceTagRepository.countTagsByDistrict(districtId);
+    }
+
+    public List<Tag> findTagsByAnnounceId(Integer announceId) {
+        return announceTagRepository.findTagsByAnnounceId(announceId);
     }
 
 
