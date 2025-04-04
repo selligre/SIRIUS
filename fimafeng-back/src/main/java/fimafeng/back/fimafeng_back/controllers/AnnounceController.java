@@ -89,7 +89,7 @@ public class AnnounceController {
 
     @GetMapping("profiles")
     public ResponseEntity<List<AnnounceProfile>> buildClientProfiles() {
-        LOGGER.info("buildClientProfiles()");
+        LOGGER.info("buildAnnounceProfiles()");
         AnnounceProfileImplementation announceProfileImplementation = new AnnounceProfileImplementation(announceService, announceTagService);
         return new ResponseEntity<>(announceProfileImplementation.getAnnouncesData(), HttpStatus.OK);
     }
