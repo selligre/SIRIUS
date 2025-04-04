@@ -18,6 +18,11 @@ export default function ModerationHistory() {
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
 
+    useEffect(() => {
+        setModerationData();
+        // eslint-disable-next-line
+    }, []);
+
     const showNotification = (message, type = 'success') => {
         setNotification({show: true, message, type});
         setTimeout(() => setNotification({show: false, message: '', type: ''}), 3000);
@@ -177,7 +182,7 @@ export default function ModerationHistory() {
                     <span className="card-key">Publiée le : </span>{formatDateTime(moderation.announcePublicationDate)}
                 </div>
                 <div className="card-field">
-                    <span className="card-key">Autheur par : </span>{moderation.authorId}</div>
+                    <span className="card-key">Auteur : </span>{moderation.authorId}</div>
                 <div className="card-field">
                     <span className="card-key">Type : </span>{moderation.announceType}</div>
                 <div className="card-field">

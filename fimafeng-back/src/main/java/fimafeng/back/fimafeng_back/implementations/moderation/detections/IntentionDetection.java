@@ -1,5 +1,9 @@
-package fimafeng.back.fimafeng_back.implementations.moderation;
+package fimafeng.back.fimafeng_back.implementations.moderation.detections;
 
+import fimafeng.back.fimafeng_back.implementations.moderation.ModerationConfiguration;
+import fimafeng.back.fimafeng_back.implementations.moderation.ModerationImplementation;
+import fimafeng.back.fimafeng_back.implementations.moderation.iDetection;
+import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
 import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 import org.springframework.stereotype.Service;
@@ -22,9 +26,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @Service
-public class IntentionImplementation {
-
-    Logger LOGGER = Logger.getLogger(IntentionImplementation.class.getName());
+public class IntentionDetection implements iDetection {
 
     /**
      * We want to implement an algorithm that detect intention in text section
@@ -42,15 +44,18 @@ public class IntentionImplementation {
      * "acheter" + "billet" will be recognized as "acheter un billet"
      *
      * 4. Moderation action
-     * Finally, if the previous detected intention is 'negative',
-     * we'll call our moderation service to moderate announce.
+     * Finally, if the previous detected intention is 'negative', our moderation service will moderate announce.
      * Otherwise (i.e. text section isn't recognized as 'negative'), we call our MS to authorized announce.
+     * => This part is done by ModerationImplementation
      */
+
+    private static final Logger LOGGER = Logger.getLogger(IntentionDetection.class.getName());
 
     private static List<String> listIrrelevantWords = null;
     private static Map<String,String> conjugaisonMap = new HashMap<>();
 
-    public IntentionImplementation() {
+
+    public IntentionDetection() {
         // Load data from files if not already existing
         if (listIrrelevantWords == null) {
             LOGGER.info("Initializing listIrrelevantWords");
@@ -71,8 +76,28 @@ public class IntentionImplementation {
             List<String> infinitivVerbsList = extractInfinitiveVerbs(ModerationConfiguration.VERBS_FILE);
             generateConjugaisons(infinitivVerbsList);
         }
-
     }
+
+
+    public void run(Moderation moderation) {
+        LOGGER.info("Analysing intention");
+        ModerationAnalysis analysis = moderation.getAnalysis();
+        prepareAnalysis(analysis);
+
+        LOGGER.info("Detecting intention");
+        ModerationReason intentionTitle = detect(analysis.getTitle());
+        if(intentionTitle != ModerationReason.INTENTION_OK) {
+            analysis.setTitleStatus(intentionTitle);
+            analysis.setIntention(intentionTitle);
+        }
+        ModerationReason intentionDescription = detect(analysis.getDescription());
+        if(intentionDescription != ModerationReason.INTENTION_OK) {
+            analysis.setDescriptionStatus(intentionDescription);
+            analysis.setIntention(intentionDescription);
+        }
+        LOGGER.info("Title: "+analysis.getTitleStatus()+", Description: "+analysis.getDescriptionStatus());
+    }
+
 
     private List<String> extractInfinitiveVerbs(String filePath){
         List<String> infinitivList = new ArrayList<>();
@@ -106,30 +131,31 @@ public class IntentionImplementation {
         return infinitivList;
     }
 
-     private void generateConjugaisons(List<String> infinitivVerbsList) {
-         InputStream verbesStream = ModerationConfiguration.loadFile(ModerationConfiguration.VERBS_FILE);
-         InputStream conjugaisonStream = ModerationConfiguration.loadFile(ModerationConfiguration.CONJUGAISONS_FILE);
 
-         LOGGER.info("Generating conjugaisons");
-         LocalTime start = LocalTime.now();
-         try {
-             Verbe conjugueur = new Verbe(verbesStream, conjugaisonStream);
-             for (String verbe : infinitivVerbsList) {
-                 List<String> conjugaisons = conjugueur.conjuguerToutMode(verbe);
-                 if (conjugaisons != null) {
-                     for (String conjugaison : conjugaisons) {
-                         conjugaisonMap.put(conjugaison, verbe);
-                     }
-                 }
-             }
-         } catch (Exception e) {
-             LOGGER.severe(e.getLocalizedMessage());
-         }
-         LocalTime end = LocalTime.now();
-         Duration duration = Duration.between(start, end);
-         LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms ("+conjugaisonMap.size()+" conjugaisons generated)");
+    private void generateConjugaisons(List<String> infinitivVerbsList) {
+        InputStream verbesStream = ModerationConfiguration.loadFile(ModerationConfiguration.VERBS_FILE);
+        InputStream conjugaisonStream = ModerationConfiguration.loadFile(ModerationConfiguration.CONJUGAISONS_FILE);
 
-     }
+        LOGGER.info("Generating conjugaisons");
+        LocalTime start = LocalTime.now();
+        try {
+            Verbe conjugueur = new Verbe(verbesStream, conjugaisonStream);
+            for (String verbe : infinitivVerbsList) {
+                List<String> conjugaisons = conjugueur.conjuguerToutMode(verbe);
+                if (conjugaisons != null) {
+                    for (String conjugaison : conjugaisons) {
+                        conjugaisonMap.put(conjugaison, verbe);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.severe(e.getLocalizedMessage());
+        }
+        LocalTime end = LocalTime.now();
+        Duration duration = Duration.between(start, end);
+        LOGGER.info("Took: "+duration.toHours()+"h"+duration.toMinutes()%60+"m"+duration.toSeconds()%60+"s"+duration.toMillis()%1000+"ms ("+conjugaisonMap.size()+" conjugaisons generated)");
+
+    }
 
     /**
      * #1 Text cleaning:
@@ -146,7 +172,7 @@ public class IntentionImplementation {
                 simplifiedMessage.add(word);
             }
         }
-        LOGGER.info("To: " + simplifiedMessage);
+        LOGGER.info("To:   " + simplifiedMessage);
         return simplifiedMessage;
     }
 
@@ -171,11 +197,11 @@ public class IntentionImplementation {
                 simplifiedMessage.add(word);
             }
         }
-        LOGGER.info("To: " + simplifiedMessage);
+        LOGGER.info("To:   " + simplifiedMessage);
         return simplifiedMessage;
     }
 
-    public void prepareAnalysis(ModerationAnalysis analysis) {
+    private void prepareAnalysis(ModerationAnalysis analysis) {
         LOGGER.info("Preparing analysis");
         LOGGER.info("Clearing...");
         analysis.setTitle(cleanText(analysis.getTitle()));
@@ -185,20 +211,84 @@ public class IntentionImplementation {
         analysis.setDescription(simplifyText(analysis.getDescription()));
     }
 
-    public void detectIntention(ModerationAnalysis analysis) {
-        LOGGER.info("Detecting intention");
-        ModerationReason intentionTitle = IntentionDetection.detect(analysis.getTitle());
-        if(intentionTitle != ModerationReason.INTENTION_OK) {
-            analysis.setTitleStatus(intentionTitle);
-            analysis.setIntention(intentionTitle);
-        }
-        ModerationReason intentionDescription = IntentionDetection.detect(analysis.getDescription());
-        if(intentionDescription != ModerationReason.INTENTION_OK) {
-            analysis.setDescriptionStatus(intentionDescription);
-            analysis.setIntention(intentionDescription);
-        }
-        LOGGER.info("Title: "+analysis.getTitleStatus()+", Description: "+analysis.getDescriptionStatus());
+    /**
+     * #3 Intention detection
+     * For giving array, verify each tuple if it is in a case and return it if so.
+     * Otherwise, no case are detect and return INTENTION_OK
+     * @param message list of word
+     * @return Detected intention
+     */
+    protected ModerationReason detect(ArrayList<String> message) {
+        ModerationReason reason = ModerationReason.INTENTION_OK;
+        for (int i = 0; i < message.size()-1; i++) {
+            String expression = message.get(i)+" "+message.get(i+1);
+            expression = expression.toLowerCase();
 
+            switch (expression) {
+                // hate
+                case "retourner pays":
+                case "sale envahisseur":
+                case "sales envahisseurs":
+                case "race inferieure":
+                case "races inferieures":
+                case "sale blanc":
+                case "sales blancs":
+                case "sale merde":
+                case "sales merdes":
+                case "sales normands":
+                case "vouloir convertir":
+                case "guerre sainte":
+                case "contre nature":
+                case "changer sexe":
+                case "faut exterminer":
+                case "devoir bruler":
+                case "etre voleurs":
+                case "etre violents":
+                    LOGGER.info(expression+": "+ModerationReason.HATE);
+                    reason = ModerationReason.HATE;
+                    break;
+                // Violence
+                case "aller tuer":
+                case "casser gueule":
+                case "faire mal":
+                case "aller detruire":
+                case "faire payer":
+                case "aller regretter":
+                case "avoir problemes":
+                case "aller exploser":
+                case "chercher arme":
+                case "faire exploser":
+                case "aller decouper":
+                case "aller tabasser":
+                case "aller torturer":
+                case "aller violer":
+                case "aller noyer":
+                case "aller bruler":
+                case "passer action":
+                case "preparer coup":
+                    LOGGER.info(expression+": "+ModerationReason.VIOLENCE);
+                    reason = ModerationReason.VIOLENCE;
+                    break;
+                // Pornography
+                case "contenu adultes":
+                case "films x":
+                case "videos chaudes":
+                case "photos denudees":
+                case "cam girl":
+                case "contenu exclusif":
+                case "contenu coquin":
+                case "images mineurs":
+                case "photos jeunes":
+                case "plan cul":
+                case "rencontre coquine":
+                case "chercher partenaire":
+                case "soiree libertine":
+                    LOGGER.info(expression+": "+ModerationReason.PORNOGRAPHY);
+                    reason = ModerationReason.PORNOGRAPHY;
+                    break;
+            }
+        }
+        return reason;
     }
 
 
