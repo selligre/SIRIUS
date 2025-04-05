@@ -32,6 +32,7 @@ export default function Profile() {
     }
 
     useEffect(() => {
+        document.title = 'Profils';
         setAnnounceProfilesData();
         setClientProfilesData();
     }, []);

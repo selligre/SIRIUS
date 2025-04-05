@@ -31,6 +31,7 @@ const OSMMap = () => {
     const mapRef = useRef();
 
     useEffect(() => {
+        document.title = 'Carte';
         document.body.classList.add('no-scroll');
         return () => {
             document.body.classList.remove('no-scroll');

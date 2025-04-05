@@ -22,8 +22,8 @@ public class ModerationConfiguration {
     // Local variables
     public static final String SYSTEM_MODERATOR_NAME = "SYSTEM";
     public static final String MODERATION_DEFAULT_MESSAGE = "Votre annonce a été modérée car elle a été détectée comme inacceptable.";
-    public static final String MODERATION_TITLE_DEFAULT_MESSAGE = "[Titre] :";
-    public static final String MODERATION_DESCRIPTION_DEFAULT_MESSAGE = "[Description] : ";
+    public static final String MODERATION_TITLE_DEFAULT_MESSAGE = "[Titre] ";
+    public static final String MODERATION_DESCRIPTION_DEFAULT_MESSAGE = "[Description] ";
     public static final String MODERATION_INCORRECT_WORD_MESSAGE = "Le mot ou les mots suivants ont levé des alertes : ";
 
     public static final int MAX_REPETITION_PATTERN = 3;

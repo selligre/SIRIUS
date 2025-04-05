@@ -19,7 +19,7 @@ public interface ModerationRepository extends JpaRepository<Moderation, Integer>
     @Query("SELECT m FROM Moderation m WHERE m.latestAction = true")
     List<Moderation> findAllLatestActions();
 
-    @Query("SELECT m FROM Moderation m WHERE m.latestAction = true")
+    @Query("SELECT m FROM Moderation m WHERE m.latestAction = true order by m.moderationDate desc")
     Page<Moderation> findAllLatestActions(Pageable pageable);
     
     List<Moderation> findByAnnounceIdOrderByModerationDateDesc(int announceId);

@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
 import {UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
@@ -19,6 +19,7 @@ export default function ModerationHistory() {
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
 
     useEffect(() => {
+        document.title = 'Historique de modération';
         setModerationData();
         // eslint-disable-next-line
     }, []);

@@ -59,6 +59,7 @@ export default function Moderation() {
     }, [currentPage]);
 
     useEffect(() => {
+        document.title = 'Moderation';
         setModerationData();
     }, [currentPage, setModerationData]);
 

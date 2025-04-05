@@ -147,7 +147,9 @@ public class ModerationAnalysis {
     private String generateModerationInformation(String words, ModerationReason reason) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(ModerationConfiguration.MODERATION_INCORRECT_WORD_MESSAGE);
+        stringBuilder.append("\"");
         stringBuilder.append(words);
+        stringBuilder.append("\"");
         if (reason != null) {
             stringBuilder.append(" (");
             stringBuilder.append(reason);
