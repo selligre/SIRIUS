@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -85,9 +82,12 @@ public class ModerationImplementation extends ModerationService {
             sb.append(analysis.getDescriptionReason());
             sb.append(analysis.getDescriptionRejectedWord() != null ? analysis.getDescriptionRejectedWord() : "");
         }
-        sb.append(" ");
-        sb.append("Intention détectée : ");
-        sb.append(analysis.getIntention());
+        if(analysis.getIntention() != ModerationReason.INTENTION_OK
+                && analysis.getIntention() != ModerationReason.UNDEFINED) {
+            sb.append(" ");
+            sb.append("Intention détectée : ");
+            sb.append(analysis.getIntention());
+        }
         return sb.toString();
     }
 

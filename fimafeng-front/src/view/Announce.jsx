@@ -180,6 +180,7 @@ export default function Announce() {
 
 
     useEffect(() => {
+        document.title = 'Annonces';
         setAnnounceData();
     }, [currentPage, setAnnounceData]);
 

@@ -28,6 +28,7 @@ export default function Client() {
     }, [currentPage, totalPages]);
 
     useEffect(() => {
+        document.title = 'Utilisateurs';
         setClientData();
     }, [currentPage, setClientData]);
 
