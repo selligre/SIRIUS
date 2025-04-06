@@ -30,7 +30,7 @@ public class ClientService {
     }
 
     public Page<Client> findSearch(Pageable pageable) {
-        return clientRepository.findSearch(pageable);
+        return clientRepository.findAll(pageable);
     }
 
     public boolean update(Client updatedClient) {

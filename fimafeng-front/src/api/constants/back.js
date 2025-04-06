@@ -13,12 +13,13 @@ export const GET_COUNT = LOCAL_HOST_LOCATION + '/count';
 export const GET_COUNTDIS = LOCAL_HOST_LOCATION + '/countDis';
 
 export const LOCAL_HOST_CLIENTS = LOCAL_HOST + '/client';
-export const GET_CLIENTS = LOCAL_HOST_CLIENTS + '/all';
+export const GET_CLIENTS_ALL = LOCAL_HOST_CLIENTS + '/all';
 export const GET_CLIENTS_SEARCH = LOCAL_HOST_CLIENTS + '/search';
 
 export const LOCAL_HOST_MODERATIONS = LOCAL_HOST + '/moderation';
 export const GET_MODERATION = LOCAL_HOST_MODERATIONS + '/all';
 export const UPDATE_MODERATION = LOCAL_HOST_MODERATIONS + '/update';
+export const GET_MODERATION_HISTORY = LOCAL_HOST_MODERATIONS + '/history';
 
 export const GET_CLIENTS_PROFILES = LOCAL_HOST_CLIENTS + '/profiles';
 export const GET_ANNOUNCES_PROFILES = LOCAL_HOST_ANNOUNCE + '/profiles';

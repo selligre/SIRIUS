@@ -59,6 +59,7 @@ export default function Announce() {
         });
     };
 
+
     const setAnnounceData = useCallback(async () => {
         const url = `${GET_ANNOUNCES_SEARCH}?keyword=&refLocationId=&tagIds=&page=${currentPage - 1}&size=10&sortBy=publication_date&sortDirection=desc`;
         fetch(url)
@@ -179,6 +180,7 @@ export default function Announce() {
 
 
     useEffect(() => {
+        document.title = 'Annonces';
         setAnnounceData();
     }, [currentPage, setAnnounceData]);
 

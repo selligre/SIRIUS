@@ -8,6 +8,9 @@
     - R1-US1 : Création d'un user
     - R1-US2 : Algorithme de modération - Liste d'exclusion
     - R1-US3 : Page de modération
+    - R2-US1 : Algorithme de modération - Bibliothèque d'extraction d'intention
+    - R2-US2 : Historique des modérations par annonce
+    - R2-US3 : Page des annonces créées par utilisateur
 
 - Étudiant 2 : MEUNIER Gilles
     - R1-US1 : Profil de l'utilisateur avec ses données

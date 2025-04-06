@@ -33,7 +33,7 @@ public class AnnounceService {
         } else {
             announce.setStatus(AnnounceStatus.TO_ANALYSE);
             announceRepository.saveAndFlush(announce);
-            moderationImplementation.run(announce);
+            moderationImplementation.moderate(announce);
         }
         return announceRepository.save(announce);
     }
@@ -41,6 +41,10 @@ public class AnnounceService {
     public Page<Announce> searchAnnounces(String keyword, Integer refLocationId, List<Long> tagIds, String status, Pageable pageable) {
         Integer tagCount = tagIds != null ? tagIds.size() : 0;
         return announceRepository.searchByKeyword(keyword, refLocationId, tagIds, tagCount, status, pageable);
+    }
+
+    public Page<Announce> findAllAnnouncesByClientId(int clientId, Pageable pageable) {
+        return announceRepository.findAllAnnouncesByClientId(clientId, pageable);
     }
 
     public Announce findById(int idAnnounce) {
@@ -85,7 +89,7 @@ public class AnnounceService {
         } else {
             announce.setStatus(AnnounceStatus.TO_ANALYSE);
             announceRepository.saveAndFlush(announce);
-            moderationImplementation.run(announce);
+            moderationImplementation.moderate(announce);
         }
 
         return true;

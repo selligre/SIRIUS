@@ -4,13 +4,14 @@ public enum ModerationReason {
     NOT_MODERATED_YET,
     INTENTION_OK,
     UNDEFINED,
-    SPAM, // need algorithm
-    HATE, // detectable
-    HARASSMENT, // complicated
+    SPAM, // done
+    HATE, // done
+    HARASSMENT, // canceled
     DISINFORMATION,
     VIOLENCE, // detectable
-    PORNOGRAPHY, // detectable
-    INTIMIDATION, // complicated
-    IDENTITY_STEALTH, // impossible
-    PRIVACY_VIOLATION // impossible
+    PORNOGRAPHY, // canceled
+    INTIMIDATION, // canceled
+    IDENTITY_STEALTH, // canceled
+    PRIVACY_VIOLATION, // canceled
+    VOCABULARY // done
 }
