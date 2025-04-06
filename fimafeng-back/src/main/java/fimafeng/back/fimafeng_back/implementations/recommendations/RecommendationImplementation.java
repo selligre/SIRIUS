@@ -147,17 +147,22 @@ public class RecommendationImplementation {
         int score = 0;
         // 1. Add tags to the score according to their popularity
         int tagPopularityCoefficient = 1;
-        score += scoringTagPopularity(announce) * tagPopularityCoefficient;
+        int scoreTagPopularity = scoringTagPopularity(announce);
+        score += scoreTagPopularity * tagPopularityCoefficient;
         // 2. Add to the score the proximity between the customer's district and that of the announcement
         int districtProximityCoefficient = 1;
-        score += scoringDistrictProximity(announce) * districtProximityCoefficient;
+        int scoreDistrictProximity = scoringDistrictProximity(announce);
+        score += scoreDistrictProximity * districtProximityCoefficient;
         // 3. Add to the score the number of times the announcement has been visited
         int visitsCoefficient = 1;
-        score += scoringVisits(announce) * visitsCoefficient;
+        int scoreVisits = scoringVisits(announce);
+        score += scoreVisits * visitsCoefficient;
         // 4. Add to the score the number of announces viewed by the customer that have a tag in common with the current
         int tagInConsultationsCoefficient = 1;
-        score += scoringCommonTagInConsultations() * tagInConsultationsCoefficient;
+        int scoreCommonTagInConsultations = scoringCommonTagInConsultations();
+        score += scoreCommonTagInConsultations * tagInConsultationsCoefficient;
         // Return final score
+        LOGGER.info("announce: " + announce.getId() + ", tagPopularity: " + scoreTagPopularity + ", districtProximity: " + scoreDistrictProximity + ", visits: " + scoreVisits + ", commonTagInConsultations: " + scoreCommonTagInConsultations + ", score: " + score);
         return score;
     }
 
@@ -201,8 +206,7 @@ public class RecommendationImplementation {
         int announceDistrictId = announce.getRefDistrictId();
         int clientDistrictId = client.getDistrict();
         // Mapping proximity values (arbitrarily)
-        int[][] proximityValues = {
-                {5, 3, 2, 1, 0, 0, 0, 0, 0, 0}, // 1
+        int[][] proximityValues = {{5, 3, 2, 1, 0, 0, 0, 0, 0, 0}, // 1
                 {3, 5, 0, 1, 1, 1, 0, 0, 0, 0}, // 2
                 {1, 0, 5, 3, 0, 0, 0, 0, 0, 1}, // 3
                 {1, 2, 3, 5, 2, 0, 0, 0, 0, 1}, // 4
