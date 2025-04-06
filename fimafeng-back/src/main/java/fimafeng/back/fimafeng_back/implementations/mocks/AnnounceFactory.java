@@ -48,10 +48,10 @@ public class AnnounceFactory extends Announce {
         String prefix = " au ";
         if (String.valueOf(firstChar).matches("[aeiouyàâäéèêëîïôöùûüÿh]")) {
             prefix = " à l'";
+        } else if (StringUtils.split(location.getName())[0].toLowerCase().matches("^(piscine|faculté|gendarmerie|résidence|crèche|place)$")) {
+            prefix = " à la ";
         }
-        if (StringUtils.split(location.getName())[0].toLowerCase().matches("^(piscine|faculté|gendarmerie|résidence|crèche)$")) {
-            prefix = " à la";
-        }
+
         announce.setTitle(tags.get(0).getName() + " et " + tags.get(1).getName() + prefix + location.getName());
         announce.setDescription(faker.lorem().paragraph(1));
         announce.setPublicationDate(new Date());

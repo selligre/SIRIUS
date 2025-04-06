@@ -25,6 +25,8 @@ public class Location {
 
     public Long getIdLocation() {return idLocation;}
 
+    public void setIdLocation(Long idLocation) {this.idLocation = idLocation;}
+
     public String getName() {return name;}
 
     public void setName(String name) {this.name = name;}
@@ -36,6 +38,8 @@ public class Location {
     public double getLatitude() {return latitude;}
 
     public void setLatitude(double latitude) {this.latitude = latitude;}
+
+    public void setRef_district(int ref_district) {this.ref_district = ref_district;}
 
     public int getRef_district() {return ref_district;}
 }

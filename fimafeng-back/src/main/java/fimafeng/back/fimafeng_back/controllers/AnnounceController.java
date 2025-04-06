@@ -48,6 +48,12 @@ public class AnnounceController {
         return new ResponseEntity<>(announceTagService.countTagsByDistrict(districtId), HttpStatus.OK);
     }
 
+    @GetMapping("/tagscount")
+    public ResponseEntity<List<TagCountProjection>> countTags() {
+        LOGGER.info("countTags()");
+        return new ResponseEntity<>(announceTagService.countTags(), HttpStatus.OK);
+    }
+
     @GetMapping("/search")
     public Page<Announce> searchAnnounces(@RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,

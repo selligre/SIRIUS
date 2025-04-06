@@ -24,6 +24,10 @@ public class AnnounceTagService {
         return announceTagRepository.countTagsByDistrict(districtId);
     }
 
+    public List<TagCountProjection> countTags() {
+        return announceTagRepository.countTags();
+    }
+
     public List<Tag> findTagsByAnnounceId(Integer announceId) {
         return announceTagRepository.findTagsByAnnounceId(announceId);
     }

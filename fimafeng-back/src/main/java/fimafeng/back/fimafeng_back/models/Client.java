@@ -36,7 +36,7 @@ public class Client {
     }
 
     // Getters et Setters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

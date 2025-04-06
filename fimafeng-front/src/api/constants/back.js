@@ -6,6 +6,7 @@ export const UPDATE_ANNOUNCES = LOCAL_HOST_ANNOUNCE + '/update';
 export const GET_ANNOUNCES_SEARCH = LOCAL_HOST_ANNOUNCE + '/search';
 export const GET_ANNOUNCE_TAG_COUNT = LOCAL_HOST_ANNOUNCE + '/district';
 export const GET_ANNOUNCE_TAGS = LOCAL_HOST_ANNOUNCE + '/tagsfind';
+export const GET_ANNOUNCE_TAGS_COUNT = LOCAL_HOST_ANNOUNCE + '/tagscount';
 
 export const LOCAL_HOST_LOCATION = LOCAL_HOST + '/location';
 export const GET_LOCATIONS = LOCAL_HOST_LOCATION + '/all';

@@ -1,4 +1,4 @@
-    .App {
+.App {
     text-align: center;
     width: 100vw;
     margin: 0;
@@ -26,10 +26,25 @@
 }
 
 /* Reset any bootstrap container styles */
-.container, 
+.container,
 .container-fluid {
     margin: 0 !important;
     padding: 0 !important;
     max-width: none !important;
     width: 100% !important;
+}
+
+.App main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 200px);
+    overflow: hidden;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    height: 100%;
+    max-height: 600px;
 }
