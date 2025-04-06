@@ -38,9 +38,9 @@ public class AnnounceService {
         return announceRepository.save(announce);
     }
 
-    public Page<Announce> searchAnnounces(String keyword, Integer refLocationId, List<Long> tagIds, Pageable pageable) {
+    public Page<Announce> searchAnnounces(String keyword, Integer refLocationId, List<Long> tagIds, String status, Pageable pageable) {
         Integer tagCount = tagIds != null ? tagIds.size() : 0;
-        return announceRepository.searchByKeyword(keyword, refLocationId, tagIds, tagCount, pageable);
+        return announceRepository.searchByKeyword(keyword, refLocationId, tagIds, tagCount, status, pageable);
     }
 
     public Page<Announce> findAllAnnouncesByClientId(int clientId, Pageable pageable) {
