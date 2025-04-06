@@ -1,6 +1,7 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
 import fimafeng.back.fimafeng_back.implementations.moderation.detections.BadWordDetection;
+import fimafeng.back.fimafeng_back.implementations.moderation.detections.HateDetection;
 import fimafeng.back.fimafeng_back.implementations.moderation.detections.IntentionDetection;
 import fimafeng.back.fimafeng_back.implementations.moderation.detections.SpamDetection;
 import fimafeng.back.fimafeng_back.models.Announce;
@@ -32,6 +33,7 @@ public class ModerationImplementation extends ModerationService {
     IntentionDetection intentionDetection = new IntentionDetection();
     BadWordDetection badWordDetection = new BadWordDetection();
     SpamDetection spamDetection = new SpamDetection();
+    HateDetection hateDetection = new HateDetection();
 
 
     public Moderation createModeration(Announce announce) {
@@ -61,6 +63,7 @@ public class ModerationImplementation extends ModerationService {
         badWordDetection.run(moderation);
         intentionDetection.run(moderation);
         spamDetection.run(moderation);
+        hateDetection.run(moderation);
 
         ModerationAnalysis analysis = moderation.getAnalysis();
         LOGGER.info("[Analysis] Title status: " + analysis.getTitleStatus());
