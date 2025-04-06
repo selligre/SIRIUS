@@ -49,6 +49,7 @@ public class AnnounceController {
             @RequestParam(defaultValue = "publicationDate") String sortBy,
             @RequestParam(required = false) String sortDirection) {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+        LOGGER.info("searchAnnounces()");
         return announceService.searchAnnounces(keyword, refLocationId, tagIds, PageRequest.of(page, size, Sort.by(direction, sortBy)));
     }
 

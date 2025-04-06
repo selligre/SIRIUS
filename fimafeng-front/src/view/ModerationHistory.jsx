@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
 import {UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
@@ -19,15 +19,17 @@ export default function ModerationHistory() {
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
 
     useEffect(() => {
+        document.title = 'Historique de modération';
         setModerationData();
-    }, [announceId]);
+        // eslint-disable-next-line
+    }, []);
 
     const showNotification = (message, type = 'success') => {
         setNotification({show: true, message, type});
         setTimeout(() => setNotification({show: false, message: '', type: ''}), 3000);
     };
 
-    const setModerationData = async () => {
+    const setModerationData = useCallback( async () => {
         const url = `${GET_MODERATION_HISTORY}/${announceId}?page=${currentPage - 1}`;
         fetch(url)
             .then(AuthenticatorResponse => AuthenticatorResponse.json())
@@ -39,7 +41,7 @@ export default function ModerationHistory() {
                 console.error('Error loading history:', error);
                 alert("Error occurred while loading data:" + error);
             });
-    }
+    }, [announceId, currentPage]);
 
     function handleNextPage() {
         setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
@@ -181,7 +183,7 @@ export default function ModerationHistory() {
                     <span className="card-key">Publiée le : </span>{formatDateTime(moderation.announcePublicationDate)}
                 </div>
                 <div className="card-field">
-                    <span className="card-key">Autheur par : </span>{moderation.authorId}</div>
+                    <span className="card-key">Auteur : </span>{moderation.authorId}</div>
                 <div className="card-field">
                     <span className="card-key">Type : </span>{moderation.announceType}</div>
                 <div className="card-field">

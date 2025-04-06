@@ -1,13 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
-import {GET_MODERATION, UPDATE_MODERATION, GET_MODERATION_HISTORY} from "../api/constants/back";
+import {GET_MODERATION, UPDATE_MODERATION} from "../api/constants/back";
 import {Link} from "react-router-dom";
 
 
 export default function Moderation() {
 
     const [moderations, setModerations] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [editingId, setEditingId] = useState(null);
 
@@ -18,10 +20,6 @@ export default function Moderation() {
         setNotification({show: true, message, type});
         setTimeout(() => setNotification({show: false, message: '', type: ''}), 3000);
     };
-
-    useEffect(() => {
-        setModerationData();
-    }, []);
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'Invalid date';
@@ -46,14 +44,31 @@ export default function Moderation() {
         }
     };
 
-    const setModerationData = async () => {
-        axios.get(GET_MODERATION).then((response) => {
-            console.log('Received moderations:', response.data);
-            setModerations(response.data || []);
-        }).catch(error => {
-            console.error('Error loading moderations:', error);
-            alert("Error occurred while loading data:" + error);
-        });
+    const setModerationData = useCallback( async () => {
+        const url = `${GET_MODERATION}?page=${currentPage - 1}&size=10`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setModerations(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error loading moderations:', error);
+                alert("Error occurred while loading data:" + error);
+            });
+    }, [currentPage]);
+
+    useEffect(() => {
+        document.title = 'Moderation';
+        setModerationData();
+    }, [currentPage, setModerationData]);
+
+    function handleNextPage() {
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    }
+
+    function handlePreviousPage() {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
     }
 
     const sortedModerations = [...moderations].sort((a, b) => {
@@ -95,6 +110,7 @@ export default function Moderation() {
             alert("Error occurred in updateModeration: " + error);
         }
     };
+
 
     const handleChangeField = (id, field, value) => {
         setModerations(prevData => prevData.map(
@@ -166,7 +182,7 @@ export default function Moderation() {
                     <span className="card-key">Publiée le : </span>{formatDateTime(moderation.announcePublicationDate)}
                 </div>
                 <div className="card-field">
-                    <span className="card-key">Autheur par : </span>{moderation.authorId}</div>
+                    <span className="card-key">Auteur : </span>{moderation.authorId}</div>
                 <div className="card-field">
                     <span className="card-key">Type : </span>{moderation.announceType}</div>
                 <div className="card-field">
@@ -282,6 +298,11 @@ export default function Moderation() {
                         </div>
                     )}
                 </div>
+            </div>
+            <div className="pagination">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>&lt;</button>
+                <span>Page {currentPage} sur {totalPages}</span>
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>&gt;</button>
             </div>
         </div>
     );

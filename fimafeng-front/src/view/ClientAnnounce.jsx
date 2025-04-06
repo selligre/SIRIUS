@@ -36,6 +36,7 @@ export default function ClientAnnounce() {
     }
 
     useEffect(() => {
+        document.title = 'Annonces de l\'utilisateur';
         setAnnounceData();
     }, [currentPage, setAnnounceData]);
 

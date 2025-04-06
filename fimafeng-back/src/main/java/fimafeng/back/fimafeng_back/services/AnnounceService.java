@@ -33,7 +33,7 @@ public class AnnounceService {
         } else {
             announce.setStatus(AnnounceStatus.TO_ANALYSE);
             announceRepository.saveAndFlush(announce);
-            moderationImplementation.run(announce);
+            moderationImplementation.moderate(announce);
         }
         return announceRepository.save(announce);
     }
@@ -89,7 +89,7 @@ public class AnnounceService {
         } else {
             announce.setStatus(AnnounceStatus.TO_ANALYSE);
             announceRepository.saveAndFlush(announce);
-            moderationImplementation.run(announce);
+            moderationImplementation.moderate(announce);
         }
 
         return true;

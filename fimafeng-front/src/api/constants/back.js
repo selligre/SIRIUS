@@ -12,7 +12,7 @@ export const GET_COUNT = LOCAL_HOST_LOCATION + '/count';
 export const GET_COUNTDIS = LOCAL_HOST_LOCATION + '/countDis';
 
 export const LOCAL_HOST_CLIENTS = LOCAL_HOST + '/client';
-export const GET_CLIENTS = LOCAL_HOST_CLIENTS + '/all';
+export const GET_CLIENTS_ALL = LOCAL_HOST_CLIENTS + '/all';
 export const GET_CLIENTS_SEARCH = LOCAL_HOST_CLIENTS + '/search';
 
 export const LOCAL_HOST_MODERATIONS = LOCAL_HOST + '/moderation';
