@@ -20,16 +20,16 @@ function App() {
         FetchTotalAnnounces("MODERATED", setTotalElementsMod);
         FetchTagsCount(setTagsCount);
         console.log(tagsCount);
-        const interval = setInterval(() => FetchTotalAnnounces("PUBLISHED", setTotalElements), 1000);
+        const interval = setInterval(() => FetchTotalAnnounces("PUBLISHED", setTotalElements), 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [tagsCount]);
 
     return (
         <div className="App">
             <header className="App-header">
                 <h1>Bienvenue sur votre Ville Partagée</h1>
                 <p>Nous avons actuellement {totalElements} annonces publiées et {totalUsers} utilisateurs.</p>
-                <p>{totalElementsMod} annonces sont en cours de modération.</p>
+                <p>{totalElementsMod} annonces ont été modérées.</p>
             </header>
             <main>
                 <TagBarChart tagsCount={tagsCount}/>
