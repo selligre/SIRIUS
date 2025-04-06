@@ -23,4 +23,7 @@ export const GET_MODERATION_HISTORY = LOCAL_HOST_MODERATIONS + '/history';
 export const GET_CLIENTS_PROFILES = LOCAL_HOST_CLIENTS + '/profiles';
 export const GET_ANNOUNCES_PROFILES = LOCAL_HOST_ANNOUNCE + '/profiles';
 
+export const GET_RECOMMENDATIONS = LOCAL_HOST_CLIENTS + '/recommendations';
+export const SHOW_RECOMMENDATIONS = LOCAL_HOST_CLIENTS + '/recommendations/show';
+
 export const GET_ALL_TAGS = LOCAL_HOST + '/tag/all';
