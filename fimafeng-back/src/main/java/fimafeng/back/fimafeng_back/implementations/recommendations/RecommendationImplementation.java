@@ -11,12 +11,12 @@ import java.util.stream.Stream;
 public class RecommendationImplementation {
     public static final Logger LOGGER = Logger.getLogger(RecommendationImplementation.class.getName());
 
-    private final TagService tagService;
-    private final ClientTagService clientTagService;
-    private final AnnounceService announceService;
-    private final AnnounceTagService announceTagService;
-    private final ClientService clientService;
-    private final ConsultationService consultationService;
+    private TagService tagService;
+    private ClientTagService clientTagService;
+    private AnnounceService announceService;
+    private AnnounceTagService announceTagService;
+    private ClientService clientService;
+    private ConsultationService consultationService;
 
     List<Tag> clientTags;
     Client client;
@@ -32,6 +32,9 @@ public class RecommendationImplementation {
         this.announceTagService = announceTagService;
         this.clientService = clientService;
         this.consultationService = consultationService;
+    }
+
+    public RecommendationImplementation() {
     }
 
     /**
