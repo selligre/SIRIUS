@@ -7,6 +7,7 @@ import polygones from '../components/data/polygones.json';
 import deli from '../components/data/deli.json';
 import customPin from '../components/PNG/broche-de-localisation.png';
 import customPin2 from '../components/PNG/ezgif-2-711d1a5a58.gif';
+import customPin3 from '../components/PNG/broche-de-localisation-select.png';
 import SearchForm from '../components/map/SearchForm';
 import OverlayAnnounce from '../components/map/OverlayAnnounce';
 import OverlayDistrict from '../components/map/OverlayDistrict';
@@ -16,9 +17,8 @@ const OSMMap = () => {
     const [locations, setLocations] = useState([]);
     const [selectedDistrict, setSelectedDistrict] = useState([]);
     const [refLocationId, setRefLocationId] = useState('');
-    const [selectedLocation, setSelectedLocation] = useState(null);
     const [counts, setCounts] = useState([]);
-    const [countsDis, setCountsDis] = useState([]);
+    const [countsDis, setCountsDIs] = useState([]);
     const [tagCounts, setTagCounts] = useState([]);
     const [zoomLevel, setZoomLevel] = useState(14);
     const [announces, setAnnounces] = useState([]);
@@ -29,6 +29,7 @@ const OSMMap = () => {
     const [showOverlayDistrict, setShowOverlayDistrict] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
+    const [isFetching, setIsFetching] = useState(false);
     const mapRef = useRef();
 
     useEffect(() => {
@@ -43,13 +44,29 @@ const OSMMap = () => {
     }, []);
 
     useEffect(() => {
-        fetchData(setLocations, setCounts, setCountsDis);
-        const interval = setInterval(fetchData(setLocations, setCounts, setCountsDis), 1000000);
+        fetchData(setLocations, setCounts, setCountsDIs);
+        const interval = setInterval(fetchData, 1000);
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        if (isFetching) {
+            const intervalId = setInterval(() => {
+                fetchFilteredAnnounces(searchKeyword, refLocationId, selectedTags, currentPage, 10, setAnnounces, setTotalPages);
+            }, 1000);
+            return () => clearInterval(intervalId);
+        }
+    }, [isFetching, searchKeyword, refLocationId, selectedTags, currentPage]);
+
+
     const customIcon = L.icon({
         iconUrl: customPin, iconSize: [50, 50],
+        iconAnchor: [25, 50],
+        popupAnchor: [0, -50]
+    });
+
+    const customIconSelectedSearch = L.icon({
+        iconUrl: customPin3, iconSize: [50, 50],
         iconAnchor: [25, 50],
         popupAnchor: [0, -50]
     });
@@ -69,8 +86,7 @@ const OSMMap = () => {
             fetchFilteredAnnounces('', locationId, '', 1, 10, setAnnounces, setTotalPages);
             handleDistrictClick(ref_district)
             setRefLocationId(locationId)
-            const location  = locations.find(loc => loc.idLocation === locationId);
-            setSelectedDistrict(location.name);
+            setIsFetching(true);
             setShowOverlayAnnounce(true);
         }
     };
@@ -83,7 +99,6 @@ const OSMMap = () => {
                 map.setView([location.latitude, location.longitude], 18);
                 handleDistrictClick(location.ref_district)
                 setRefLocationId(announce.refLocationId);
-                setSelectedDistrict(location.name);
             }
         }
     };
@@ -118,7 +133,8 @@ const OSMMap = () => {
         event.preventDefault();
         setCurrentPage(1);
         setRefLocationId('');
-        fetchFilteredAnnounces('', '', selectedTags, 1, 10, setAnnounces, setTotalPages);
+        fetchFilteredAnnounces(searchKeyword, '', selectedTags, 1, 10, setAnnounces, setTotalPages);
+        setIsFetching(true);
         setShowOverlayAnnounce(true);
     };
 
@@ -141,6 +157,7 @@ const OSMMap = () => {
         setShowOverlayDistrict(false)
         setShowOverlayAnnounce(false);
         setSelectedTags([]);
+        setIsFetching(false);
     };
 
     const handleZoom = () => {
@@ -166,8 +183,7 @@ const OSMMap = () => {
             const onZoomEnd = () => {
                 setZoomLevel(map.getZoom());
             };
-            const onClick = (e) => {
-                console.log(`Clicked at latitude: ${e.latlng.lat}, longitude: ${e.latlng.lng}`);
+            const onClick = () => {
             };
             map.on('zoomend', onZoomEnd);
             map.on('click', onClick);
@@ -246,30 +262,35 @@ const OSMMap = () => {
                                     fillColor: fillColor,
                                     fillOpacity: fillOpacity,
                                 }}
+                                eventHandlers={{
+                                    click: () => handleDistrictClick(zone.id),
+                                }}
                             >
                             </Polygon>
                         </React.Fragment>
                     );
                 })}
 
-                {zoomLevel >= 15 && locations.map(location => (
-                    <Marker
-                        key={location.idLocation}
-                        position={[location.latitude, location.longitude]}
-                        icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
-                        eventHandlers={{
-                            click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
-                        }}
-                    >
-                    </Marker>
-                ))}
+                {zoomLevel >= 16 && locationsWithAnnounces.map(location => {
+                    const isLocationInSearch = locationsSearch.some(searchLocation => searchLocation.idLocation === location.idLocation);
+                    return !isLocationInSearch ? (
+                        <Marker
+                            key={location.idLocation}
+                            position={[location.latitude, location.longitude]}
+                            icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
+                            eventHandlers={{
+                                click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
+                            }}
+                        />
+                    ) : null;
+                })}
 
                 {locationsSearch.map(location => {
                     return location.latitude && location.longitude ? (
                         <Marker
                             key={location.idLocation}
                             position={[location.latitude, location.longitude]}
-                            icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
+                            icon={refLocationId === location.idLocation ? customIconSelected : customIconSelectedSearch}
                             eventHandlers={{
                                 click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
                             }}
@@ -302,7 +323,6 @@ const OSMMap = () => {
                     setShowOverlayAnnounce={setShowOverlayAnnounce}
                     setSearchKeyword={setSearchKeyword}
                     setRefLocationId={setRefLocationId}
-                    selectedDistrict={selectedDistrict}
                 />
             )}
         </>

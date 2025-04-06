@@ -2,6 +2,7 @@ package fimafeng.back.fimafeng_back.repositories;
 
 import fimafeng.back.fimafeng_back.models.AnnounceTag;
 import fimafeng.back.fimafeng_back.models.Tag;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +19,8 @@ public interface AnnounceTagRepository extends JpaRepository<AnnounceTag, Intege
             "JOIN announce a ON at.ref_announce_id = a.id " +
             "WHERE ref_district_id = :districtId " +
             "GROUP BY tag.id " +
-            "HAVING COUNT(tag.id) > 0", nativeQuery = true)
+            "HAVING COUNT(tag.id) > 0 " +
+            "ORDER BY Count DESC", nativeQuery = true)
     List<TagCountProjection> countTagsByDistrict(@Param("districtId") int districtId);
 
     @Query(value = "SELECT t FROM Tag t " +

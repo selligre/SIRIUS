@@ -4,6 +4,7 @@ import fimafeng.back.fimafeng_back.controllers.ClientController;
 import fimafeng.back.fimafeng_back.models.*;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.models.enums.AnnounceType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import com.github.javafaker.Faker;
 
@@ -47,6 +48,9 @@ public class AnnounceFactory extends Announce {
         String prefix = " au ";
         if (String.valueOf(firstChar).matches("[aeiouyàâäéèêëîïôöùûüÿh]")) {
             prefix = " à l'";
+        }
+        if (StringUtils.split(location.getName())[0].toLowerCase().matches("^(piscine|faculté|gendarmerie|résidence|crèche)$")) {
+            prefix = " à la";
         }
         announce.setTitle(tags.get(0).getName() + " et " + tags.get(1).getName() + prefix + location.getName());
         announce.setDescription(faker.lorem().paragraph(1));

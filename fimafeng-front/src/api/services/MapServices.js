@@ -9,7 +9,7 @@ import {
 } from "../constants/back";
 
 export const fetchFilteredAnnounces = (keyword, refLocationId, tagIds, currentPage, size = 10, setAnnounces, setTotalPages) => {
-    const url = `${GET_ANNOUNCES_SEARCH}?keyword=${keyword}&page=${currentPage - 1}&size=${size}&sortBy=publication_date&sortDirection=desc&refLocationId=${refLocationId}&tagIds=${tagIds}`;
+    const url = `${GET_ANNOUNCES_SEARCH}?keyword=${keyword}&page=${currentPage - 1}&size=${size}&sortBy=publication_date&sortDirection=desc&refLocationId=${refLocationId}&tagIds=${tagIds}&status=PUBLISHED`;
     fetch(url)
         .then(response => response.json())
         .then(data => {

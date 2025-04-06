@@ -17,6 +17,7 @@ public interface AnnounceRepository extends JpaRepository<Announce, Integer> {
         "WHERE (:keyword IS NULL OR a.title LIKE %:keyword% OR a.description LIKE %:keyword%) " +
         "AND (:refLocationId IS NULL OR a.ref_location_id = :refLocationId) " +
         "AND (:tagCount = 0 OR at.ref_tag_id IN :tagIds) " +
+        "AND (:status is NULL OR a.status LIKE :status)" +
         "GROUP BY a.id " +
         "HAVING (:tagCount = 0 OR COUNT(DISTINCT at.ref_tag_id) = :tagCount)", nativeQuery = true)
 Page<Announce> searchByKeyword(
@@ -24,5 +25,6 @@ Page<Announce> searchByKeyword(
         @Param("refLocationId") Integer refLocationId,
         @Param("tagIds") List<Long> tagIds,
         @Param("tagCount") Integer tagCount,
+        @Param("status") String status,
         Pageable pageable);
 }
