@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("moderation")
 public class ModerationController {
-    Logger LOGGER = Logger.getLogger(ModerationController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ModerationController.class.getName());
 
     @Autowired
     private ModerationService moderationService;

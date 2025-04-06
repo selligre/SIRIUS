@@ -57,7 +57,7 @@ public class RecommendationImplementationPOC {
                 {11, 8}, // Cinéma
                 {12, 7}, // Musée
                 {13, 5}, // Artisanat
-                {14, 6}, // Comptétition
+                {14, 6}, // Compétition
                 {15, 8}, // Plein air
                 {16, 6}, // Intérieur
                 {17, 7}, // Entrainement
@@ -69,7 +69,7 @@ public class RecommendationImplementationPOC {
                 {23, 5}, // Bricolage
                 {24, 6}, // Jardinage
                 {25, 5}, // Nettoyage
-                {26, 7}, // Electronique
+                {26, 7}, // Électronique
                 {27, 6}, // Aménagement
                 {28, 7}, // Cuisine
                 {29, 8}, // Jeux & Jouets

@@ -128,14 +128,14 @@ public class ModerationAnalysis {
         // source : https://stackoverflow.com/questions/4122170/java-change-%c3%a1%c3%a9%c5%91%c5%b1%c3%ba-to-aeouu?noredirect=1&lq=1
         String normalizedTitle = Normalizer
                 .normalize(moderation.getAnnounceTitle(), Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","");
+                .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","").toLowerCase();
         LOGGER.fine("Title: " + normalizedTitle);
         this.title = new ArrayList<String>(Arrays.asList(normalizedTitle.split(" ")));
         LOGGER.info("Title: " +this.title.toString());
         this.titleStatus = ModerationReason.NOT_MODERATED_YET;
         String normalizedDescription = Normalizer
                 .normalize(moderation.getAnnounceDescription(), Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","");
+                .replaceAll("[^\\p{ASCII}]", "").replaceAll(",","").toLowerCase();
         LOGGER.fine("Description: " + normalizedDescription);
         this.description = new ArrayList<String>(Arrays.asList(normalizedDescription.split(" ")));
         LOGGER.info("Description: "+this.description.toString());

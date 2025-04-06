@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("client")
 public class ClientController {
-    Logger LOGGER = Logger.getLogger(ClientController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ClientController.class.getName());
 
     @Autowired
     private ClientService clientService;

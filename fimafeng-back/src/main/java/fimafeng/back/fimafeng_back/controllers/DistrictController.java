@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 @RequestMapping("district")
 public class DistrictController {
 
-    Logger LOGGER = Logger.getLogger(DistrictController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DistrictController.class.getName());
 
     @Autowired
     private DistrictService districtService;

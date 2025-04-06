@@ -1,7 +1,6 @@
 package fimafeng.back.fimafeng_back.implementations.moderation.detections;
 
 import fimafeng.back.fimafeng_back.implementations.moderation.ModerationConfiguration;
-import fimafeng.back.fimafeng_back.implementations.moderation.ModerationImplementation;
 import fimafeng.back.fimafeng_back.implementations.moderation.iDetection;
 import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
@@ -51,8 +50,8 @@ public class IntentionDetection implements iDetection {
 
     private static final Logger LOGGER = Logger.getLogger(IntentionDetection.class.getName());
 
-    private static List<String> listIrrelevantWords = null;
-    private static Map<String,String> conjugaisonMap = new HashMap<>();
+    protected static List<String> listIrrelevantWords = null;
+    protected static Map<String,String> conjugaisonMap = new HashMap<>();
 
 
     public IntentionDetection() {
@@ -163,7 +162,7 @@ public class IntentionDetection implements iDetection {
      * @param message list of words
      * @return the same words list but without its irrelevant words if found
      */
-    private ArrayList<String> cleanText(ArrayList<String> message) {
+    protected ArrayList<String> cleanText(ArrayList<String> message) {
         // Anti ConcurrentModificationException: https://stackoverflow.com/questions/8104692/how-to-avoid-java-util-concurrentmodificationexception-when-iterating-through-an
         ArrayList<String> simplifiedMessage = new ArrayList<>();
         LOGGER.info("From: " + message);
@@ -182,7 +181,7 @@ public class IntentionDetection implements iDetection {
      * @param message list of words
      * @return the same words list but with verbs to their infinitive form
      */
-    private ArrayList<String> simplifyText(ArrayList<String> message) {
+    protected ArrayList<String> simplifyText(ArrayList<String> message) {
         ArrayList<String> simplifiedMessage = new ArrayList<>();
         LOGGER.info("From: " + message);
         for (int i = 0; i < message.size(); i++) {
@@ -201,7 +200,7 @@ public class IntentionDetection implements iDetection {
         return simplifiedMessage;
     }
 
-    private void prepareAnalysis(ModerationAnalysis analysis) {
+    protected void prepareAnalysis(ModerationAnalysis analysis) {
         LOGGER.info("Preparing analysis");
         LOGGER.info("Clearing...");
         analysis.setTitle(cleanText(analysis.getTitle()));

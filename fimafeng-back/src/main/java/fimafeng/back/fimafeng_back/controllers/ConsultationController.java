@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("consultation")
 public class ConsultationController {
-    Logger LOGGER = Logger.getLogger(ConsultationController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ConsultationController.class.getName());
 
     @Autowired
     private ConsultationService consultationService;
