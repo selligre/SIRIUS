@@ -19,10 +19,9 @@ function App() {
         FetchTotalUsers(setTotalUsers);
         FetchTotalAnnounces("MODERATED", setTotalElementsMod);
         FetchTagsCount(setTagsCount);
-        console.log(tagsCount);
         const interval = setInterval(() => FetchTotalAnnounces("PUBLISHED", setTotalElements), 30000);
         return () => clearInterval(interval);
-    }, [tagsCount]);
+    }, []);
 
     return (
         <div className="App">
