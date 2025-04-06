@@ -5,12 +5,13 @@ import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 import polygones from '../components/data/polygones.json';
 import deli from '../components/data/deli.json';
-import {GET_LOCATIONS, GET_COUNT, GET_COUNTDIS, GET_ANNOUNCES_SEARCH, GET_ANNOUNCE_TAG_COUNT, GET_ALL_TAGS} from '../api/constants/back';
 import customPin from '../components/PNG/broche-de-localisation.png';
 import customPin2 from '../components/PNG/ezgif-2-711d1a5a58.gif';
+import customPin3 from '../components/PNG/broche-de-localisation-select.png';
 import SearchForm from '../components/map/SearchForm';
 import OverlayAnnounce from '../components/map/OverlayAnnounce';
 import OverlayDistrict from '../components/map/OverlayDistrict';
+import {fetchFilteredAnnounces, fetchData, fetchAnnounceTagCount, fetchAllTags} from '../api/services/MapServices';
 
 const OSMMap = () => {
     const [locations, setLocations] = useState([]);
@@ -28,9 +29,11 @@ const OSMMap = () => {
     const [showOverlayDistrict, setShowOverlayDistrict] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
+    const [isFetching, setIsFetching] = useState(false);
     const mapRef = useRef();
 
     useEffect(() => {
+        document.title = 'Carte';
         document.body.classList.add('no-scroll');
         return () => {
             document.body.classList.remove('no-scroll');
@@ -38,48 +41,33 @@ const OSMMap = () => {
     }, []);
 
     useEffect(() => {
-        fetch(GET_ALL_TAGS)
-        .then(response => response.json())
-        .then(data => setTags(data))
-        .catch(error => console.error('Erreur lors de la récupération des locations:', error));
+        fetchAllTags(setTags);
     }, []);
 
-    const fetchData = () => {
-        fetch(GET_LOCATIONS)
-            .then(response => response.json())
-            .then(data => setLocations(data))
-            .catch(error => console.error('Erreur lors de la récupération des locations:', error));
-
-        fetch(GET_COUNT)
-            .then(response => response.json())
-            .then(data => setCounts(data))
-            .catch(error => console.error('Erreur lors de la récupération des counts:', error));
-
-        fetch(GET_COUNTDIS)
-            .then(response => response.json())
-            .then(data => setCountsDIs(data))
-            .catch(error => console.error('Erreur lors de la récupération des counts:', error));
-    };
-
     useEffect(() => {
-        fetchData();
-        const interval = setInterval(fetchData, 100000);
+        fetchData(setLocations, setCounts, setCountsDIs);
+        const interval = setInterval(fetchData(setLocations, setCounts, setCountsDIs), 1000);
         return () => clearInterval(interval);
     }, []);
 
-    const fetchFilteredAnnounces = (keyword, refLocationId, tagIds, currentPage, size = 10) => {
-        const url = `${GET_ANNOUNCES_SEARCH}?keyword=${keyword}&page=${currentPage - 1}&size=${size}&sortBy=publication_date&sortDirection=desc&refLocationId=${refLocationId}&tagIds=${tagIds}`;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                setAnnounces(data.content);
-                setTotalPages(data.totalPages);
-            })
-            .catch(error => console.error('Error fetching filtered announces:', error));
-    };
+    useEffect(() => {
+        if (isFetching) {
+            const intervalId = setInterval(() => {
+                fetchFilteredAnnounces(searchKeyword, refLocationId, selectedTags, currentPage, 10, setAnnounces, setTotalPages);
+            }, 1000);
+            return () => clearInterval(intervalId);
+        }
+    }, [isFetching, searchKeyword, refLocationId, selectedTags, currentPage]);
+
 
     const customIcon = L.icon({
         iconUrl: customPin, iconSize: [50, 50],
+        iconAnchor: [25, 50],
+        popupAnchor: [0, -50]
+    });
+
+    const customIconSelectedSearch = L.icon({
+        iconUrl: customPin3, iconSize: [50, 50],
         iconAnchor: [25, 50],
         popupAnchor: [0, -50]
     });
@@ -96,9 +84,10 @@ const OSMMap = () => {
             setCurrentPage(1);
             map.setMaxBounds(deli.zone);
             map.setView([lat, lng], 18);
-            fetchFilteredAnnounces('', locationId, '', 1);
+            fetchFilteredAnnounces('', locationId, '', 1, 10, setAnnounces, setTotalPages);
             handleDistrictClick(ref_district)
             setRefLocationId(locationId)
+            setIsFetching(true);
             setShowOverlayAnnounce(true);
         }
     };
@@ -129,12 +118,7 @@ const OSMMap = () => {
                     [northEast.lat + margin, northEast.lng + margin]
                 );
                 setSelectedDistrict(district);
-                const url = `${GET_ANNOUNCE_TAG_COUNT}/${districtId}`;
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        setTagCounts(data);
-                    })
+                fetchAnnounceTagCount(districtId, setTagCounts);
                 map.setMaxBounds(adjustedBounds);
                 map.setZoom(15);
                 setShowOverlayDistrict(true);
@@ -150,7 +134,8 @@ const OSMMap = () => {
         event.preventDefault();
         setCurrentPage(1);
         setRefLocationId('');
-        fetchFilteredAnnounces(searchKeyword, '', selectedTags, 1);
+        fetchFilteredAnnounces(searchKeyword, '', selectedTags, 1, 10, setAnnounces, setTotalPages);
+        setIsFetching(true);
         setShowOverlayAnnounce(true);
     };
 
@@ -173,6 +158,7 @@ const OSMMap = () => {
         setShowOverlayDistrict(false)
         setShowOverlayAnnounce(false);
         setSelectedTags([]);
+        setIsFetching(false);
     };
 
     const handleZoom = () => {
@@ -184,12 +170,12 @@ const OSMMap = () => {
 
     function handleNextPage() {
         setCurrentPage(currentPage + 1);
-        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage + 1);
+        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage + 1, 10, setAnnounces, setTotalPages);
     }
 
     function handlePreviousPage() {
         setCurrentPage(currentPage - 1);
-        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage - 1);
+        fetchFilteredAnnounces(searchKeyword, refLocationId, '', currentPage - 1, 10, setAnnounces, setTotalPages);
     }
 
     const MapEventHandler = () => {
@@ -286,24 +272,26 @@ const OSMMap = () => {
                     );
                 })}
 
-                {zoomLevel >= 15 && locationsWithAnnounces.map(location => (
-                    <Marker
-                        key={location.idLocation}
-                        position={[location.latitude, location.longitude]}
-                        icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
-                        eventHandlers={{
-                            click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
-                        }}
-                    >
-                    </Marker>
-                ))}
+                {zoomLevel >= 16 && locationsWithAnnounces.map(location => {
+                    const isLocationInSearch = locationsSearch.some(searchLocation => searchLocation.idLocation === location.idLocation);
+                    return !isLocationInSearch ? (
+                        <Marker
+                            key={location.idLocation}
+                            position={[location.latitude, location.longitude]}
+                            icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
+                            eventHandlers={{
+                                click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
+                            }}
+                        />
+                    ) : null;
+                })}
 
                 {locationsSearch.map(location => {
                     return location.latitude && location.longitude ? (
                         <Marker
                             key={location.idLocation}
                             position={[location.latitude, location.longitude]}
-                            icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
+                            icon={refLocationId === location.idLocation ? customIconSelected : customIconSelectedSearch}
                             eventHandlers={{
                                 click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
                             }}

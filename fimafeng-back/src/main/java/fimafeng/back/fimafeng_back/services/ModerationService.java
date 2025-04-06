@@ -3,6 +3,8 @@ package fimafeng.back.fimafeng_back.services;
 import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.repositories.ModerationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -29,6 +31,10 @@ public class ModerationService {
     public List<Moderation> findAll() {
         return moderationRepository.findAll();
     }
+
+    public List<Moderation> findAllLatestAction() { return moderationRepository.findAllLatestActions(); }
+
+    public Page<Moderation> findAllLatestAction(Pageable pageable) { return moderationRepository.findAllLatestActions(pageable); }
 
     public boolean update(Moderation updatedModeration) {
         if (updatedModeration == null) throw new IllegalArgumentException("moderation is null");
@@ -80,6 +86,14 @@ public class ModerationService {
             moderation.setLatestAction(false);
         }
         moderationRepository.saveAll(moderations);
+    }
+
+    public List<Moderation> findModerationByAnnounceId(int idAnnounce) {
+        return moderationRepository.findByAnnounceIdOrderByModerationDateDesc(idAnnounce);
+    }
+
+    public Page<Moderation> findModerationByAnnounceId(int idAnnounce, Pageable pageable) {
+        return moderationRepository.findModerationByAnnounceIdOrderByModerationDateDesc(idAnnounce, pageable);
     }
 
 

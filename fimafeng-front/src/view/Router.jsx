@@ -5,8 +5,12 @@ import Navbar from "../components/Navbar";
 import Announce from './Announce';
 import Map from './Map';
 import Client from './Client';
+import ClientAnnounce from "./ClientAnnounce";
 import Profile from "./Profile";
 import Moderation from './Moderation';
+import ModerationHistory from "./ModerationHistory";
+import Recommendation from "./Recommendation";
+
 
 export default function Router() {
     return (
@@ -14,12 +18,15 @@ export default function Router() {
             <div>
                 <Navbar/>
                 <Routes>
-                    <Route path="/" element={<App />}/>
-                    <Route path="/announce" element={<Announce />}/>
-                    <Route path="/map" element={<Map />}/>
-                    <Route path="/client" element={<Client />}/>
+                    <Route path="/" element={<App/>}/>
+                    <Route path="/announce" element={<Announce/>}/>
+                    <Route path="/map" element={<Map/>}/>
+                    <Route path="/client" element={<Client/>}/>
+                    <Route path="/client/:clientId/announces" element={<ClientAnnounce/>}/>
                     <Route path="/profiles" element={<Profile/>}/>
-                    <Route path="/moderation" element={<Moderation />}/>
+                    <Route path="/moderation" element={<Moderation/>}/>
+                    <Route path="/moderation/:announceId" element={<ModerationHistory/>}/>
+                    <Route path="/recommendations" element={<Recommendation/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

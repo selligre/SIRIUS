@@ -1,5 +1,9 @@
 package fimafeng.back.fimafeng_back.implementations.moderation;
 
+import fimafeng.back.fimafeng_back.implementations.moderation.detections.BadWordDetection;
+import fimafeng.back.fimafeng_back.implementations.moderation.detections.HateDetection;
+import fimafeng.back.fimafeng_back.implementations.moderation.detections.IntentionDetection;
+import fimafeng.back.fimafeng_back.implementations.moderation.detections.SpamDetection;
 import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.models.Moderation;
 import fimafeng.back.fimafeng_back.models.ModerationAnalysis;
@@ -11,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -28,27 +29,12 @@ public class ModerationImplementation extends ModerationService {
     // Source: https://medium.com/@tuananhbk1996/how-to-handle-cyclic-dependency-between-beans-in-spring-754d1a56e297
     private AnnounceService announceService;
 
-    @Autowired
-    IntentionImplementation intentionImplementation;
 
-    private static List<String> listBanWords = null;
+    IntentionDetection intentionDetection = new IntentionDetection();
+    BadWordDetection badWordDetection = new BadWordDetection();
+    SpamDetection spamDetection = new SpamDetection();
+    HateDetection hateDetection = new HateDetection();
 
-    public ModerationImplementation() {
-        // Load data from files if not already existing
-        if (listBanWords == null) {
-            LOGGER.info("Initializing Moderation Service");
-            try {
-                listBanWords = new ArrayList<>();
-                InputStream file = ModerationConfiguration.loadFile(ModerationConfiguration.CLEAR_BAD_WORDS_FILE);
-                BufferedReader br = new BufferedReader(new InputStreamReader(file));
-                for (String line = br.readLine(); line != null; line = br.readLine()) {
-                    listBanWords.add(line);
-                }
-            } catch (IOException e) {
-                LOGGER.severe(e.getMessage());
-            }
-        }
-    }
 
     public Moderation createModeration(Announce announce) {
         Moderation moderation = new Moderation();
@@ -72,48 +58,18 @@ public class ModerationImplementation extends ModerationService {
         announceService.update(announce, true);
     }
 
-    private String isThereBanWord(String[] text) {
-        for(String word : text) {
-            if (listBanWords.contains(word)) {
-                return word;
-            }
-        }
-        return null;
-    }
-
     private void analyseAnnounce(Moderation moderation) {
-        // Setting up data to do less interaction later
-        LOGGER.info("Analysing announce data");
-        String[] title = moderation.getAnnounceTitle().split(" ");
-        String[] desc = moderation.getAnnounceDescription().split(" ");
-
-        // Checking bad word presence
-        String titleModeratedWord = isThereBanWord(title);
-        String descModeratedWord = isThereBanWord(desc);
+        LOGGER.info("Analysing announce");
+        badWordDetection.run(moderation);
+        intentionDetection.run(moderation);
+        spamDetection.run(moderation);
+        hateDetection.run(moderation);
 
         ModerationAnalysis analysis = moderation.getAnalysis();
-        if(titleModeratedWord != null) {
-            analysis.setTitleStatus(ModerationReason.UNDEFINED);
-            analysis.setTitleReason("Le titre a été détecté comme inacceptable : ");
-            analysis.setTitleRejectedWord(titleModeratedWord);
-            analysis.setModerationStatus(AnnounceStatus.MODERATED);
-        }
-        if(descModeratedWord != null) {
-            analysis.setDescriptionStatus(ModerationReason.UNDEFINED);
-            analysis.setDescriptionReason("La description a été détectée comme inacceptable : ");
-            analysis.setDescriptionRejectedWord(titleModeratedWord);
-            analysis.setModerationStatus(AnnounceStatus.MODERATED);
-        }
-
-        LOGGER.info("Moderation analyse: title=" + analysis.getTitleStatus()+ ", desc=" + analysis.getDescriptionStatus());
+        LOGGER.info("[Analysis] Title status: " + analysis.getTitleStatus());
+        LOGGER.info("[Analysis] Description status : " + analysis.getDescriptionStatus());
+        updateModerationStatus(moderation);
         LOGGER.info("Moderation reason: " + moderation.getReason());
-        intentionImplementation.prepareAnalysis(analysis);
-        intentionImplementation.detectIntention(analysis);
-        LOGGER.info("Title status: " + analysis.getTitleStatus()+ ", Description stats : " + analysis.getDescriptionStatus());
-        moderation.setAnalysis(analysis);
-        updateModerationStatus(moderation, analysis);
-        LOGGER.info("Moderation reason: " + moderation.getReason());
-
     }
 
     private String generateModerationDescription(ModerationAnalysis analysis) {
@@ -129,23 +85,28 @@ public class ModerationImplementation extends ModerationService {
             sb.append(analysis.getDescriptionReason());
             sb.append(analysis.getDescriptionRejectedWord() != null ? analysis.getDescriptionRejectedWord() : "");
         }
-        sb.append(" ");
-        sb.append("Intention détectée : ");
-        sb.append(analysis.getIntention());
+        if(analysis.getIntention() != ModerationReason.INTENTION_OK
+                && analysis.getIntention() != ModerationReason.UNDEFINED) {
+            sb.append(" ");
+            sb.append("Intention détectée : ");
+            sb.append(analysis.getIntention());
+        }
         return sb.toString();
     }
 
-    private void updateModerationStatus(Moderation moderation, ModerationAnalysis analysis) {
-        if (analysis.getTitleStatus() != ModerationReason.INTENTION_OK) {
+    private void updateModerationStatus(Moderation moderation) {
+        ModerationAnalysis analysis = moderation.getAnalysis();
+        if (analysis.getTitleStatus() != ModerationReason.INTENTION_OK
+                && analysis.getTitleStatus() != ModerationReason.NOT_MODERATED_YET) {
             moderation.setReason(analysis.getTitleStatus());
-
         }
-        if (analysis.getDescriptionStatus() != ModerationReason.INTENTION_OK) {
+        if (analysis.getDescriptionStatus() != ModerationReason.INTENTION_OK
+                && analysis.getDescriptionStatus() != ModerationReason.NOT_MODERATED_YET) {
             moderation.setReason(analysis.getDescriptionStatus());
         }
     }
 
-    public void run(Announce announceToAnalyse) {
+    public void moderate(Announce announceToAnalyse) {
         // Assuring data isn't null or empty
         if (announceToAnalyse.getDescription() != null && !announceToAnalyse.getDescription().isEmpty()) {
 

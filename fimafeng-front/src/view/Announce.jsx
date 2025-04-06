@@ -1,12 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import axios from "axios";
 import '../styles/Announce.css';
-import {
-    ADD_ANNOUNCE,
-    GET_ANNOUNCES_SEARCH,
-    LOCAL_HOST_ANNOUNCE,
-    UPDATE_ANNOUNCES
-} from "../api/constants/back";
+import {ADD_ANNOUNCE, GET_ANNOUNCES_SEARCH, LOCAL_HOST_ANNOUNCE, UPDATE_ANNOUNCES} from "../api/constants/back";
 
 export default function Announce() {
     const getCurrentDateTime = () => {
@@ -135,12 +130,10 @@ export default function Announce() {
         }
     };
 
-
     const handleCancelEdit = () => {
         setEditingId(null);
         setAnnounceData();
     };
-
 
     const handleNewAnnounceSubmit = async (e) => {
         e.preventDefault();
@@ -177,8 +170,8 @@ export default function Announce() {
         }
     };
 
-
     useEffect(() => {
+        document.title = 'Annonces';
         setAnnounceData();
     }, [currentPage, setAnnounceData]);
 
@@ -205,6 +198,39 @@ export default function Announce() {
         }
     };
 
+    const formatStatus = (status) => {
+        if (!status) return 'Invalid status';
+        try {
+            if (status === 'DRAFT') {
+                return <td><i>Brouillon</i></td>; // italic
+            } else if (status === 'TO_ANALYSE') {
+                return <td color="#0000FF">À analyser</td>; // blue
+            } else if (status === 'PUBLISHED') {
+                return <td color="#008000">Publiée</td>; // green
+            } else if (status === 'MODERATED') {
+                return <td color="#FF0000">Modérée</td>; // red
+            }
+        } catch (e) {
+            console.error('Invalid status:', status);
+            return 'Invalid status';
+        }
+    };
+
+    const formatType = (type) => {
+        if (!type) return 'Invalid type';
+        try {
+            if (type === 'EVENT') {
+                return <td color="#A020F0">Événement</td>; // violet
+            } else if (type === 'LOAN') {
+                return <td color="#ffA500">Prêt</td>; // orange
+            } else if (type === 'SERVICE') {
+                return <td color="#00FFFF">Service</td>; // cyan
+            }
+        } catch (e) {
+            console.error('Invalid type:', type);
+            return 'Invalid type';
+        }
+    };
 
     const calculateEndDateTime = (startDate, duration) => {
         if (!startDate || duration == null) return '';
@@ -222,7 +248,6 @@ export default function Announce() {
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
-
     const handleTimeChange = (field, value) => {
         const updatedAnnounce = {...newAnnounce, [field]: value};
 
@@ -235,7 +260,6 @@ export default function Announce() {
 
         setNewAnnounce(updatedAnnounce);
     };
-
 
     const toLocalDateTime = (dateString) => {
         if (!dateString) return '';
@@ -273,7 +297,6 @@ export default function Announce() {
         });
     };
 
-
     const formatDuration = (duration) => {
         if (isNaN(duration) || duration <= 0) return "0 h 0 min";
 
@@ -286,12 +309,11 @@ export default function Announce() {
         }
     };
 
-
     const renderReadOnlyRow = (announce) => (
         <>
             <td>{formatDateTime(announce.publicationDate)}</td>
-            <td>{announce.status}</td>
-            <td>{announce.type}</td>
+            {formatStatus(announce.status)}
+            {formatType(announce.type)}
             <td>{announce.title}</td>
             <td>{announce.description}</td>
             <td>{formatDateTime(announce.dateTimeStart)}</td>

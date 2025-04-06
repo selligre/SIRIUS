@@ -3,6 +3,7 @@ package fimafeng.back.fimafeng_back.services;
 import fimafeng.back.fimafeng_back.models.District;
 import fimafeng.back.fimafeng_back.repositories.DistrictRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class DistrictService {
     }
 
     public List<District> findAll() {
-        return locationRepository.findAll();
+        return locationRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     public boolean update(District updatedLocation) {

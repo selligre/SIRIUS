@@ -1,3 +1,12 @@
+je
+tu
+il
+elle
+on
+nous
+vous
+ils
+elles
 le
 la
 les
@@ -75,6 +84,7 @@ devant
 doucement
 egalement
 encore
+en
 enfin
 ensemble
 ensuite
