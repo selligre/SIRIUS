@@ -32,7 +32,7 @@ public class AnnounceProfileImplementation extends AnnounceService {
         while (toBeDisplayed > 0) {
             // Get a random announce
             int numberOfAnnounces = announceService.findAll().size();
-            int announceId = new Random().nextInt(1, numberOfAnnounces);
+            int announceId = new Random().nextInt(62, 62 + numberOfAnnounces);
             Announce announce = announceService.findById(announceId);
             // Break if null
             if (announce == null) continue;

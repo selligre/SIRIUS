@@ -42,7 +42,8 @@ public class ConsultationFactory extends Consultation {
         List<Announce> announces = announceService.findAll();
         Collections.shuffle(announces);
         // choose a random way to generate a consultation
-        switch (random.nextInt(1, 4)) {
+//        switch (random.nextInt(1, 4)) {
+        switch (3) {
             case 1:
                 // if client and announce share the same district
                 LOGGER.info("generating shared_district consultation");

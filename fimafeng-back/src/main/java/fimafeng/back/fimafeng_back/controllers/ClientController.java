@@ -3,7 +3,7 @@ package fimafeng.back.fimafeng_back.controllers;
 import fimafeng.back.fimafeng_back.implementations.mocks.ClientFactory;
 import fimafeng.back.fimafeng_back.implementations.profiles.ClientProfile;
 import fimafeng.back.fimafeng_back.implementations.profiles.ClientProfileImplementation;
-import fimafeng.back.fimafeng_back.implementations.recommendations.RecommendationImplementationPOC;
+import fimafeng.back.fimafeng_back.implementations.recommendations.RecommendationImplementation;
 import fimafeng.back.fimafeng_back.models.Announce;
 import fimafeng.back.fimafeng_back.models.Client;
 import fimafeng.back.fimafeng_back.models.ClientTag;
@@ -146,11 +146,11 @@ public class ClientController {
         return new ResponseEntity<>(msg, HttpStatus.CREATED);
     }
 
-    @GetMapping("recommendations/{id}")
-    public ResponseEntity<List<Announce>> buildClientRecommendations(@PathVariable int id) {
-        LOGGER.info("buildClientRecommendations()");
-        RecommendationImplementationPOC recommendationImplementationPOC = new RecommendationImplementationPOC(clientTagService, announceService, consultationService, announceTagService, tagService);
-        return new ResponseEntity<>(recommendationImplementationPOC.generateRecommendations(id), HttpStatus.OK);
+    @GetMapping("recommendations")
+    public ResponseEntity<List<Announce>> buildClientRecommendations(@RequestParam int id, @RequestParam int amount) {
+        // LOGGER.info("buildClientRecommendations(" + id + ", " + amount + ")");
+        RecommendationImplementation recommendationImplementation = new RecommendationImplementation(tagService, clientTagService, announceService, announceTagService, clientService, consultationService);
+        return new ResponseEntity<>(recommendationImplementation.generateRecommendations(id, amount), HttpStatus.OK);
     }
 
     @GetMapping("{clientId}/announces")
