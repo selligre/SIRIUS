@@ -52,8 +52,8 @@ public class BadWordDetection implements iDetection {
         LOGGER.info("Analysing bad words presence");
 
         // Setting up data to do less interaction later
-        String[] title = moderation.getAnnounceTitle().split(" ");
-        String[] desc = moderation.getAnnounceDescription().split(" ");
+        String[] title = moderation.getAnnounceTitle().toLowerCase().split("\\s+");
+        String[] desc = moderation.getAnnounceDescription().toLowerCase().split("\\s+");
 
         // Checking bad word presence
         String titleModeratedWord = isThereBanWord(title);
@@ -71,7 +71,7 @@ public class BadWordDetection implements iDetection {
         }
     }
 
-    private String isThereBanWord(String[] text) {
+    protected String isThereBanWord(String[] text) {
         for(String word : text) {
             if (listBanWords.contains(word)) {
                 return word;

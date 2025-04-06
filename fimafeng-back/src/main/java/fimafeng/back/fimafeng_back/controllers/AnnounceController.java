@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("announce")
 public class AnnounceController {
-    Logger LOGGER = Logger.getLogger(AnnounceController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AnnounceController.class.getName());
 
     @Autowired
     private AnnounceService announceService;

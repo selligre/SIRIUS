@@ -54,7 +54,7 @@ public class SpamDetection implements iDetection {
 
     private String concatenateText(String text) {
         return Normalizer.normalize(text, Normalizer.Form.NFD)
-                .replaceAll(" ", "")
+                .replaceAll("\\s+", "")
                 .replaceAll("[^\\p{ASCII}]", "").toLowerCase();
     }
 
