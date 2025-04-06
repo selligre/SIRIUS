@@ -175,4 +175,22 @@ public class ModerationAnalysis {
         this.descriptionStatus = reason;
         this.moderationStatus = AnnounceStatus.MODERATED;
     }
+
+    public void addCustomTitleInformations(String customInfo, ModerationReason reason) {
+        if(this.titleReason == null) {
+            this.titleReason = ModerationConfiguration.MODERATION_DESCRIPTION_DEFAULT_MESSAGE;
+        }
+        this.titleReason += customInfo;
+        this.titleStatus = reason;
+        this.moderationStatus = AnnounceStatus.MODERATED;
+    }
+
+    public void addCustomDescriptionInformations(String customInfo, ModerationReason reason) {
+        if(this.descriptionReason == null) {
+            this.descriptionReason = ModerationConfiguration.MODERATION_DESCRIPTION_DEFAULT_MESSAGE;
+        }
+        this.descriptionReason += customInfo;
+        this.descriptionStatus = reason;
+        this.moderationStatus = AnnounceStatus.MODERATED;
+    }
 }

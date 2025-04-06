@@ -19,7 +19,7 @@ public class BadWordDetection implements iDetection {
 
     private final Logger LOGGER = Logger.getLogger(BadWordDetection.class.getName());
 
-    private static List<String> listBanWords = null;
+    protected static List<String> listBanWords = null;
 
     public BadWordDetection() {
         // Load data from files if not already existing

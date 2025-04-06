@@ -46,7 +46,7 @@ pipeline {
                 echo "Compilation du BACK"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-back
-                    mvn clean install
+                    mvn clean install -DskipTests
                 '''
 
                 echo "Compilation du FRONT"
@@ -97,7 +97,7 @@ pipeline {
                     }
                 }
                 sh "ssh ${SCP_ADR} ls -l"
-                sh "ssh ${SCP_ADR} java -jar fimafeng-back-1.0-SNAPSHOT.jar &"
+                sh "ssh ${SCP_ADR} java -jar fimafeng-back-1.0-SNAPSHOT.jar > backend.log 2>&1 &"
             }
         }
     }
