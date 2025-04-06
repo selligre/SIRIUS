@@ -25,8 +25,12 @@ public class ModerationConfiguration {
     public static final String MODERATION_TITLE_DEFAULT_MESSAGE = "[Titre] ";
     public static final String MODERATION_DESCRIPTION_DEFAULT_MESSAGE = "[Description] ";
     public static final String MODERATION_INCORRECT_WORD_MESSAGE = "Le mot ou les mots suivants ont levé des alertes : ";
+    public static final String MODERATION_TOO_MANY_SUSPICIOUS_WORDS_MESSAGE = "Le texte contient trop de mots suspicieux/inappropriés. ";
+    public static final String MODERATION_TOO_MANY_UPPER_LETTER_MESSAGE = "Le texte contient des mots avec trop de majuscules. ";
 
     public static final int MAX_REPETITION_PATTERN = 3;
+    public static final int MAX_ALLOWED_BAD_WORD_AMOUNT = 2;
+    public static final int MAX_ALLOWED_AVERAGE_UPPER_LETTER = 2;
 
     static Logger LOGGER = Logger.getLogger(ModerationConfiguration.class.getName());
 

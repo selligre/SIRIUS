@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 @Service
 public class SpamDetection implements iDetection {
 
-    Logger LOGGER = Logger.getLogger(SpamDetection.class.getName());
+    private final Logger LOGGER = Logger.getLogger(SpamDetection.class.getName());
 
     private int repetitionFirstIndex;
     private int repetitionLastIndex;
@@ -63,7 +63,7 @@ public class SpamDetection implements iDetection {
      *  Analyse the message by first clearing and simplifying it
      *  Then compare each following substring with increasing length
      *  If a substring is identified 4 times consecutively, then detected as SPAM
-     * @param message: the text to analyse
+     * @param message the text to analyse
      * @return ModerationReason.SPAM if detected as spam, ModerationReason.IntentionOK otherwise
      */
     protected ModerationReason detect(String message) {
