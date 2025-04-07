@@ -204,15 +204,15 @@ export default function Announce() {
             if (status === 'DRAFT') {
                 return <td><i>Brouillon</i></td>; // italic
             } else if (status === 'TO_ANALYSE') {
-                return <td color="#0000FF">À analyser</td>; // blue
+                return <td style={{color:"#0000FF"}}>À analyser</td>; // blue
             } else if (status === 'PUBLISHED') {
-                return <td color="#008000">Publiée</td>; // green
+                return <td style={{color:"#008000"}}>Publiée</td>; // green
             } else if (status === 'MODERATED') {
-                return <td color="#FF0000">Modérée</td>; // red
+                return <td style={{color:"#FF0000"}}>Modérée</td>; // red
             }
         } catch (e) {
             console.error('Invalid status:', status);
-            return 'Invalid status';
+            return <td>Invalid status</td>;
         }
     };
 
@@ -220,15 +220,15 @@ export default function Announce() {
         if (!type) return 'Invalid type';
         try {
             if (type === 'EVENT') {
-                return <td color="#A020F0">Événement</td>; // violet
+                return <td style={{color:"#A020F0"}}>Événement</td>; // violet
             } else if (type === 'LOAN') {
-                return <td color="#ffA500">Prêt</td>; // orange
+                return <td style={{color:"#ffA500"}}>Prêt</td>; // orange
             } else if (type === 'SERVICE') {
-                return <td color="#00FFFF">Service</td>; // cyan
+                return <td style={{color:"#00FFFF"}}>Service</td>; // cyan
             }
         } catch (e) {
             console.error('Invalid type:', type);
-            return 'Invalid type';
+            return <td>Invalid status</td>;
         }
     };
 
