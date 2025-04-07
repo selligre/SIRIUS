@@ -11,7 +11,7 @@ const OverlayAnnounce = ({
                              setShowOverlayAnnounce,
                              setSearchKeyword,
                              setRefLocationId,
-                             selectedDistrict
+                             locationName
                          }) => {
 
     const [announceTags, setAnnounceTags] = useState({});
@@ -36,7 +36,7 @@ const OverlayAnnounce = ({
                     setRefLocationId('')
                 }}>X
                 </button>
-                <h2>Annonces : {selectedDistrict}</h2>
+                <h2>Annonces : {locationName}</h2>
                 {announces.map(announce => (
                     <table key={announce.id} className="announce-table" onClick={() => handleAnnounceClick(announce)}>
                         <thead>

@@ -17,6 +17,7 @@ const OSMMap = () => {
     const [locations, setLocations] = useState([]);
     const [selectedDistrict, setSelectedDistrict] = useState([]);
     const [refLocationId, setRefLocationId] = useState('');
+    const [locationName, setLocationName] = useState('');
     const [counts, setCounts] = useState([]);
     const [countsDis, setCountsDIs] = useState([]);
     const [tagCounts, setTagCounts] = useState([]);
@@ -78,7 +79,7 @@ const OSMMap = () => {
         popupAnchor: [0, -50]
     });
 
-    const handleMarkerClick = (lat, lng, locationId, ref_district) => {
+    const handleMarkerClick = (lat, lng, locationId, ref_district, name) => {
         const map = mapRef.current;
         if (map) {
             setCurrentPage(1);
@@ -87,6 +88,7 @@ const OSMMap = () => {
             fetchFilteredAnnounces('', locationId, '', 1, 10, setAnnounces, setTotalPages);
             handleDistrictClick(ref_district)
             setRefLocationId(locationId)
+            setLocationName(name)
             setIsFetching(true);
             setShowOverlayAnnounce(true);
         }
@@ -153,6 +155,7 @@ const OSMMap = () => {
         setAnnounces([]);
         setCurrentPage(1);
         setRefLocationId('');
+        setLocationName('');
         mapRef.current.setMaxBounds(deli.zone);
         setSelectedDistrict([]);
         setShowOverlayDistrict(false)
@@ -280,7 +283,7 @@ const OSMMap = () => {
                             position={[location.latitude, location.longitude]}
                             icon={refLocationId === location.idLocation ? customIconSelected : customIcon}
                             eventHandlers={{
-                                click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
+                                click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district, location.name),
                             }}
                         />
                     ) : null;
@@ -293,7 +296,7 @@ const OSMMap = () => {
                             position={[location.latitude, location.longitude]}
                             icon={refLocationId === location.idLocation ? customIconSelected : customIconSelectedSearch}
                             eventHandlers={{
-                                click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district),
+                                click: () => handleMarkerClick(location.latitude, location.longitude, location.idLocation, location.ref_district, location.name),
                             }}
                         />
                     ) : (
@@ -324,6 +327,7 @@ const OSMMap = () => {
                     setShowOverlayAnnounce={setShowOverlayAnnounce}
                     setSearchKeyword={setSearchKeyword}
                     setRefLocationId={setRefLocationId}
+                    locationName={locationName}
                 />
             )}
         </>

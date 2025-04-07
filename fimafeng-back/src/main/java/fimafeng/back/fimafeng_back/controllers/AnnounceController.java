@@ -134,10 +134,11 @@ public class AnnounceController {
 
         for (int i = 0; i < amount; i++) {
             Collections.shuffle(tags);
-            List<Tag> selectedTags = tags.subList(0, Math.min(2, tags.size()));
             AnnounceFactory announceFactory = new AnnounceFactory();
+            String type = announceFactory.selectedType();
+            List<Tag> selectedTags = announceFactory.selectTags(tags, type);
             Location location = announceFactory.selectLocationBasedOnPopulation(locations, districts);
-            Announce generatedAnnounce = announceService.save(announceFactory.generateAnnounce(selectedTags, location, clients));
+            Announce generatedAnnounce = announceService.save(announceFactory.generateAnnounce(selectedTags, location, clients, type));
             for (Tag tag : selectedTags) {
                 AnnounceTag announceTag = new AnnounceTag();
                 announceTag.setRefTagId(tag.getId());
