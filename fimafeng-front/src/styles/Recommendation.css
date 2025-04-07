@@ -206,7 +206,7 @@ input[type="text"].form-control {
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    color: #dddddd;
+    color: #007bff;
 }
 
 .section-title-left {
@@ -214,7 +214,7 @@ input[type="text"].form-control {
     text-align: left;
     font-size: 24px;
     font-weight: bold;
-    color: #dddddd;
+    color: #007bff;
 }
 
 /* Read-only view styles */
