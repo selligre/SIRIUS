@@ -149,8 +149,12 @@ public class ClientController {
     @GetMapping("recommendations")
     public ResponseEntity<List<Announce>> buildClientRecommendations(@RequestParam int id, @RequestParam int amount) {
         // LOGGER.info("buildClientRecommendations(" + id + ", " + amount + ")");
+        long start = System.currentTimeMillis();
         RecommendationImplementation recommendationImplementation = new RecommendationImplementation(tagService, clientTagService, announceService, announceTagService, clientService, consultationService);
-        return new ResponseEntity<>(recommendationImplementation.generateRecommendations(id, amount), HttpStatus.OK);
+        List<Announce> recommendations = recommendationImplementation.generateRecommendations(id, amount);
+        long end = System.currentTimeMillis();
+        LOGGER.info("buildClientRecommendations(" + id + ", " + amount + "): " + (end - start) + " ms");
+        return new ResponseEntity<>(recommendations, HttpStatus.OK);
     }
 
     @GetMapping("{clientId}/announces")
