@@ -51,7 +51,7 @@ public class RecommendationImplementation {
         // 3. Reduce announces list to more pertinent announces (with a district close to the client)
         int announcesSizeLimit = 50;
         for (Announce announce : announceService.findAll()) {
-            if (scoringDistrictProximity(announce) > 3)
+            if (scoringDistrictProximity(announce) > 5)
                 announces.add(announce);
             if (announces.size() > announcesSizeLimit)
                 break;
@@ -169,7 +169,7 @@ public class RecommendationImplementation {
         score += scoreVisits;
         // 4. Add to the score the number of announces viewed by the customer that have a tag in common with the current
         int tagInConsultationsCoefficient = 3;
-        int scoreCommonTagInConsultations = scoringCommonTagInConsultations() * tagInConsultationsCoefficient;
+        int scoreCommonTagInConsultations = scoringCommonTagInConsultations(announce) * tagInConsultationsCoefficient;
         score += scoreCommonTagInConsultations;
         // Return final score
         LOGGER.info("announce: " + announce.getId() + ", tagPopularity: " + scoreTagPopularity + ", districtProximity: " + scoreDistrictProximity + ", visits: " + scoreVisits + ", commonTagInConsultations: " + scoreCommonTagInConsultations + ", score: " + score);
@@ -258,7 +258,7 @@ public class RecommendationImplementation {
     /**
      * @return score part related to common tag in consultations
      */
-    public int scoringCommonTagInConsultations() {
+    public int scoringCommonTagInConsultations(Announce announce) {
         int score = 0;
         // Retrieve client consultations
         List<Consultation> clientConsultations = new ArrayList<>();
@@ -267,22 +267,23 @@ public class RecommendationImplementation {
                 clientConsultations.add(consultation);
             }
         }
-        // Retrieve tags from visited announces by client
+        // Retrieve tags from visited announces by client and current announce tags
         List<Tag> visitedAnnounceTags = new ArrayList<>();
+        List<Tag> announceTags = new ArrayList<>();
         for (Consultation consultation : clientConsultations) {
             for (AnnounceTag announceTag : allAnnounceTags) {
-                if (consultation.getRefAnnounceId() == announceTag.getRefAnnounceId()) {
+                if (announceTag.getRefAnnounceId() == consultation.getRefAnnounceId()) {
                     visitedAnnounceTags.add(tagService.findById(announceTag.getRefTagId()));
+                }
+                if (announceTag.getRefAnnounceId() == announce.getId()) {
+                    announceTags.add(tagService.findById(announceTag.getRefTagId()));
                 }
             }
         }
-        // Go through tags from visited announces
-        for (Tag visitedAnnounceTag : visitedAnnounceTags) {
-            for (Tag clientTag : clientTags) {
-                // If tag in common with client, then add to the score
-                if (visitedAnnounceTag.getId() == clientTag.getId()) {
-                    score++;
-                }
+        // If announce tag in common with tag in consultations, then add to the score
+        for (Tag announceTag : announceTags) {
+            if (visitedAnnounceTags.contains(announceTag)) {
+                score++;
             }
         }
         // Return score
