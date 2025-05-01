@@ -21,7 +21,7 @@ public class RecommendationImplementation {
     List<Tag> clientTags;
     Client client;
     List<Consultation> allConsultations;
-    List<Announce> announces;
+    List<Announce> announces = new ArrayList<>();
     List<AnnounceTag> allAnnounceTags;
 
     public RecommendationImplementation(TagService tagService, ClientTagService clientTagService, AnnounceService announceService, AnnounceTagService announceTagService, ClientService clientService, ConsultationService consultationService) {
@@ -48,17 +48,24 @@ public class RecommendationImplementation {
         client = clientService.findById(clientId);
         // 2. Get client tags from clientId
         clientTags = getClientTags(clientId);
-        // 3. Calculate score for each announce
-        announces = announceService.findAll();
+        // 3. Reduce announces list to more pertinent announces (with a district close to the client)
+        int announcesSizeLimit = 50;
+        for (Announce announce : announceService.findAll()) {
+            if (scoringDistrictProximity(announce) > 3)
+                announces.add(announce);
+            if (announces.size() > announcesSizeLimit)
+                break;
+        }
+        // 4. Calculate score for each announce
         allConsultations = consultationService.findAll();
         allAnnounceTags = announceTagService.findAll();
         Map<Announce, Integer> scoredAnnounces = new HashMap<>();
         for (Announce announce : announces) {
             scoredAnnounces.put(announce, generateScore(announce));
         }
-        // 4. Sort result
+        // 5. Sort result
         Map<Announce, Integer> sortedScoredConsultations = sortByValues(scoredAnnounces);
-        // 5. Return the amount from the best announces
+        // 6. Return the amount from the best announces
         List<Announce> chosenAnnounces = new ArrayList<>();
         for (Announce announce : sortedScoredConsultations.keySet()) {
             if (chosenAnnounces.size() < amount) {
