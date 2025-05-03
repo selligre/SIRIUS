@@ -3,6 +3,7 @@ export const LOCAL_HOST_ANNOUNCE = LOCAL_HOST + '/announce';
 export const GET_ANNOUNCES = LOCAL_HOST_ANNOUNCE + '/all';
 export const ADD_ANNOUNCE = LOCAL_HOST_ANNOUNCE + '/add';
 export const UPDATE_ANNOUNCES = LOCAL_HOST_ANNOUNCE + '/update';
+export const MARK_ANNOUNCE = LOCAL_HOST_ANNOUNCE + '/markAs';
 export const GET_ANNOUNCES_SEARCH = LOCAL_HOST_ANNOUNCE + '/search';
 export const GET_ANNOUNCE_TAG_COUNT = LOCAL_HOST_ANNOUNCE + '/district';
 export const GET_ANNOUNCE_TAGS = LOCAL_HOST_ANNOUNCE + '/tagsfind';
@@ -19,6 +20,7 @@ export const GET_CLIENTS_SEARCH = LOCAL_HOST_CLIENTS + '/search';
 
 export const LOCAL_HOST_MODERATIONS = LOCAL_HOST + '/moderation';
 export const GET_MODERATION = LOCAL_HOST_MODERATIONS + '/all';
+export const GET_MODERATION_FOR_STATUS = LOCAL_HOST_MODERATIONS + '/allForStatus';
 export const UPDATE_MODERATION = LOCAL_HOST_MODERATIONS + '/update';
 export const GET_MODERATION_HISTORY = LOCAL_HOST_MODERATIONS + '/history';
 

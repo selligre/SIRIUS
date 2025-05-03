@@ -4,6 +4,7 @@ import fimafeng.back.fimafeng_back.implementations.mocks.AnnounceFactory;
 import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfile;
 import fimafeng.back.fimafeng_back.implementations.profiles.AnnounceProfileImplementation;
 import fimafeng.back.fimafeng_back.models.*;
+import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.repositories.TagCountProjection;
 import fimafeng.back.fimafeng_back.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,27 @@ public class AnnounceController {
     public ResponseEntity<Announce> updateAnnounce(@RequestBody Announce announce) {
         LOGGER.info("updateAnnounce()");
         boolean isUpdated = announceService.update(announce, false);
+        if (!isUpdated) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(announce, HttpStatus.OK);
+    }
+
+    @PostMapping("markAs")
+    public ResponseEntity<Announce> markAnnounce(@RequestBody int announceID, String status) {
+        LOGGER.info("updateAnnounce()");
+
+        Announce announce = announceService.findById(announceID);
+        AnnounceStatus futurStatus;
+        try {
+            futurStatus = AnnounceStatus.valueOf(status);
+            announce.setStatus(futurStatus);
+        } catch (IllegalArgumentException e) {
+            LOGGER.severe("Invalid announce status: " + status);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        boolean isUpdated = announceService.update(announce, true);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

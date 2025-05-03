@@ -7,6 +7,12 @@ public enum AnnounceStatus {
     TO_ANALYSE,
     // Announce get validated by the moderation algorithm
     PUBLISHED,
+    // Announce get removed by the USER
+    REMOVED,
     // Announce do not pass the moderation algorithm
-    MODERATED
+    MODERATED,
+    // Announce get refused by a moderator
+    REFUSED,
+    // Announce get approved by a moderator
+    APPROVED
 }
