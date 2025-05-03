@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 @RestController
@@ -37,6 +41,8 @@ public class AnnounceController {
     @Autowired
     private DistrictService districtService;
 
+    private ScheduledExecutorService scheduler;
+
     @GetMapping("/{id}")
     public ResponseEntity<Announce> findAnnounceById(@PathVariable int id) {
         LOGGER.info("findAnnounceById()");
@@ -56,14 +62,7 @@ public class AnnounceController {
     }
 
     @GetMapping("/search")
-    public Page<Announce> searchAnnounces(@RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Integer refLocationId,
-            @RequestParam(required = false) List<Long> tagIds,
-            @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "publicationDate") String sortBy,
-            @RequestParam(required = false) String sortDirection) {
+    public Page<Announce> searchAnnounces(@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) Integer refLocationId, @RequestParam(required = false) List<Long> tagIds, @RequestParam(required = false) String status, @RequestParam(defaultValue = "publicationDate") String sortBy, @RequestParam(required = false) String sortDirection) {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
         return announceService.searchAnnounces(keyword, refLocationId, tagIds, status, PageRequest.of(page, size, Sort.by(direction, sortBy)));
     }
@@ -138,44 +137,75 @@ public class AnnounceController {
     }
 
     @GetMapping("generate")
-    public ResponseEntity<String> generateAnnounce(@RequestParam(required = false) Integer amount, @RequestParam(required = false) Integer delay) {
+    public ResponseEntity<String> generateAnnounce(@RequestParam(required = false) Integer frequency, @RequestParam(required = false) Boolean activation) {
         LOGGER.info("generateAnnounce()");
-        if (amount == null) {
-            amount = 1;
-        }
-        if (delay == null) {
-            delay = 0;
+
+        if (activation == null || !activation) {
+            if (scheduler != null && !scheduler.isShutdown()) {
+                scheduler.shutdownNow();
+                LOGGER.info("Génération d'annonces désactivée.");
+            }
+            return new ResponseEntity<>("Génération désactivée.", HttpStatus.OK);
         }
 
-        int savedAmount = 0;
+        if (frequency == null || frequency <= 0) {
+            return new ResponseEntity<>("La fréquence doit être un entier positif.", HttpStatus.BAD_REQUEST);
+        }
 
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+            scheduler.scheduleAtFixedRate(() -> {
+                long startTime = System.currentTimeMillis();
+                long elapsedTime = 0;
+
+                while (elapsedTime < frequency * 1000) {
+                    try {
+                        Thread.sleep(1000);
+                        elapsedTime = System.currentTimeMillis() - startTime;
+
+                        // 10% to generate an announce before the end of the interval
+                        if (new Random().nextInt(100) < 10) {
+                            generateSingleAnnounce();
+                            LOGGER.info("Annonce générée avant la fin du délai. Temps écoulé : " + elapsedTime / 1000.0 + " secondes.");
+                            scheduler.shutdownNow();
+                            scheduler = null;
+                            generateAnnounce(frequency, true);
+                            return;
+                        }
+                    } catch (InterruptedException e) {
+                        LOGGER.severe("Erreur lors de l'attente : " + e.getMessage());
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+
+                // generate an announce at the end of the interval
+                generateSingleAnnounce();
+                LOGGER.info("Annonce générée automatiquement à la fin de l'intervalle.");
+            }, 0, frequency, TimeUnit.SECONDS);
+        }
+
+        return new ResponseEntity<>("Génération d'annonces activée avec une fréquence de " + frequency + " secondes.", HttpStatus.OK);
+    }
+
+    private void generateSingleAnnounce() {
         List<Tag> tags = tagService.findAll();
         List<Location> locations = locationService.findAllLocation();
         List<Client> clients = clientService.findAll();
         List<District> districts = districtService.findAll();
 
-        for (int i = 0; i < amount; i++) {
-            Collections.shuffle(tags);
-            AnnounceFactory announceFactory = new AnnounceFactory();
-            String type = announceFactory.selectedType();
-            List<Tag> selectedTags = announceFactory.selectTags(tags, type);
-            Location location = announceFactory.selectLocationBasedOnPopulation(locations, districts);
-            Announce generatedAnnounce = announceService.save(announceFactory.generateAnnounce(selectedTags, location, clients, type));
-            for (Tag tag : selectedTags) {
-                AnnounceTag announceTag = new AnnounceTag();
-                announceTag.setRefTagId(tag.getId());
-                announceTag.setRefAnnounceId(generatedAnnounce.getId());
-                announceTagService.save(announceTag);
-            }
-            savedAmount += 1;
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        Collections.shuffle(tags);
+        AnnounceFactory announceFactory = new AnnounceFactory();
+        String type = announceFactory.selectedType();
+        List<Tag> selectedTags = announceFactory.selectTags(tags, type);
+        Location location = announceFactory.selectLocationBasedOnPopulation(locations, districts);
+        Announce generatedAnnounce = announceService.save(announceFactory.generateAnnounce(selectedTags, location, clients, type));
+        for (Tag tag : selectedTags) {
+            AnnounceTag announceTag = new AnnounceTag();
+            announceTag.setRefTagId(tag.getId());
+            announceTag.setRefAnnounceId(generatedAnnounce.getId());
+            announceTagService.save(announceTag);
         }
-
-        String msg = String.format("Success: %d / %d", savedAmount, amount);
-        return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        LOGGER.info("Annonce générée avec succès.");
     }
 }
