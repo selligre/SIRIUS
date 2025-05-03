@@ -201,14 +201,15 @@ export default function Announce() {
     const formatStatus = (status) => {
         if (!status) return 'Invalid status';
         try {
-            if (status === 'DRAFT') {
-                return <td><i>Brouillon</i></td>; // italic
-            } else if (status === 'TO_ANALYSE') {
-                return <td style={{color:"#0000FF"}}>À analyser</td>; // blue
-            } else if (status === 'PUBLISHED') {
-                return <td style={{color:"#008000"}}>Publiée</td>; // green
-            } else if (status === 'MODERATED') {
-                return <td style={{color:"#FF0000"}}>Modérée</td>; // red
+            switch (status) {
+                case 'DRAFT':       return <td><i>Brouillon</i></td>; // italic
+                case 'TO_ANALYSE':  return <td style={{color:"#ff9900"}}>À analyser</td>; // orange
+                case 'PUBLISHED':   return <td style={{color:"#008000"}}>Publiée</td>; // green
+                case 'REMOVED':     return <td style={{color:"#4a4a4a"}}>Retirée</td>; // grey
+                case 'MODERATED':   return <td style={{color:"#d000ff"}}>Modérée</td>; // magenta
+                case 'REFUSED':     return <td style={{color:"#FF0000"}}>Refusée</td>; // red
+                case 'APPROVED':    return <td style={{color:"#149fea"}}>Approuvée</td>; // cyan
+                default: return <td>Invalid status</td>;
             }
         } catch (e) {
             console.error('Invalid status:', status);

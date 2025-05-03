@@ -1,6 +1,7 @@
 package fimafeng.back.fimafeng_back.services;
 
 import fimafeng.back.fimafeng_back.models.Moderation;
+import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import fimafeng.back.fimafeng_back.repositories.ModerationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -94,6 +95,10 @@ public class ModerationService {
 
     public Page<Moderation> findModerationByAnnounceId(int idAnnounce, Pageable pageable) {
         return moderationRepository.findModerationByAnnounceIdOrderByModerationDateDesc(idAnnounce, pageable);
+    }
+
+    public Page<Moderation> findModerationByAnnounceStatus(AnnounceStatus status, Pageable pageable) {
+        return moderationRepository.findLatestActionsForStatus(pageable, status);
     }
 
 

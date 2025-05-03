@@ -253,3 +253,13 @@ input[type="checkbox"]:disabled {
     width: fit-content;
     padding: 5px;
 }
+
+.moderation-tab-selection {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.moderation-tab-selection > button {
+    max-width: 15%;
+}

@@ -1,9 +1,11 @@
 package fimafeng.back.fimafeng_back.repositories;
 
 import fimafeng.back.fimafeng_back.models.Moderation;
+import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,6 +23,9 @@ public interface ModerationRepository extends JpaRepository<Moderation, Integer>
 
     @Query("SELECT m FROM Moderation m WHERE m.latestAction = true order by m.moderationDate desc")
     Page<Moderation> findAllLatestActions(Pageable pageable);
+
+    @Query("SELECT m FROM Moderation m LEFT JOIN Announce a ON m.announceId = a.id WHERE m.latestAction = true AND a.status = :status order by m.moderationDate desc")
+    Page<Moderation> findLatestActionsForStatus(Pageable pageable, @Param("status") AnnounceStatus status);
     
     List<Moderation> findByAnnounceIdOrderByModerationDateDesc(int announceId);
 

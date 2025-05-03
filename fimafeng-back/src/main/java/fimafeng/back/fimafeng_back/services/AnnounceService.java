@@ -99,9 +99,8 @@ public class AnnounceService {
         Optional<Announce> optionalAnnounce = announceRepository.findById(idAnnounce);
         if (optionalAnnounce.isPresent()) {
             Announce announce = optionalAnnounce.get();
-            // TODO : récuperer les annonces_tags, puis les supprimer avant de supprimer l'annonce
-
-            announceRepository.delete(announce);
+            announce.setStatus(AnnounceStatus.REMOVED);
+            announceRepository.save(announce);
             return true;
         }
         return false;

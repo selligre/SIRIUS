@@ -1,9 +1,10 @@
 import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import '../styles/Moderation.css';
-import {GET_MODERATION, UPDATE_MODERATION} from "../api/constants/back";
+import {GET_MODERATION_FOR_STATUS, MARK_ANNOUNCE, UPDATE_MODERATION} from "../api/constants/back";
 import {Link} from "react-router-dom";
 
+var moderationStatus = "MODERATED";
 
 export default function Moderation() {
 
@@ -12,6 +13,10 @@ export default function Moderation() {
     const [totalPages, setTotalPages] = useState(1);
     const [notification, setNotification] = useState({show: false, message: '', type: ''});
     const [editingId, setEditingId] = useState(null);
+
+    const APPROVED = "APPROVED";
+    const MODERATED = "MODERATED";
+    const REFUSED = "REFUSED";
 
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
@@ -45,7 +50,8 @@ export default function Moderation() {
     };
 
     const setModerationData = useCallback( async () => {
-        const url = `${GET_MODERATION}?page=${currentPage - 1}&size=10`;
+        const url = `${GET_MODERATION_FOR_STATUS}?status=${moderationStatus}&page=${currentPage - 1}&size=5`;
+        console.log(url);
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -111,6 +117,18 @@ export default function Moderation() {
         }
     };
 
+    const markAnnounceAs = async (announce) => {
+        console.log('Marking announce as refused:', announce);
+        try {
+            const response = await axios.post(MARK_ANNOUNCE, announce, moderationStatus);
+            console.log('Updated announce:', response.data);
+            showNotification('Moderation successfully updated');
+        } catch (error) {
+            console.error('Error updating announce:', error);
+            alert("Error occurred in updateModeration: " + error);
+        }
+    };
+
 
     const handleChangeField = (id, field, value) => {
         setModerations(prevData => prevData.map(
@@ -122,6 +140,35 @@ export default function Moderation() {
         setEditingId(null);
         setModerationData();
     };
+
+    function setActive(id) {
+        console.log(" ");
+        console.log("old:"+moderationStatus);
+        console.log("new:"+id);
+        let old = document.getElementById(moderationStatus);
+        switch (old.id) {
+            case APPROVED:
+                old.className = "btn btn-outline-success"; break;
+            case MODERATED:
+                old.className = "btn btn-outline-primary"; break;
+            case REFUSED:
+                old.className = "btn btn-outline-danger"; break;
+            default: break;
+        }
+        let sel = document.getElementById(id);
+        switch (sel.id) {
+            case APPROVED:
+                sel.className = "btn btn-success"; break;
+            case MODERATED:
+                sel.className = "btn btn-primary"; break;
+            case REFUSED:
+                sel.className = "btn btn-danger"; break;
+            default: break;
+        }
+        moderationStatus = id;
+        setModerationData();
+    }
+
 
     const renderReadOnlyItem = (moderation) => (
         <div className="card">
@@ -141,13 +188,21 @@ export default function Moderation() {
                 </div>
                 <div className="moderator-actions">
                     <div className="moderator-actions-left">
-                        <button
-                            type="button"
-                            className="btn btn-danger"
-                            onClick={() => console.log("annonce delete event")}
-                            disabled
-                        >Supprimer l'annonce
-                        </button>
+                        { (moderationStatus === REFUSED) ? (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                            >Suspendre l'annonce
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                            >Refuser l'annonce
+                            </button>
+                        )}
                     </div>
                     <div className="moderator-actions-right">
                         <button
@@ -160,19 +215,29 @@ export default function Moderation() {
                     <div>
                         <Link
                             type="button"
-                            className="btn btn-primary"
+                            className="btn btn-info"
                             to={`/moderation/${moderation.announceId}`}
                         >Voir l'historique
                         </Link>
                     </div>
                     <div>
-                        <button
-                            type="button"
-                            className="btn btn-success"
-                            onClick={() => console.log("annonce delete event")}
-                            disabled
-                        >Approuver l'annonce
-                        </button>
+                        { (moderationStatus === APPROVED) ?
+                        (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                            >Suspendre l'annonce
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                                className="btn btn-success"
+                            >Approuver l'annonce
+                            </button>
+                        )
+                        }
                     </div>
                 </div>
             </div>
@@ -257,7 +322,7 @@ export default function Moderation() {
                     <span className="card-key">Publiée le : </span>{formatDateTime(moderation.announcePublicationDate)}
                 </div>
                 <div className="card-field">
-                    <span className="card-key">Autheur par : </span>{moderation.authorId}</div>
+                    <span className="card-key">Auteur par : </span>{moderation.authorId}</div>
                 <div className="card-field">
                     <span className="card-key">Type : </span>{moderation.announceType}</div>
                 <div className="card-field">
@@ -283,18 +348,22 @@ export default function Moderation() {
             <div className="moderation-content">
                 <div className="section">
                     <h4 className="section-title">Liste des modérations</h4>
+                    <div className="moderation-tab-selection btn-group">
+                        <button className="btn btn-outline-danger" id={REFUSED} onClick={() => setActive(REFUSED)}>Annonces refusées</button>
+                        <button className="btn btn-primary" id={MODERATED} onClick={() => setActive(MODERATED)}>Annonces suspendues</button>
+                        <button className="btn btn-outline-success" id={APPROVED} onClick={() => setActive(APPROVED)}>Annonces approuvées</button>
+                    </div>
                     {moderations.length === 0 ? (
                         <div className="alert alert-info">No moderations available</div>
                     ) : (
-
                         <div>
-                        {sortedModerations.map((moderation, index) => (
-                            <div key={index}>
-                                {editingId === moderation.id
-                                    ? renderEditItem(moderation)
-                                    : renderReadOnlyItem(moderation)}
-                            </div>
-                        ))}
+                            {sortedModerations.map((moderation, index) => (
+                                <div key={index}>
+                                    {editingId === moderation.id
+                                        ? renderEditItem(moderation)
+                                        : renderReadOnlyItem(moderation)}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
