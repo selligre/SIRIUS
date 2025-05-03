@@ -24,6 +24,7 @@
     "start": "cross-env REACT_APP_BACKEND_URL=http://localhost:8080 react-scripts start",
     "start:preprod": "cross-env REACT_APP_BACKEND_URL=http://172.31.250.67:8080 react-scripts start",
     "start:prod": "cross-env REACT_APP_BACKEND_URL=http://172.31.250.70:8080 react-scripts start",
+    "start:cicd": "cross-env REACT_APP_BACKEND_URL=http://localhost:8081 react-scripts start",
     "build": "cross-env REACT_APP_BACKEND_URL=http://localhost:8080 react-scripts build",
     "build:preprod": "cross-env REACT_APP_BACKEND_URL=http://172.31.250.67:8080 react-scripts build",
     "build:prod": "cross-env REACT_APP_BACKEND_URL=http://172.31.250.70:8080 react-scripts build",
