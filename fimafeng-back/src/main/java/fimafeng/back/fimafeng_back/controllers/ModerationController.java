@@ -1,6 +1,8 @@
 package fimafeng.back.fimafeng_back.controllers;
 
 import fimafeng.back.fimafeng_back.models.Moderation;
+import fimafeng.back.fimafeng_back.models.enums.AnnounceStatus;
+import fimafeng.back.fimafeng_back.models.enums.ModerationReason;
 import fimafeng.back.fimafeng_back.services.ModerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,13 +38,6 @@ public class ModerationController {
         return new ResponseEntity<>(createdModeration, HttpStatus.CREATED);
     }
 
-    //@GetMapping("all")
-    public ResponseEntity<List<Moderation>> findAllModeration() {
-        LOGGER.info("findAllModeration()");
-        LOGGER.log(Level.FINE, "findAllLatestAction()");
-        return new ResponseEntity<>(moderationService.findAllLatestAction(), HttpStatus.OK);
-    }
-
     @GetMapping("all")
     public ResponseEntity<Page<Moderation>> findAllModeration(
             @RequestParam(defaultValue = "0") int page,
@@ -50,6 +45,16 @@ public class ModerationController {
     ) {
         LOGGER.info("findAllModeration() (pages)");
         return new ResponseEntity<>(moderationService.findAllLatestAction(PageRequest.of(page, size)), HttpStatus.OK);
+    }
+
+    @GetMapping("allForStatus")
+    public ResponseEntity<Page<Moderation>> findAllModerationForStatus(
+            @RequestParam(defaultValue = "MODERATED") AnnounceStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+            ) {
+        LOGGER.info("findAllModerationForStatus() (pages)");
+        return new ResponseEntity<>(moderationService.findModerationByAnnounceStatus(status, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
     @PostMapping("update")
