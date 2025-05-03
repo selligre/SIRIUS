@@ -26,12 +26,36 @@ pipeline {
                     mvn test
                 '''
 
-                echo "Lancement des tests FRONT"
+                echo "Lancement du backend"
                 sh '''
-                    cd ${WORKSPACE}/fimafeng-front
-                    npm install
-                    npm run start
-                    npm run test:cypress:${NPM_BUILD_PARAM}
+                    cd ${WORKSPACE}/fimafeng-back/
+                    export SERVER_PORT=8081
+                    nohup java -jar ./target/*.jar ${SCP_ADR}: &
+                    sleep 10
+                '''
+        
+                echo "Lancement des tests FRONT"
+                ansiColor('xterm') {
+                    sh '''
+                        cd ${WORKSPACE}/fimafeng-front
+                        npm install
+                        Xvfb :99 -screen 0 1280x1024x24 &
+                        export DISPLAY=:99
+                        npm run start:cicd &
+                        for i in {1..30}; do
+                            if curl -s http://localhost:3000 > /dev/null; then
+                                break
+                            fi
+                            sleep 2
+                        done
+                        npm run test:cypress:local --no-color
+                        kill $(lsof -t -i:3000)
+                        '''
+                }
+
+                echo "Arrêt du backend"
+                sh '''
+                    kill $(lsof -t -i:8081)
                 '''
             }
         }
