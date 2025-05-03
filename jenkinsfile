@@ -26,17 +26,13 @@ pipeline {
                     mvn test
                 '''
 
-                /*
                 echo "Lancement des tests FRONT"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-front
                     npm install
-                    chmod -R 755 ./node_modules
-                    rm -rf node_modules
-                    npx update-browserslist-db@latest
-                    npm install --save-dev @babel/plugin-proposal-private-property-in-object
+                    npm run start
+                    npm run test:cypress:${NPM_BUILD_PARAM}
                 '''
-                */
             }
         }
 
