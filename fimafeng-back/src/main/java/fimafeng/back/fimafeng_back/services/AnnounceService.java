@@ -56,13 +56,14 @@ public class AnnounceService {
         return announceRepository.findAll();
     }
 
-    public boolean update(Announce updatedAnnounce, boolean fromModeration) {
+    public boolean update(Announce updatedAnnounce, boolean fromModeration, boolean updateLatestAction) {
         if (updatedAnnounce == null) {
             throw new IllegalArgumentException("The updated announce must not be null");
         }
 
         int id = updatedAnnounce.getId();
-        moderationService.updatePreviousModeration(id);
+
+        if(updateLatestAction) {moderationService.updatePreviousModeration(id);}
 
         Optional<Announce> optionalAnnounce = announceRepository.findById(id);
         if (optionalAnnounce.isEmpty()) {

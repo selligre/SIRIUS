@@ -4,7 +4,7 @@ import '../styles/Moderation.css';
 import {GET_MODERATION_FOR_STATUS, MARK_ANNOUNCE, UPDATE_MODERATION} from "../api/constants/back";
 import {Link} from "react-router-dom";
 
-var moderationStatus = "MODERATED";
+let moderationStatus = "MODERATED";
 
 export default function Moderation() {
 
@@ -17,7 +17,6 @@ export default function Moderation() {
     const APPROVED = "APPROVED";
     const MODERATED = "MODERATED";
     const REFUSED = "REFUSED";
-
 
     const [sortConfig] = useState({key: 'id', direction: 'desc'});
 
@@ -51,7 +50,6 @@ export default function Moderation() {
 
     const setModerationData = useCallback( async () => {
         const url = `${GET_MODERATION_FOR_STATUS}?status=${moderationStatus}&page=${currentPage - 1}&size=5`;
-        console.log(url);
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -117,12 +115,14 @@ export default function Moderation() {
         }
     };
 
-    const markAnnounceAs = async (announce) => {
-        console.log('Marking announce as refused:', announce);
+    const markAnnounceAs = async (announceId, status) => {
+        console.log('Marking announce as refused:', announceId, status);
         try {
-            const response = await axios.post(MARK_ANNOUNCE, announce, moderationStatus);
+            const response = await axios.post(`${MARK_ANNOUNCE}?announceId=${announceId}&status=${status}`,
+                null,{headers: {'Content-Type': 'application/json'}});
             console.log('Updated announce:', response.data);
             showNotification('Moderation successfully updated');
+            setModerationData();
         } catch (error) {
             console.error('Error updating announce:', error);
             alert("Error occurred in updateModeration: " + error);
@@ -141,16 +141,15 @@ export default function Moderation() {
         setModerationData();
     };
 
+
+    // Inspired from https://react.school/ui/button
     function setActive(id) {
-        console.log(" ");
-        console.log("old:"+moderationStatus);
-        console.log("new:"+id);
         let old = document.getElementById(moderationStatus);
         switch (old.id) {
             case APPROVED:
                 old.className = "btn btn-outline-success"; break;
             case MODERATED:
-                old.className = "btn btn-outline-primary"; break;
+                old.className = "btn btn-outline-secondary"; break;
             case REFUSED:
                 old.className = "btn btn-outline-danger"; break;
             default: break;
@@ -160,7 +159,7 @@ export default function Moderation() {
             case APPROVED:
                 sel.className = "btn btn-success"; break;
             case MODERATED:
-                sel.className = "btn btn-primary"; break;
+                sel.className = "btn btn-secondary"; break;
             case REFUSED:
                 sel.className = "btn btn-danger"; break;
             default: break;
@@ -191,15 +190,15 @@ export default function Moderation() {
                         { (moderationStatus === REFUSED) ? (
                             <button
                                 type="button"
-                                className="btn btn-primary"
-                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                                className="btn btn-secondary"
+                                onClick={() => markAnnounceAs(moderation.announceId, MODERATED)}
                             >Suspendre l'annonce
                             </button>
                         ) : (
                             <button
                                 type="button"
                                 className="btn btn-danger"
-                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                                onClick={() => markAnnounceAs(moderation.announceId, REFUSED)}
                             >Refuser l'annonce
                             </button>
                         )}
@@ -225,14 +224,14 @@ export default function Moderation() {
                         (
                             <button
                                 type="button"
-                                className="btn btn-primary"
-                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                                className="btn btn-secondary"
+                                onClick={() => markAnnounceAs(moderation.announceId, MODERATED)}
                             >Suspendre l'annonce
                             </button>
                         ) : (
                             <button
                                 type="button"
-                                onClick={() => markAnnounceAs(moderation.announceId, moderationStatus)}
+                                onClick={() => markAnnounceAs(moderation.announceId, APPROVED)}
                                 className="btn btn-success"
                             >Approuver l'annonce
                             </button>

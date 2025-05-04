@@ -91,7 +91,7 @@ public class AnnounceController {
     @PostMapping("update")
     public ResponseEntity<Announce> updateAnnounce(@RequestBody Announce announce) {
         LOGGER.info("updateAnnounce()");
-        boolean isUpdated = announceService.update(announce, false);
+        boolean isUpdated = announceService.update(announce, false, true);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -99,10 +99,10 @@ public class AnnounceController {
     }
 
     @PostMapping("markAs")
-    public ResponseEntity<Announce> markAnnounce(@RequestBody int announceID, String status) {
-        LOGGER.info("updateAnnounce()");
+    public ResponseEntity<Announce> markAnnounce(@RequestParam int announceId, @RequestParam String status) {
+        LOGGER.info("markAnnounce()");
 
-        Announce announce = announceService.findById(announceID);
+        Announce announce = announceService.findById(announceId);
         AnnounceStatus futurStatus;
         try {
             futurStatus = AnnounceStatus.valueOf(status);
@@ -112,7 +112,7 @@ public class AnnounceController {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
-        boolean isUpdated = announceService.update(announce, true);
+        boolean isUpdated = announceService.update(announce, true, false);
         if (!isUpdated) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
