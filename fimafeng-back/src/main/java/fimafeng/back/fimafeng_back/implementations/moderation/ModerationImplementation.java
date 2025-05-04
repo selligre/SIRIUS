@@ -55,7 +55,7 @@ public class ModerationImplementation extends ModerationService {
     private void markAndUpdateAnnounceAs(Announce announce, AnnounceStatus status) {
         LOGGER.info("Updating announce as " + status);
         announce.setStatus(status);
-        announceService.update(announce, true);
+        announceService.update(announce, true, true);
     }
 
     private void analyseAnnounce(Moderation moderation) {
