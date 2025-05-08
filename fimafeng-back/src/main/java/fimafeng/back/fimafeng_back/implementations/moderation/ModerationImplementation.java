@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -29,11 +31,17 @@ public class ModerationImplementation extends ModerationService {
     // Source: https://medium.com/@tuananhbk1996/how-to-handle-cyclic-dependency-between-beans-in-spring-754d1a56e297
     private AnnounceService announceService;
 
+    protected List<iDetection> algorithmsDetection;
 
-    IntentionDetection intentionDetection = new IntentionDetection();
-    BadWordDetection badWordDetection = new BadWordDetection();
-    SpamDetection spamDetection = new SpamDetection();
-    HateDetection hateDetection = new HateDetection();
+    public ModerationImplementation() {
+        if (algorithmsDetection == null || algorithmsDetection.isEmpty()) {
+            algorithmsDetection = new ArrayList<>();
+            algorithmsDetection.add(new IntentionDetection());
+            algorithmsDetection.add(new BadWordDetection());
+            algorithmsDetection.add(new SpamDetection());
+            algorithmsDetection.add(new HateDetection());
+        }
+    }
 
 
     public Moderation createModeration(Announce announce) {
@@ -58,17 +66,19 @@ public class ModerationImplementation extends ModerationService {
         announceService.update(announce, true, true);
     }
 
-    private void analyseAnnounce(Moderation moderation) {
+    protected void analyseAnnounce(Moderation moderation) {
         LOGGER.info("Analysing announce");
-        badWordDetection.run(moderation);
-        intentionDetection.run(moderation);
-        spamDetection.run(moderation);
-        hateDetection.run(moderation);
+        for (iDetection detection : algorithmsDetection) {
+            detection.run(moderation);
+        }
 
         ModerationAnalysis analysis = moderation.getAnalysis();
         LOGGER.info("[Analysis] Title status: " + analysis.getTitleStatus());
         LOGGER.info("[Analysis] Description status : " + analysis.getDescriptionStatus());
         updateModerationStatus(moderation);
+        if(moderation.getAnalysis().getModerationStatus() != AnnounceStatus.MODERATED) {
+            moderation.getAnalysis().setModerationStatus(AnnounceStatus.PUBLISHED);
+        }
         LOGGER.info("Moderation reason: " + moderation.getReason());
     }
 

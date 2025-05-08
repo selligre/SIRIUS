@@ -55,6 +55,18 @@ pipeline {
 
                 echo "Arrêt du backend"
                 sh '''
+                    cd ${WORKSPACE}/fimafeng-front
+                    npm install
+                    Xvfb :99 -screen 0 1280x1024x24 &
+                    export DISPLAY=:99
+                    npm run start:cicd &
+                    sleep 10
+                    npm run test:cypress:local --no-color
+                    kill $(lsof -t -i:3000)
+                '''
+
+                echo "Arrêt du backend"
+                sh '''
                     kill $(lsof -t -i:8081)
                 '''
             }
