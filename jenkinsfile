@@ -29,6 +29,7 @@ pipeline {
                 echo "Lancement du backend"
                 sh '''
                     cd ${WORKSPACE}/fimafeng-back/
+                    mvn package
                     export SERVER_PORT=8081
                     nohup java -jar ./target/*.jar ${SCP_ADR}: &
                     sleep 10
