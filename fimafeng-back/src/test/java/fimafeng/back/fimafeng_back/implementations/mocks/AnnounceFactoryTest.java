@@ -35,7 +35,7 @@ package fimafeng.back.fimafeng_back.implementations.mocks;
                 Tag tag3 = new Tag();
                 tag3.setId(3);
                 tag3.setName("Environnemental");
-                tag3.setCategory("Grand public");
+                tag3.setCategory("Citoyen");
 
                 tags = Arrays.asList(tag1, tag2, tag3);
 
@@ -90,6 +90,7 @@ package fimafeng.back.fimafeng_back.implementations.mocks;
                 assertNotNull(selectedTags);
                 assertFalse(selectedTags.isEmpty());
                 for (Tag tag : selectedTags) {
+                    System.out.println(tag);
                     assertTrue(Arrays.asList("Culture", "Sport", "Citoyen").contains(tag.getCategory()));
                 }
             }
