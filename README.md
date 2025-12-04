@@ -4,39 +4,20 @@
 
 ### Liste des étudiants
 
-- Étudiant 1 : TAURAND Clément
-    - R1-US1 : Création d'un user
-    - R1-US2 : Algorithme de modération - Liste d'exclusion
-    - R1-US3 : Page de modération
-    - R2-US1 : Algorithme de modération - Bibliothèque d'extraction d'intention
-    - R2-US2 : Historique des modérations par annonce
-    - R2-US3 : Page des annonces créées par utilisateur
-    - R3-US1 : Détection de spam
-    - R3-US2 : Détection de haine
+- Étudiant 1 : TAURAND Clément (FISA)
+> Spécialités S5 choisies :
+> - DATA : Orchestration de services de données (ORC)	
+> - DATA : Pipeline de traitements de données pour le cloud (PIP)
+> - NCC : Architectures distribuées PaaS (PAAS)
 
-- Étudiant 2 : MEUNIER Gilles
-    - R1-US1 : Profil de l'utilisateur avec ses données
-    - R1-US2 : Profil de l'annonce avec ses données
-    - R2-US1 : Mock Consultation
-    - R2-US2 : Proof Of Concept du processus de recommandation
-    - R2-US3 : Profil de l'utilisateur avec ses consultations
-    - R3-US1 : Calcul des annonces les plus pertinentes
-    - R3-US2 : Sélection et affichage des annonces
-    - R3-US3 : Affichage des calculs effectués
+- Étudiant 2 : MEUNIER Gilles (FISA)
+> Spécialités S5 choisies :
+> - SEC : Sécurité systèmes et réseau (SSR)
+> - SEC : Sécurité des logiciels
+> - SEC : Politiques de sécurité et Dev Sec Ops (PSEC)
 
-- Étudiant 3 : TRAN Louis
-    - R1-US1 : Afficher la carte
-    - R1-US2 : Affichage des lieux (emplacements possibles des annonces)
-    - R1-US3 : Recentrage de la carte sur le lieu sélectionné
-    - R1-US4 : Afficher les quartiers
-    - R1-US5 : Différents affichages selon le nombre d'annonces visibles
-    - R2-US6 : Afficher toutes les annonces
-    - R2-US7 : Affichage avec filtre (tag, quartier) des annonces
-    - R2-US8 : Ouverture d'une annonce depuis la carte
-    - R2-US9 : Déplacement automatique en fonction du filtre par quartier
-    - R2-US10 : Monter seulement les annonces filtrés
-    - R2-US11 : Afficher le nombre d'annonces
-    - R3-US1 : Création d'une annonce
-    - R3-US2 : Amélioration de l'affichage des tags
-    - R3-US3 : Afficher les annonces seulements avec le statut online
-    - R3-US4 : Données en temps réel
+- Étudiant 3 : TRAN Louis (FISE)
+> Spécialités S5 choisies :
+> - DATA : Orchestration de services de données (ORC)	
+> - DATA : Pipeline de traitements de données pour le cloud (PIP)
+> - NCC : Architectures distribuées PaaS (PAAS)

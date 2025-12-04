@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # Base de données 
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: fimafeng
+      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }} # TODO: À injecté par le runner
+      POSTGRES_DB: fimafeng_dev
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - internal_net
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == database
+          - node.labels.env == ${TARGET_ENV}
+
+  # Announce Manager
+  announce-manager:
+    image: ghcr.io/TON_USER/announce-manager:dev
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/fimafeng_dev
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }} # TODO: À injecté par le runner
+    networks:
+      - internal_net
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints:
+          - node.labels.role == announce
+          - node.labels.env == ${TARGET_ENV}
+
+  # React
+  web-server:
+    image: ghcr.io/TON_USER/ecf-front:${TAG_VERSION}
+    networks:
+      - internal_net
+    ports:
+      - "80:80"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == web-server
+          - node.labels.env == ${TARGET_ENV}
+
+volumes:
+  db_data:
+
+networks:
+  internal_net:
+    driver: overlay 
