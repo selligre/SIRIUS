@@ -3,95 +3,122 @@ name: CI/CD Hybrid Deployment
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  ALL_SERVICES: '["search-service","web-server","database"]'
 
 on:
   push:
-    branches: [ dev, preprod, main ] # Déclenchement sur les 3 branches
+    branches: [ dev, preprod, main ]
   workflow_dispatch:
 
 jobs:
-  # ÉTAPE 1 : Détection des changements (Identique)
+  # ------------------------------------------------------------
+  # ÉTAPE 1 — Détection des changements (dev uniquement)
+  # ------------------------------------------------------------
   changes:
     runs-on: self-hosted
     outputs:
       services: ${{ steps.filter.outputs.changes }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect changed services
+        uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            search: 'search/**'
+            search-service: 'search-service/**'
             web-server: 'web-server/**'
             database: 'database/**'
-          # Ajouter ici les noms et chemins des autres services
 
-  # ÉTAPE 2 : Build & Push (Mutualisé pour économiser du temps)
+  # ------------------------------------------------------------
+  # ÉTAPE 2 — Build & Push Docker images (avec cache Buildx)
+  # ------------------------------------------------------------
   build:
     needs: changes
-    if: ${{ needs.changes.outputs.services != '[]' }}
     runs-on: self-hosted
+
+    env:
+      SERVICES_JSON: ${{ github.ref_name == 'dev'
+        && needs.changes.outputs.services != '[]'
+        && needs.changes.outputs.services
+        || env.ALL_SERVICES }}
+
+    strategy:
+      matrix:
+        service: ${{ fromJson(env.SERVICES_JSON) }}
+
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.changes.outputs.services) }}
+
     steps:
-      - name: Lowercase Image Name
-        run: |
-          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Normalize image name
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker Login
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push
+      - name: Build & Push ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
           context: ./${{ matrix.service }}
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
-  # ÉTAPE 3 : Déploiement DEV (Auto si branche 'dev')
+  # ------------------------------------------------------------
+  # ÉTAPE 3 — Déploiement DEV (automatique)
+  # ------------------------------------------------------------
   deploy-dev:
-    needs: [changes, build]
+    needs: build
     if: github.ref == 'refs/heads/dev'
     runs-on: self-hosted
     environment: development
     steps:
       - name: Deploy to Swarm DEV
         run: |
-            cd /opt/app/dev
-            docker stack deploy -c docker-compose.yml --with-registry-auth stack_dev
+          cd /opt/app/dev
+          docker stack deploy -c docker-compose.yml --with-registry-auth stack_dev
 
-  # ÉTAPE 4 : Déploiement PREPROD (Auto si branche 'preprod')
+  # ------------------------------------------------------------
+  # ÉTAPE 4 — Déploiement PREPROD (automatique)
+  # ------------------------------------------------------------
   deploy-preprod:
-    needs: [changes, build]
+    needs: build
     if: github.ref == 'refs/heads/preprod'
     runs-on: self-hosted
     environment: preproduction
     steps:
       - name: Deploy to Swarm PREPROD
         run: |
-            cd /opt/app/preprod
-            docker stack deploy -c docker-compose.yml --with-registry-auth stack_preprod
+          cd /opt/app/preprod
+          docker stack deploy -c docker-compose.yml --with-registry-auth stack_preprod
 
-  # ÉTAPE 5 : Déploiement PROD (Manuel / Validation sur branche 'main')
+  # ------------------------------------------------------------
+  # ÉTAPE 5 — Déploiement PROD (manuel via environment)
+  # ------------------------------------------------------------
   deploy-prod:
-    needs: [changes, build]
+    needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: self-hosted
-    environment: production # Nécessite validation manuelle dans GitHub
+    environment: production
     steps:
       - name: Deploy to Swarm PROD
         run: |
-            cd /opt/app/prod
-            docker stack deploy -c docker-compose.yml --with-registry-auth stack_prod
+          cd /opt/app/prod
+          docker stack deploy -c docker-compose.yml --with-registry-auth stack_prod
