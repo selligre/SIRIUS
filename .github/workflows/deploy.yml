@@ -9,6 +9,11 @@ on:
   push:
     branches: [ dev, preprod, main ]
   workflow_dispatch:
+    inputs:
+      force_full_dev_rebuild:
+        description: "Force full rebuild & deploy on DEV"
+        required: false
+        default: "false"
 
 jobs:
   # ------------------------------------------------------------
@@ -31,11 +36,20 @@ jobs:
 
       - name: Set services list
         id: set-services
+        shell: bash
         run: |
+          ALL_SERVICES='["search-service","web-server","database"]'
+
           if [ "${GITHUB_REF_NAME}" = "dev" ]; then
-            echo "services=${{ steps.filter.outputs.changes }}" >> $GITHUB_OUTPUT
+            if [ "${{ github.event.inputs.force_full_dev_rebuild }}" = "true" ]; then
+              echo "services=${ALL_SERVICES}" >> $GITHUB_OUTPUT
+            elif [ "${{ steps.filter.outputs.changes }}" = "" ]; then
+              echo "services=[]" >> $GITHUB_OUTPUT
+            else
+              echo "services=${{ steps.filter.outputs.changes_json }}" >> $GITHUB_OUTPUT
+            fi
           else
-            echo 'services=["search-service","web-server","database"]' >> $GITHUB_OUTPUT
+            echo "services=${ALL_SERVICES}" >> $GITHUB_OUTPUT
           fi
 
   # ------------------------------------------------------------
@@ -44,6 +58,8 @@ jobs:
   build:
     needs: changes
     runs-on: self-hosted
+
+    if: needs.changes.outputs.services != '[]'
 
     strategy:
       matrix:
