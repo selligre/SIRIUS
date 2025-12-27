@@ -17,19 +17,26 @@ jobs:
   changes:
     runs-on: self-hosted
     outputs:
-      services: ${{ steps.filter.outputs.changes }}
+      services: ${{ steps.set-services.outputs.services }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Detect changed services
-        uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
             search-service: 'search-service/**'
             web-server: 'web-server/**'
             database: 'database/**'
+
+      - name: Set services list
+        id: set-services
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "dev" ]; then
+            echo "services=${{ steps.filter.outputs.changes }}" >> $GITHUB_OUTPUT
+          else
+            echo 'services=["search-service","web-server","database"]' >> $GITHUB_OUTPUT
+          fi
 
   # ------------------------------------------------------------
   # ÉTAPE 2 — Build & Push Docker images (avec cache Buildx)
@@ -38,15 +45,9 @@ jobs:
     needs: changes
     runs-on: self-hosted
 
-    env:
-      SERVICES_JSON: ${{ github.ref_name == 'dev'
-        && needs.changes.outputs.services != '[]'
-        && needs.changes.outputs.services
-        || env.ALL_SERVICES }}
-
     strategy:
       matrix:
-        service: ${{ fromJson(env.SERVICES_JSON) }}
+        service: ${{ fromJson(needs.changes.outputs.services) }}
 
     permissions:
       contents: read
