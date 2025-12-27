@@ -39,18 +39,21 @@ jobs:
         shell: bash
         run: |
           ALL_SERVICES='["search-service","web-server","database"]'
+          CHANGED_SERVICES=""
 
           if [ "${GITHUB_REF_NAME}" = "dev" ]; then
             if [ "${{ github.event.inputs.force_full_dev_rebuild }}" = "true" ]; then
-              echo "services=${ALL_SERVICES}" >> $GITHUB_OUTPUT
-            elif [ "${{ steps.filter.outputs.changes }}" = "" ]; then
-              echo "services=[]" >> $GITHUB_OUTPUT
+              CHANGED_SERVICES=${ALL_SERVICES}
+            elif [ "${{ steps.filter.outputs.changes }}" != "" ]; then
+              CHANGED_SERVICES=${{ steps.filter.outputs.changes_json }}
             else
-              echo "services=${{ steps.filter.outputs.changes_json }}" >> $GITHUB_OUTPUT
+              CHANGED_SERVICES="[]"
             fi
           else
-            echo "services=${ALL_SERVICES}" >> $GITHUB_OUTPUT
+            CHANGED_SERVICES=${ALL_SERVICES}
           fi
+
+          echo "services=${CHANGED_SERVICES}" >> $GITHUB_OUTPUT
 
   # ------------------------------------------------------------
   # ÉTAPE 2 — Build & Push Docker images (avec cache Buildx)
@@ -60,7 +63,6 @@ jobs:
     runs-on: self-hosted
 
     if: needs.changes.outputs.services != '[]'
-
     strategy:
       matrix:
         service: ${{ fromJson(needs.changes.outputs.services) }}
