@@ -1,0 +1,42 @@
+services:
+  # Base de données
+  database:
+    build: ./database
+    environment:
+      POSTGRES_DB: fimafengdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  # Backend Java (Search)
+  search:
+    build: ./search
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/fimafengdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      # Exemple de config Graylog si tu l'ajoutes plus tard
+      # - GRAYLOG_HOST=graylog
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  # Frontend React
+  web-server:
+    build: ./web-server
+    ports:
+      - "3000:80"
+    depends_on:
+      - search
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

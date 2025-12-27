@@ -1,0 +1,87 @@
+name: CI/CD Hybrid Deployment
+
+env:
+  REGISTRY: ghrc.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  push:
+    branches: [ dev, preprod, main ] # Déclenchement sur les 3 branches
+  workflow_dispatch:
+
+jobs:
+  # ÉTAPE 1 : Détection des changements (Identique)
+  changes:
+    runs-on: self-hosted
+    outputs:
+      services: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            search: 'search/**'
+            front-end: 'web-server/**'
+            database: 'database/**'
+          # Ajouter ici les noms et chemins des autres services
+
+  # ÉTAPE 2 : Build & Push (Mutualisé pour économiser du temps)
+  build:
+    needs: changes
+    if: ${{ needs.changes.outputs.services != '[]' }}
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.changes.outputs.services) }}
+    steps:
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.service }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}//${{ matrix.service }}:${{ github.ref_name }}
+
+  # ÉTAPE 3 : Déploiement DEV (Auto si branche 'dev')
+  deploy-dev:
+    needs: [changes, build]
+    if: github.ref == 'refs/heads/dev'
+    runs-on: self-hosted
+    environment: development
+    steps:
+      - name: Deploy to Swarm DEV
+        run: |
+            cd /opt/app/dev
+            docker stack deploy -c docker-compose.yml --with-registry-auth stack_dev
+
+  # ÉTAPE 4 : Déploiement PREPROD (Auto si branche 'preprod')
+  deploy-preprod:
+    needs: [changes, build]
+    if: github.ref == 'refs/heads/preprod'
+    runs-on: self-hosted
+    environment: preproduction
+    steps:
+      - name: Deploy to Swarm PREPROD
+        run: |
+            cd /opt/app/preprod
+            docker stack deploy -c docker-compose.yml --with-registry-auth stack_preprod
+
+  # ÉTAPE 5 : Déploiement PROD (Manuel / Validation sur branche 'main')
+  deploy-prod:
+    needs: [changes, build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    environment: production # Nécessite validation manuelle dans GitHub
+    steps:
+      - name: Deploy to Swarm PROD
+        run: |
+            cd /opt/app/prod
+            docker stack deploy -c docker-compose.yml --with-registry-auth stack_prod
