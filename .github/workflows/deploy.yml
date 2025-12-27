@@ -1,7 +1,7 @@
 name: CI/CD Hybrid Deployment
 
 env:
-  REGISTRY: ghrc.io
+  REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 on:
@@ -22,7 +22,7 @@ jobs:
         with:
           filters: |
             search: 'search/**'
-            front-end: 'web-server/**'
+            web-server: 'web-server/**'
             database: 'database/**'
           # Ajouter ici les noms et chemins des autres services
 
@@ -31,10 +31,17 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.services != '[]' }}
     runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         service: ${{ fromJson(needs.changes.outputs.services) }}
     steps:
+      - name: Lowercase Image Name
+        run: |
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+
       - name: Docker Login
         uses: docker/login-action@v3
         with:
@@ -48,7 +55,7 @@ jobs:
           context: ./${{ matrix.service }}
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}//${{ matrix.service }}:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}:${{ github.ref_name }}
 
   # ÉTAPE 3 : Déploiement DEV (Auto si branche 'dev')
   deploy-dev:
