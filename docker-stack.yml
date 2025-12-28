@@ -20,7 +20,7 @@ services:
 
   # Search
   search:
-    image: ghcr.io/BlooSkyd/search:${TAG_VERSION}
+    image: ghcr.io/blooskyd/search:${TAG_VERSION}
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/fimafengdb
       SPRING_DATASOURCE_PASSWORD: postgres # TODO: À injecter/gérer avec un vault
@@ -39,7 +39,7 @@ services:
 
   # React
   web-server:
-    image: ghcr.io/BlooSkyd/web-server:${TAG_VERSION}
+    image: ghcr.io/blooskyd/web-server:${TAG_VERSION}
     networks:
       - internal_net
     ports:
