@@ -110,12 +110,20 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/dev'
     runs-on: self-hosted
-    environment: development
+    environment: dev
     steps:
-      - name: Deploy to Swarm DEV
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set TARGET_ENV
+        run: echo "TARGET_ENV=dev" >> $GITHUB_ENV
+
+      - name: Deploy to Docker Stack DEV
         run: |
-          cd /opt/app/dev
-          docker stack deploy -c docker-compose.yml --with-registry-auth stack_dev
+          docker stack deploy \
+            --compose-file docker-stack.yml \
+            --with-registry-auth \ 
+            stack_dev
 
   # ------------------------------------------------------------
   # ÉTAPE 4 — Déploiement PREPROD (automatique)
@@ -124,12 +132,20 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/preprod'
     runs-on: self-hosted
-    environment: preproduction
+    environment: preprod
     steps:
-      - name: Deploy to Swarm PREPROD
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set TARGET_ENV
+        run: echo "TARGET_ENV=preprod" >> $GITHUB_ENV
+
+      - name: Deploy to Docker Stack PREPROD
         run: |
-          cd /opt/app/preprod
-          docker stack deploy -c docker-compose.yml --with-registry-auth stack_preprod
+          docker stack deploy \
+            --compose-file docker-stack.yml \
+            --with-registry-auth \ 
+            stack_preprod
 
   # ------------------------------------------------------------
   # ÉTAPE 5 — Déploiement PROD (manuel via environment)
@@ -138,9 +154,17 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: self-hosted
-    environment: production
+    environment: prod
     steps:
-      - name: Deploy to Swarm PROD
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set TARGET_ENV
+        run: echo "TARGET_ENV=prod" >> $GITHUB_ENV
+
+      - name: Deploy to Docker Stack PROD
         run: |
-          cd /opt/app/prod
-          docker stack deploy -c docker-compose.yml --with-registry-auth stack_prod
+          docker stack deploy \
+            --compose-file docker-stack.yml \
+            --with-registry-auth \
+            stack_prod

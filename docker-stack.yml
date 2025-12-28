@@ -3,11 +3,11 @@ version: '3.8'
 services:
   # Base de données 
   database:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     environment:
       POSTGRES_USER: fimafeng
-      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }} # TODO: À injecté par le runner
-      POSTGRES_DB: fimafeng_dev
+      POSTGRES_PASSWORD: postgres # TODO: À injecter/gérer avec un vault
+      POSTGRES_DB: fimafengdb
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -18,12 +18,12 @@ services:
           - node.labels.role == database
           - node.labels.env == ${TARGET_ENV}
 
-  # Announce Manager
-  announce-manager:
-    image: ghcr.io/TON_USER/announce-manager:dev
+  # Search
+  search:
+    image: ghcr.io/BlooSkyd/search:${TAG_VERSION}
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/fimafeng_dev
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }} # TODO: À injecté par le runner
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/fimafengdb
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }} # TODO: À injecter/gérer avec un vault
     networks:
       - internal_net
     ports:
@@ -34,12 +34,12 @@ services:
         order: start-first
       placement:
         constraints:
-          - node.labels.role == announce
+          - node.labels.role == search
           - node.labels.env == ${TARGET_ENV}
 
   # React
   web-server:
-    image: ghcr.io/TON_USER/ecf-front:${TAG_VERSION}
+    image: ghcr.io/BlooSkyd/web-server:${TAG_VERSION}
     networks:
       - internal_net
     ports:
