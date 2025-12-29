@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Base de données 
   database:
-    image: postgres:16-alpine
+    image: ghcr.io/blooskyd/database:dev
     environment:
       POSTGRES_USER: fimafeng
       POSTGRES_PASSWORD: postgres # TODO: À injecter/gérer avec un vault
