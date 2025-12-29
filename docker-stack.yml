@@ -35,7 +35,7 @@ services:
       placement:
         constraints:
           - node.labels.role == search
-          - node.labels.env == ${GITHUB_ENV}
+          - node.labels.env == ${TARGET_ENV}
 
   # React
   web-server:
@@ -49,7 +49,7 @@ services:
       placement:
         constraints:
           - node.labels.role == web-server
-          - node.labels.env == ${GITHUB_ENV}
+          - node.labels.env == ${TARGET_ENV}
 
 volumes:
   db_data:
