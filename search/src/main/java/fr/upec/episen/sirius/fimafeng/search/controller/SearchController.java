@@ -21,6 +21,6 @@ public class SearchController {
         if (query == null || query.isEmpty()) {
             return announceRepository.findAll();
         }
-        return announceRepository.findByTitreContainingIgnoreCase(query);
+        return announceRepository.findByTitleContainingIgnoreCase(query);
     }
 }

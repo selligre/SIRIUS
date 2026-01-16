@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface AnnounceRepository extends JpaRepository<Announce, Long> {
     // Spring Data crée la requête SQL automatiquement grâce au nom de la méthode
-    List<Announce> findByTitreContainingIgnoreCase(String keyword);
+    List<Announce> findByTitleContainingIgnoreCase(String keyword);
 }

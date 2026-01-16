@@ -13,10 +13,10 @@ public class Announce {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String titre;
+    private String title;
     private String description;
-    private BigDecimal prix;
+    private BigDecimal price;
 
-    @Column(name = "date_creation")
-    private LocalDateTime dateCreation;
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
 }

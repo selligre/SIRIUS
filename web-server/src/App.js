@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [annonces, setAnnonces] = useState([]);
+  const [announces, setAnnounces] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fonction pour charger les annonces
-  const fetchAnnonces = (query = '') => {
+  const fetchAnnounces = (query = '') => {
     // En local docker-compose, on tape sur localhost:8080
     // En prod, ce sera l'URL de ton reverse proxy
     const url = query
@@ -15,18 +15,18 @@ function App() {
 
     fetch(url)
         .then(response => response.json())
-        .then(data => setAnnonces(data))
+        .then(data => setAnnounces(data))
         .catch(err => console.error("Erreur connexion API:", err));
   };
 
   // Chargement initial
   useEffect(() => {
-    fetchAnnonces();
+    fetchAnnounces();
   }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchAnnonces(searchTerm);
+    fetchAnnounces(searchTerm);
   };
 
   return (
@@ -45,14 +45,14 @@ function App() {
             <button type="submit" style={{ padding: '10px' }}>Chercher</button>
           </form>
 
-          <div className="annonces-list">
-            {annonces.length === 0 ? <p>Aucune annonce trouvée.</p> : null}
+          <div className="announces-list">
+            {announces.length === 0 ? <p>Aucune annonce trouvée.</p> : null}
 
-            {annonces.map(annonce => (
-                <div key={annonce.id} className="card">
-                  <h3>{annonce.titre}</h3>
-                  <p>{annonce.description}</p>
-                  <span>Prix: {annonce.prix} €</span>
+            {announces.map(announce => (
+                <div key={announce.id} className="card">
+                  <h3>{announce.title}</h3>
+                  <p>{announce.description}</p>
+                  <span>Prix: {announce.price} €</span>
                 </div>
             ))}
           </div>
