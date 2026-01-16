@@ -1,42 +1,87 @@
 # Ville Partagée
 
-## Une plateforme de collaboration citoyenne qui partage, liste et permet de s'inscrire à des annonces d'événements ou de prêts.
+> L'application Ville Partagée est projet pédagogique suivant les consignes du projet SIRIUS réalisé tout au long de la formation d'ingénieur SI de l'EPISEN.
+> Notre version, Ville partagée, est une plateforme de collaboration citoyenne qui partage, liste et permet de s'inscrire à des annonces d'événements ou de prêts.
 
-### Liste des étudiants
+## Liste des étudiants et spécialités choisies
 
-- Étudiant 1 : TAURAND Clément
-    - R1-US1 : Création d'un user
-    - R1-US2 : Algorithme de modération - Liste d'exclusion
-    - R1-US3 : Page de modération
-    - R2-US1 : Algorithme de modération - Bibliothèque d'extraction d'intention
-    - R2-US2 : Historique des modérations par annonce
-    - R2-US3 : Page des annonces créées par utilisateur
-    - R3-US1 : Détection de spam
-    - R3-US2 : Détection de haine
+1. **Clément TAURAND (FISA) :**
+   - S5 :
+      - DATA : Orchestration de services de données (ORC)	
+      - DATA : Pipeline de traitements de données pour le cloud (PIP)
+      - NCC : Architectures distribuées PaaS (PAAS)
+   - S6 :
+      - NCC : Architectures Orientées Événements (GRID)
+      - NCC : Internet des objets (IOT)
+      - SEC : Scalabilité, virtualisation et conteneurisation (SCA)
 
-- Étudiant 2 : MEUNIER Gilles
-    - R1-US1 : Profil de l'utilisateur avec ses données
-    - R1-US2 : Profil de l'annonce avec ses données
-    - R2-US1 : Mock Consultation
-    - R2-US2 : Proof Of Concept du processus de recommandation
-    - R2-US3 : Profil de l'utilisateur avec ses consultations
-    - R3-US1 : Calcul des annonces les plus pertinentes
-    - R3-US2 : Sélection et affichage des annonces
-    - R3-US3 : Affichage des calculs effectués
 
-- Étudiant 3 : TRAN Louis
-    - R1-US1 : Afficher la carte
-    - R1-US2 : Affichage des lieux (emplacements possibles des annonces)
-    - R1-US3 : Recentrage de la carte sur le lieu sélectionné
-    - R1-US4 : Afficher les quartiers
-    - R1-US5 : Différents affichages selon le nombre d'annonces visibles
-    - R2-US6 : Afficher toutes les annonces
-    - R2-US7 : Affichage avec filtre (tag, quartier) des annonces
-    - R2-US8 : Ouverture d'une annonce depuis la carte
-    - R2-US9 : Déplacement automatique en fonction du filtre par quartier
-    - R2-US10 : Monter seulement les annonces filtrés
-    - R2-US11 : Afficher le nombre d'annonces
-    - R3-US1 : Création d'une annonce
-    - R3-US2 : Amélioration de l'affichage des tags
-    - R3-US3 : Afficher les annonces seulements avec le statut online
-    - R3-US4 : Données en temps réel
+2. **Gilles MEUNIER (FISA) :**
+   - S5 :
+      - SEC : Sécurité systèmes et réseau (SSR)
+      - SEC : Sécurité des logiciels
+      - SEC : Politiques de sécurité et Dev Sec Ops (PSEC)
+   - S6 :
+      - NCC : Internet des objets (IOT)
+      - SEC : Scalabilité, virtualisation et conteneurisation (SCA)
+      - SEC : Sécurité du cloud (SCL)
+
+
+3. **Louis TRAN (FISE) :**
+   - S5 :
+      - DATA : Orchestration de services de données (ORC)	
+      - DATA : Pipeline de traitements de données pour le cloud (PIP)
+      - NCC : Architectures distribuées PaaS (PAAS)
+
+## Arborescence du projet
+
+```
+SIRIUS/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # Le script CI/CD (Github Actions)
+│
+├── announce-life-events/
+│   ├── Dockerfile              # Dockerfile du service Announce Life Events
+│   ├── pom.xml                 # Dépendances Maven
+│   └── src/                    # Code application Java (Spring Boot)
+│
+├── announce-manager/
+│   ├── Dockerfile              # Dockerfile du service Announce Manager
+│   ├── pom.xml                 # Dépendances Maven
+│   └── src/                    # Code application Java (Spring Boot)
+│
+├── cache/
+│   └── Dockerfile              # Dockerfile du service Cache
+│
+├── database/
+│   ├── Dockerfile              # Dockerfile de la BDD
+│   └── init.sql                # Script SQL de création de tables
+│
+├── iam/                        # TODO: à completer
+|
+├── logs/                       # TODO: à completer
+|
+├── notifications/              # TODO: à completer
+|
+├── recommendation/             # TODO: à completer
+|
+├── reverse-proxy/              # TODO: à completer
+│
+├── search/                     # Dossier du Back-end (Spring Boot)
+│   ├── Dockerfile              # Dockerfile du service Java
+│   ├── pom.xml                 # Dépendances Maven
+│   └── src/                    # Code source SpringBoot
+│
+├── web-server/                 # Dossier du Front-end (React)
+│   ├── Dockerfile              # Dockerfile du service React
+│   ├── nginx.conf              # Config Nginx pour servir le React
+│   ├── package.json
+│   ├── public/
+│   │   └── index.html
+│   └── src/                    # Code application React
+│
+├── docker-compose.yml          # Pour lancer le tout en local
+├── docker-stack.yml            # Ancien docker-compose, voué à être supprimé
+└── README.md                   # Fichier actuel
+```
