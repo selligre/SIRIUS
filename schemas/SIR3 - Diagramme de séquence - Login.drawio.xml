@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.6">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.8">
   <diagram name="IDP Authentication Flow" id="z0xc_fhCXn24UrwxYpdX">
-    <mxGraphModel dx="2066" dy="1109" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1722" dy="924" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -50,7 +50,7 @@
             <mxPoint x="820" y="240" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="tii1jDIIIGUNck5WJlKe-23" connectable="0" parent="FxGwj0zl0x7VIZfU28gg-10" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Arrive sur application.com" vertex="1">
+        <mxCell id="tii1jDIIIGUNck5WJlKe-23" connectable="0" parent="FxGwj0zl0x7VIZfU28gg-10" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Arrive sur villepartagee.com" vertex="1">
           <mxGeometry relative="1" x="-0.053" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -92,7 +92,7 @@
             <mxPoint x="340" y="201" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="tii1jDIIIGUNck5WJlKe-22" connectable="0" parent="tii1jDIIIGUNck5WJlKe-4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Je veux aller sur application.com" vertex="1">
+        <mxCell id="tii1jDIIIGUNck5WJlKe-22" connectable="0" parent="tii1jDIIIGUNck5WJlKe-4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Je veux aller sur villepartagee.com" vertex="1">
           <mxGeometry relative="1" x="-0.1228" y="-2" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -145,7 +145,7 @@
             <mxPoint x="340" y="480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sZ_jetT4Vy5MgwNvHxbx-29" connectable="0" parent="sZ_jetT4Vy5MgwNvHxbx-28" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Askip faut que tu remplisses ça" vertex="1">
+        <mxCell id="sZ_jetT4Vy5MgwNvHxbx-29" connectable="0" parent="sZ_jetT4Vy5MgwNvHxbx-28" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Demandes à renseigner Username et Password" vertex="1">
           <mxGeometry relative="1" x="-0.1805" y="2" as="geometry">
             <mxPoint x="-12" as="offset" />
           </mxGeometry>
@@ -156,7 +156,7 @@
             <mxPoint x="820" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sZ_jetT4Vy5MgwNvHxbx-31" connectable="0" parent="sZ_jetT4Vy5MgwNvHxbx-30" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="C&#39;est bon, t&#39;es auth. Rediriges vers le RP" vertex="1">
+        <mxCell id="sZ_jetT4Vy5MgwNvHxbx-31" connectable="0" parent="sZ_jetT4Vy5MgwNvHxbx-30" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="C&#39;est bon, t&#39;es auth. Rediriges vers le RP&amp;nbsp;&lt;div&gt;avec le token&lt;/div&gt;" vertex="1">
           <mxGeometry relative="1" x="0.0153" y="-1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
