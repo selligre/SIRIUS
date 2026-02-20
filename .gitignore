@@ -4,3 +4,6 @@ fimafeng-front/node_modules/
 fimafeng-front/build/
 */.idea/
 .idea/
+*.csv
+*.zip
+*.parquet

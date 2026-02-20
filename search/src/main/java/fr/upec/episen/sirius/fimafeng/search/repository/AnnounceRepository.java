@@ -1,6 +1,6 @@
 package fr.upec.episen.sirius.fimafeng.search.repository;
 
-import fr.upec.episen.sirius.fimafeng.search.model.Announce;
+import fr.upec.episen.sirius.fimafeng.models.Announce;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

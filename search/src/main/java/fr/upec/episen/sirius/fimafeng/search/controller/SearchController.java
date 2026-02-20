@@ -1,6 +1,6 @@
 package fr.upec.episen.sirius.fimafeng.search.controller;
 
-import fr.upec.episen.sirius.fimafeng.search.model.Announce;
+import fr.upec.episen.sirius.fimafeng.models.Announce;
 import fr.upec.episen.sirius.fimafeng.search.repository.AnnounceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
