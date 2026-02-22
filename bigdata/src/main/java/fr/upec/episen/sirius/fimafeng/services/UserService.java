@@ -11,12 +11,10 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    private UserRepository UserRepository;
-    @Autowired
     private UserRepository userRepository;
 
     public User save(User user) {
-        return UserRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
     public User findByUsername(String username) {

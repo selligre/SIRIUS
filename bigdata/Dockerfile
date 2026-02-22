@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copie des scripts Python
 COPY 0-datasource-to-bronze.py .
 COPY 1-bronze-to-silver.py .
-COPY 2-silver-to-gold-db.py .
 
 # Création du dossier data
 RUN mkdir -p /app/data

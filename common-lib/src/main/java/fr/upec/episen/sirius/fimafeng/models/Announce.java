@@ -9,41 +9,30 @@ import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "announce")
 public class Announce {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "publication_date")
     private Date publicationDate;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.ORDINAL)
     private AnnounceStatus status;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
     private AnnounceType type;
 
-    @Column(name = "title")
+    @Column(columnDefinition = "TEXT")
     private String title;
 
-    @Column(name = "description", length = 500)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "date_time_start")
     private Date dateTimeStart;
 
-    @Column(name = "duration")
     private Float duration;
 
-    @Column(name = "date_time_end")
     private Date dateTimeEnd;
 
-    @Column(name = "ref_author_id")
     private int authorId;
 
     @Override

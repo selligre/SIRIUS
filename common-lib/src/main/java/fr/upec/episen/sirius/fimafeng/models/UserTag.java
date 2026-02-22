@@ -1,23 +1,21 @@
 package fr.upec.episen.sirius.fimafeng.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "user_tag")
 public class UserTag {
 
-    // Columns
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(name = "ref_tag_id")
     private int refTagId;
 
-    @Column(name = "ref_client_id")
     private int refClientId;
 
     public UserTag() {}

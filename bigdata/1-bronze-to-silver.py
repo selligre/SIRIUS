@@ -22,16 +22,18 @@ COLS_TO_RENAME = {
     'datetime': 'publication_date',
     'text': 'description'
 }
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 def remove_columns():
     print(f"Chargement du fichier {DATASET_SILVER}...")
     df = pd.read_parquet(BASE_DIRECTORY+DATASET_SILVER)
     print(f"Suppression des colonnes inutiles...")
     df_clean = df.drop(columns=COLS_TO_DROP, errors='ignore')
-    df_clean.fillna(0)
+    df_clean = df_clean.dropna()
+    df_clean = df_clean.fillna(0)
     print(f"Sauvegarde du fichier en .parquet")
     df_clean.to_parquet(BASE_DIRECTORY+DATASET_SILVER, index=False)
-    #df_clean.to_csv(BASE_DIRECTORY+'silver-remove-col.csv')
+    df_clean.to_csv(BASE_DIRECTORY+'silver-remove-col.csv')
     print(f"Nettoyage termine !")
     
     org_size = os.path.getsize(BASE_DIRECTORY+DATASET_NAME)
@@ -87,7 +89,7 @@ def get_status(float):
 def create_time_start(date):
     # on souhaite avoir entre 1 et 14 jours après la date de creation
     spacing = random.randrange(1,14)
-    original_date = dt.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    original_date = dt.datetime.strptime(date, DATETIME_FORMAT)
     new_date = original_date + dt.timedelta(days=spacing)
     final_starting_time = dt.datetime(new_date.year, new_date.month, new_date.day, random.randrange(0,23), random.randrange(0,45,15))
     return final_starting_time
@@ -102,10 +104,12 @@ def create_new_columns():
     df['status'] = df['score'].apply(get_status)
     # colonne date_time_start : écart artificiel à partir de la date de creation
     df['date_time_start'] = df['publication_date'].apply(create_time_start)
+    df['date_time_start'] = df['date_time_start'].dt.strftime('%Y-%m-%d %H:%M:%S')
     # colonne duration : duree en heure exprimee en float, granulaire par quart d'heure
     df['duration'] = np.random.randint(1, 23*4, df.shape[0])*0.25
     # colonne date_time_end : on additionne duration à date_time_start
-    df['date_time_end'] = df['date_time_start'] + pd.to_timedelta(df['duration'].astype(float), unit='h')
+    df['date_time_end'] = pd.to_datetime(df['date_time_start']) + pd.to_timedelta(df['duration'].astype(float), unit='h')
+    df['date_time_end'] = df['date_time_end'].dt.strftime(DATETIME_FORMAT)
     print(f"Sauvegarde du fichier en .parquet")
     df.to_parquet(BASE_DIRECTORY+DATASET_SILVER, index=False)
     print(f"Creation des nouvelles colonnes termine !")
@@ -120,7 +124,6 @@ def readSchema(file: str):
 
 if __name__ == '__main__':
     print(f"Schema en entrée")
-    readSchema(BASE_DIRECTORY+DATASET_NAME)
     print(f"Lancement des opérations...")
     print(f"="*50)
     remove_rows()
@@ -134,4 +137,3 @@ if __name__ == '__main__':
     print(f"Toutes les opérations sont finies")
     print(f"="*50)
     print(f"Schema en sortie")
-    readSchema(BASE_DIRECTORY+DATASET_SILVER)

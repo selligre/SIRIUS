@@ -6,11 +6,14 @@ import fr.upec.episen.sirius.fimafeng.models.enums.AnnounceStatus;
 import fr.upec.episen.sirius.fimafeng.models.enums.AnnounceType;
 import fr.upec.episen.sirius.fimafeng.repositories.AnnounceRepository;
 import fr.upec.episen.sirius.fimafeng.services.UserService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
+import org.apache.hadoop.conf.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +34,15 @@ public class ParquetReaderImplementation {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     UserService userService;
 
     @Autowired
     AnnounceRepository announceRepository;
+
 
     @Transactional
     public void importParquet(String filePath) throws IOException {
@@ -43,7 +50,11 @@ public class ParquetReaderImplementation {
 
         Path path = new Path(filePath);
 
-        try (ParquetReader<GenericRecord> reader = AvroParquetReader.<GenericRecord>builder(path).build()) {
+        Configuration conf = new Configuration();
+        try (ParquetReader<GenericRecord> reader = AvroParquetReader
+                .<GenericRecord>builder(path)
+                .withConf(conf)
+                .build()) {
 
             GenericRecord record;
             List<Announce> announceBatch = new ArrayList<>();
@@ -55,7 +66,9 @@ public class ParquetReaderImplementation {
 
                 if(announceBatch.size() >= BATCH_SIZE) {
                     LOGGER.info("Saving some announces");
-                    announceRepository.saveAll(announceBatch);
+                    announceRepository.saveAllAndFlush(announceBatch);
+                    entityManager.flush();
+                    entityManager.clear();
                     announceBatch.clear();
                 }
 
@@ -63,11 +76,13 @@ public class ParquetReaderImplementation {
             if (!announceBatch.isEmpty()) {
                 LOGGER.info("Saving last announces");
                 announceRepository.saveAll(announceBatch);
+                entityManager.flush();
+                entityManager.clear();
             }
         }
     }
 
-    @Transactional
+
     public Announce mapperRecordToAnnounce(GenericRecord record) {
         Announce announce = new Announce();
         String userUsername = record.get("author").toString();
@@ -82,16 +97,20 @@ public class ParquetReaderImplementation {
         } else {
             announce.setAuthorId(optionalUser.getId());
         }
-        announce.setPublicationDate(Date.from(Instant.parse(record.get("publication_date").toString())));
-        announce.setStatus(AnnounceStatus.fromValue( (Integer) record.get("status")));
-        announce.setType(AnnounceType.fromValue( (Integer) record.get("type")));
+        announce.setStatus(AnnounceStatus.fromValue( ((Double) record.get("status")).intValue()));
+        announce.setType(AnnounceType.fromValue( Math.toIntExact( (Long) record.get("type"))));
         announce.setTitle(record.get("title").toString());
         announce.setDescription(record.get("description").toString());
         try {
+            announce.setPublicationDate(sdf.parse(record.get("publication_date").toString()));
             announce.setDateTimeStart(sdf.parse(record.get("date_time_start").toString()));
             announce.setDuration(Float.parseFloat(record.get("duration").toString()));
-            announce.setDateTimeEnd(Date.from(Instant.parse(record.get("date_time_end").toString())));
+            announce.setDateTimeEnd(sdf.parse(record.get("date_time_end").toString()));
         } catch (ParseException e) {
+            LOGGER.warning("publication_date: "+record.get("publication_date").toString());
+            LOGGER.warning("date_time_start: "+record.get("date_time_start").toString());
+            LOGGER.warning("duration: "+record.get("duration").toString());
+            LOGGER.warning("date_time_end: "+record.get("date_time_end").toString());
             LOGGER.warning(e.getMessage());
             throw new RuntimeException(e);
         }

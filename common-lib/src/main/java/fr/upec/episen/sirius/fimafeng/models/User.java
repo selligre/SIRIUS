@@ -5,19 +5,15 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name = "app_user")
 public class User {
 
-    // Columns
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "username")
     private String username;
 
-    @Column(name = "email")
     private String email;
 
 

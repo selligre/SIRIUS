@@ -3,7 +3,6 @@ package fr.upec.episen.sirius.fimafeng;
 import fr.upec.episen.sirius.fimafeng.implementations.ParquetReaderImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.logging.Logger;
@@ -15,6 +14,10 @@ public class BigdataConnectorApplication implements CommandLineRunner {
     ParquetReaderImplementation parquetReaderImplementation;
 
     private static Logger LOGGER = Logger.getLogger(BigdataConnectorApplication.class.getName());
+
+    public static void main(String[] args) {
+        org.springframework.boot.SpringApplication.run(BigdataConnectorApplication.class, args);
+    }
 
     @Override
     public void run(String[] args) throws Exception {
