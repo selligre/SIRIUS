@@ -5,6 +5,7 @@ import fr.upec.episen.sirius.fimafeng.models.User;
 import fr.upec.episen.sirius.fimafeng.models.enums.AnnounceStatus;
 import fr.upec.episen.sirius.fimafeng.models.enums.AnnounceType;
 import fr.upec.episen.sirius.fimafeng.repositories.AnnounceRepository;
+import fr.upec.episen.sirius.fimafeng.services.AnnounceBatchService;
 import fr.upec.episen.sirius.fimafeng.services.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -41,7 +42,7 @@ public class ParquetReaderImplementation {
     UserService userService;
 
     @Autowired
-    AnnounceRepository announceRepository;
+    AnnounceBatchService announceBatchService;
 
 
     @Transactional
@@ -58,6 +59,8 @@ public class ParquetReaderImplementation {
 
             GenericRecord record;
             List<Announce> announceBatch = new ArrayList<>();
+            int counter = 0;
+
 
             LOGGER.info("Starting parquet read");
             while ((record = reader.read()) != null) {
@@ -65,8 +68,9 @@ public class ParquetReaderImplementation {
                 announceBatch.add(announce);
 
                 if(announceBatch.size() >= BATCH_SIZE) {
-                    LOGGER.info("Saving some announces");
-                    announceRepository.saveAllAndFlush(announceBatch);
+                    counter += BATCH_SIZE;
+                    LOGGER.info("Saving some announces ("+ counter+")");
+                    announceBatchService.saveBatch(announceBatch);
                     entityManager.flush();
                     entityManager.clear();
                     announceBatch.clear();
@@ -75,7 +79,7 @@ public class ParquetReaderImplementation {
             }
             if (!announceBatch.isEmpty()) {
                 LOGGER.info("Saving last announces");
-                announceRepository.saveAll(announceBatch);
+                announceBatchService.saveBatch(announceBatch);
                 entityManager.flush();
                 entityManager.clear();
             }
