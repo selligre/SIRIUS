@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import config from '../../api/config';
 
@@ -81,6 +81,10 @@ function LoginPage({ onLogin }) {
           <div className="login-info">
             <p>Connectez-vous pour accéder à toutes les fonctionnalités</p>
           </div>
+
+          <Link className="loggout-btn" to="http://172.31.249.140:21180/oauth2/sign_out?rd=http://172.31.249.140:21280/realms/fimafeng/protocol/openid-connect/logout">
+            Se déconnecter complètement
+          </Link>
         </div>
       </div>
     </div>

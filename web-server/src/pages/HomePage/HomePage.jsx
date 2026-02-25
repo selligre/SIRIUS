@@ -27,7 +27,7 @@ function HomePage({ currentUser }) {
         page: page,
         amount: pageSize
       });
-      const response = await fetch(`${config.searchServiceUrl}/api/search/query/${params}`);
+      const response = await fetch(`${config.searchServiceUrl}/api/search/query?${params}`);
       if (response.ok) {
         const data = await response.json();
         // Le backend retourne une Page, extraire le contenu

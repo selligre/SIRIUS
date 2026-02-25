@@ -15,6 +15,6 @@ public interface AnnounceRepository extends JpaRepository<Announce, Long> {
 
     List<Announce> findByTitleContainingIgnoreCase(String keyword);
 
-    @Query(value = "SELECT a FROM Announce a WHERE (a.title LIKE %:keyword% OR a.description LIKE %:keyword%)", nativeQuery = true)
+    @Query("SELECT a FROM Announce a WHERE a.title LIKE CONCAT('%', :keyword, '%') OR a.description LIKE CONCAT('%', :keyword, '%')")
     Page<Announce> searchByKeyword(String keyword, Pageable pageable);
 }

@@ -24,10 +24,4 @@ public class SearchController {
         LOGGER.info("Received GET /query/"+keyword);
         return announceRepository.searchByKeyword(keyword, PageRequest.of(page, amount));
     }
-
-    @GetMapping("/all")
-    public Page<Announce> retrieveAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int amount) {
-        LOGGER.info("Received GET /all");
-        return announceRepository.findAll(PageRequest.of(page, amount));
-    }
 }
