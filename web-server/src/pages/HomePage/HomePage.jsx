@@ -1,0 +1,167 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './HomePage.css';
+import config from '../../api/config';
+import AnnouncementCard from '../../components/AnnouncementCard/AnnouncementCard';
+import CreateAnnouncementForm from '../../components/CreateAnnouncementForm/CreateAnnouncementForm';
+
+function HomePage({ currentUser }) {
+  const navigate = useNavigate();
+  const [announcements, setAnnouncements] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSize] = useState(20);
+
+  useEffect(() => {
+    fetchAnnouncements(searchKeyword, currentPage);
+  }, [searchKeyword, currentPage]);
+
+  const fetchAnnouncements = async (keyword = '', page = 0) => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        keyword: keyword || '',
+        page: page,
+        amount: pageSize
+      });
+      const response = await fetch(`${config.searchServiceUrl}/api/search/query/${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        // Le backend retourne une Page, extraire le contenu
+        setAnnouncements(data.content || []);
+        setTotalPages(data.totalPages || 0);
+      } else {
+        console.error('Erreur lors de la récupération des annonces');
+        setAnnouncements([]);
+        setTotalPages(0);
+      }
+    } catch (error) {
+      console.error('Erreur :', error);
+      setAnnouncements([]);
+      setTotalPages(0);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = (keyword) => {
+    setSearchKeyword(keyword);
+    setCurrentPage(0);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleAnnouncementCreated = (newAnnouncement) => {
+    setAnnouncements((prev) => [newAnnouncement, ...prev]);
+    setShowCreateForm(false);
+  };
+
+  const handleViewDetails = (announcementId) => {
+    navigate(`/announcement/${announcementId}`);
+  };
+
+  return (
+    <div className="home-page">
+      <div className="home-container">
+        <section className="home-hero">
+          <h1>Bienvenue sur Ville Partagée</h1>
+          <p>Découvrez toutes les annonces disponibles dans votre communauté</p>
+        </section>
+
+        {currentUser && (
+          <div className="create-announcement-section">
+            <button
+              className="create-btn"
+              onClick={() => setShowCreateForm(!showCreateForm)}
+            >
+              {showCreateForm ? 'Fermer' : '+ Créer une annonce'}
+            </button>
+            {showCreateForm && (
+              <CreateAnnouncementForm
+                currentUser={currentUser}
+                onAnnouncementCreated={handleAnnouncementCreated}
+              />
+            )}
+          </div>
+        )}
+
+        <section className="announcements-section">
+          <h2>Annonces disponibles</h2>
+
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Rechercher une annonce..."
+              value={searchKeyword}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="search-input"
+            />
+            {searchKeyword && (
+              <button
+                className="clear-search-btn"
+                onClick={() => handleSearch('')}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {isLoading ? (
+            <div className="loading">Chargement des annonces...</div>
+          ) : announcements.length === 0 ? (
+            <div className="no-announcements">
+              <p>Aucune annonce trouvée pour le moment.</p>
+            </div>
+          ) : (
+            <>
+              <div className="announcements-list">
+                {announcements.map((announcement) => (
+                  <AnnouncementCard
+                    key={announcement.id}
+                    announcement={announcement}
+                    onViewDetails={() => handleViewDetails(announcement.id)}
+                  />
+                ))}
+              </div>
+
+              <div className="pagination">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 0}
+                  className="pagination-btn"
+                >
+                  ← Précédent
+                </button>
+                <span className="pagination-info">
+                  Page {currentPage + 1} sur {totalPages}
+                </span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage >= totalPages - 1}
+                  className="pagination-btn"
+                >
+                  Suivant →
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+export default HomePage;

@@ -1,6 +1,6 @@
 package fr.upec.episen.sirius.fimafeng.repositories;
 
-import fr.upec.episen.sirius.fimafeng.models.User;
+import fr.upec.episen.sirius.fimafeng.commons.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package fr.upec.episen.sirius.fimafeng.factories;
 
-import fr.upec.episen.sirius.fimafeng.models.User;
+import fr.upec.episen.sirius.fimafeng.commons.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;

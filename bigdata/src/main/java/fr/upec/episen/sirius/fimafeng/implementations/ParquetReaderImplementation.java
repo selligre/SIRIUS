@@ -1,9 +1,9 @@
 package fr.upec.episen.sirius.fimafeng.implementations;
 
-import fr.upec.episen.sirius.fimafeng.models.Announce;
-import fr.upec.episen.sirius.fimafeng.models.User;
-import fr.upec.episen.sirius.fimafeng.models.enums.AnnounceStatus;
-import fr.upec.episen.sirius.fimafeng.models.enums.AnnounceType;
+import fr.upec.episen.sirius.fimafeng.commons.models.Announce;
+import fr.upec.episen.sirius.fimafeng.commons.models.User;
+import fr.upec.episen.sirius.fimafeng.commons.models.enums.AnnounceStatus;
+import fr.upec.episen.sirius.fimafeng.commons.models.enums.AnnounceType;
 import fr.upec.episen.sirius.fimafeng.repositories.AnnounceRepository;
 import fr.upec.episen.sirius.fimafeng.services.AnnounceBatchService;
 import fr.upec.episen.sirius.fimafeng.services.UserService;

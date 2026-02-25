@@ -1,11 +1,12 @@
 package fr.upec.episen.sirius.fimafeng.search.controller;
 
-import fr.upec.episen.sirius.fimafeng.models.Announce;
-import fr.upec.episen.sirius.fimafeng.search.repository.AnnounceRepository;
+import fr.upec.episen.sirius.fimafeng.commons.models.Announce;
+import fr.upec.episen.sirius.fimafeng.search.repositories.AnnounceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/search")
@@ -13,14 +14,20 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class SearchController {
 
+    private static Logger LOGGER = Logger.getLogger(SearchController.class.getName());
+
     @Autowired
     private AnnounceRepository announceRepository;
 
-    @GetMapping
-    public List<Announce> search(@RequestParam(required = false) String query) {
-        if (query == null || query.isEmpty()) {
-            return announceRepository.findAll();
-        }
-        return announceRepository.findByTitleContainingIgnoreCase(query);
+    @GetMapping("/query")
+    public Page<Announce> search(@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int amount) {
+        LOGGER.info("Received GET /query/"+keyword);
+        return announceRepository.searchByKeyword(keyword, PageRequest.of(page, amount));
+    }
+
+    @GetMapping("/all")
+    public Page<Announce> retrieveAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int amount) {
+        LOGGER.info("Received GET /all");
+        return announceRepository.findAll(PageRequest.of(page, amount));
     }
 }
