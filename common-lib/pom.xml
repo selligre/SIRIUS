@@ -13,7 +13,7 @@
 
     <groupId>fr.upec.episen.sirius.fimafeng</groupId>
     <artifactId>common-lib</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <properties>
         <java.version>21</java.version>
