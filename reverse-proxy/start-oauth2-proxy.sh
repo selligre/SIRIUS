@@ -19,7 +19,8 @@ OPTS="$OPTS --client-secret=a6v6m7jT8hsk8yeW2EMSquDblVvvgzfd"
 OPTS="$OPTS --redirect-url=http://172.31.249.140:21180/oauth2/callback"
 OPTS="$OPTS --code-challenge-method=S256"
 OPTS="$OPTS --cookie-expire=2h"
-OPTS="$OPTS --cookie-secure=false"
+OPTS="$OPTS --cookie-secure=true"
+OPTS="$OPTS --insecure-oidc-allow-unverified-email=true"
 
 # BROWSER
 OPTS="$OPTS --login-url=http://172.31.249.140:21280/realms/fimafeng/protocol/openid-connect/auth"
