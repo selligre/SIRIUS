@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
 public class UserController {
     
     private static Logger LOGGER = Logger.getLogger(UserController.class.getName());

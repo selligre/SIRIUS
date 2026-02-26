@@ -6,6 +6,7 @@ import fr.upec.episen.sirius.fimafeng.commons.models.enums.AnnounceType;
 import fr.upec.episen.sirius.fimafeng.announce_manager.dtos.AnnounceDTO;
 import fr.upec.episen.sirius.fimafeng.announce_manager.dtos.AnnounceDAO;
 import fr.upec.episen.sirius.fimafeng.announce_manager.repositories.AnnounceRepository;
+import fr.upec.episen.sirius.fimafeng.announce_manager.utils.NotificationClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
@@ -21,6 +22,9 @@ public class AnnounceService {
 
     @Autowired
     private AnnounceRepository announceRepository;
+
+    @Autowired
+    private NotificationClient notificationClient;
 
     /**
      * Crée une nouvelle annonce à partir du DTO provenant du formulaire web
@@ -59,7 +63,22 @@ public class AnnounceService {
         announce.setDuration(durationHours);
 
         // Sauvegarder dans la base de données
-        return announceRepository.save(announce);
+        Announce savedAnnounce = announceRepository.save(announce);
+
+        // Créer une notification pour l'utilisateur
+        try {
+            notificationClient.notifyAnnounceCreated(
+                announceDTO.getAuthorId(),
+                (int) savedAnnounce.getId(),
+                "ANNOUNCE_SAVED",
+                "Votre annonce '" + announceDTO.getTitle() + "' a été créée avec succès."
+            );
+        } catch (Exception e) {
+            // On log l'erreur mais on ne lève pas d'exception pour ne pas bloquer
+            System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
+        }
+
+        return savedAnnounce;
     }
 
     /**
@@ -122,7 +141,22 @@ public class AnnounceService {
         float durationHours = durationMinutes / 60.0f;
         announce.setDuration(durationHours);
         
-        return announceRepository.save(announce);
+        Announce updatedAnnounce = announceRepository.save(announce);
+
+        // Créer une notification pour l'utilisateur
+        try {
+            notificationClient.notifyAnnounceUpdated(
+                authorId,
+                id,
+                "ANNOUNCE_SAVED",
+                "Votre annonce '" + announceDTO.getTitle() + "' a été modifiée avec succès."
+            );
+        } catch (Exception e) {
+            // On log l'erreur mais on ne lève pas d'exception pour ne pas bloquer
+            System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
+        }
+
+        return updatedAnnounce;
     }
 
     /**
@@ -144,8 +178,23 @@ public class AnnounceService {
         if (announce.getAuthorId() != authorId) {
             throw new IllegalAccessException("You are not authorized to delete this announcement");
         }
+
+        String announceTitle = announce.getTitle();
         
         announceRepository.deleteById(id);
+
+        // Créer une notification pour l'utilisateur
+        try {
+            notificationClient.notifyAnnounceDeleted(
+                authorId,
+                id,
+                "ANNOUNCE_DELETED",
+                "Votre annonce '" + announceTitle + "' a été supprimée avec succès."
+            );
+        } catch (Exception e) {
+            // On log l'erreur mais on ne lève pas d'exception pour ne pas bloquer
+            System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
+        }
     }
 
     /**
@@ -282,5 +331,6 @@ public class AnnounceService {
         
         return dao;
     }
+
 }
 

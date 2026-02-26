@@ -10,31 +10,36 @@ import MyAnnouncementsPage from './pages/MyAnnouncementsPage/MyAnnouncementsPage
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
   // Charger l'utilisateur depuis le localStorage au démarrage
   useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
+    const savedUserId = localStorage.getItem('userId');
     if (savedUser) {
       setCurrentUser(savedUser);
     }
+    if (savedUserId) {
+      setCurrentUserId(parseInt(savedUserId, 10));
+    }
   }, []);
 
-  // Récupérer le nombre de notifications non-lues
+  // Récupérer le nombre de notifications non-lues une seule fois au login
   useEffect(() => {
-    if (currentUser) {
+    if (currentUserId) {
       fetchUnreadNotificationCount();
     }
-  }, [currentUser]);
+  }, [currentUserId]);
 
   const fetchUnreadNotificationCount = async () => {
     try {
       const response = await fetch(
-        `${config.announceManagerServiceUrl}/api/notifications/unread-count?userId=${currentUser}`
+        `${config.notificationsServiceUrl}/api/notifications/unread-count?userId=${currentUserId}`
       );
       if (response.ok) {
         const data = await response.json();
-        setUnreadNotificationCount(data.count || 0);
+        setUnreadNotificationCount(data.unreadCount || 0);
       }
     } catch (error) {
       console.error('Erreur lors du chargement du nombre de notifications:', error);
@@ -63,7 +68,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={currentUser ? <HomePage currentUser={currentUser} /> : <Navigate to="/login" />}
+          element={currentUser ? <HomePage currentUser={currentUser} onUpdateNotificationCount={fetchUnreadNotificationCount} /> : <Navigate to="/login" />}
         />
         <Route
           path="/login"
@@ -73,7 +78,7 @@ function App() {
           path="/notifications"
           element={
             currentUser ? (
-              <NotificationsPage currentUser={currentUser} />
+              <NotificationsPage currentUser={currentUser} onUpdateNotificationCount={fetchUnreadNotificationCount} />
             ) : (
               <Navigate to="/login" />
             )

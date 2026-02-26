@@ -21,11 +21,10 @@ public enum NotificationTitle {
     }
 
     public static NotificationTitle getNotificationTitle(String s) {
-        for(NotificationTitle notificationTitle : NotificationTitle.values()) {
-            if (notificationTitle.title.equals(s)) {
-                return notificationTitle;
-            }
+        try {
+            return NotificationTitle.valueOf(s);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("No enum constant class " + NotificationTitle.class + " with value " + s);
         }
-        throw new IllegalArgumentException("No enum constant " + NotificationTitle.class + " with value "+ s);
     }
 }

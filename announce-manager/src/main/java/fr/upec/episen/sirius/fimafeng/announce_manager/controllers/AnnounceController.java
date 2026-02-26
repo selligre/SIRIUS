@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/announcements")
-@CrossOrigin(origins = "*")
 public class AnnounceController {
 
     private static final Logger LOGGER = Logger.getLogger(AnnounceController.class.getName());

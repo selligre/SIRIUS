@@ -4,25 +4,44 @@ import './NotificationsPage.css';
 import config from '../../api/config';
 import NotificationItem from '../../components/NotificationItem/NotificationItem';
 
-function NotificationsPage({ currentUser }) {
+function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterUnread, setFilterUnread] = useState(false);
+  const [selectedNotifications, setSelectedNotifications] = useState(new Set());
 
   useEffect(() => {
-    fetchNotifications();
+    const savedUserId = localStorage.getItem('userId');
+    if (savedUserId) {
+      setUserId(parseInt(savedUserId, 10));
+    }
   }, []);
+
+  // Appeler la fonction pour mettre à jour le compteur de notifications uniquement au chargement de la page
+  useEffect(() => {
+    if (onUpdateNotificationCount) {
+      onUpdateNotificationCount();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchNotifications();
+    }
+  }, [userId]);
 
   const fetchNotifications = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${config.announceManagerServiceUrl}/api/notifications?userId=${currentUser}`
+        `${config.notificationsServiceUrl}/api/notifications?userId=${userId}`
       );
       if (response.ok) {
         const data = await response.json();
         setNotifications(data || []);
+        setSelectedNotifications(new Set());
       }
     } catch (error) {
       console.error('Erreur lors du chargement des notifications:', error);
@@ -34,14 +53,14 @@ function NotificationsPage({ currentUser }) {
   const handleMarkAsRead = async (notificationId) => {
     try {
       const response = await fetch(
-        `${config.announceManagerServiceUrl}/api/notifications/${notificationId}/read`,
+        `${config.notificationsServiceUrl}/api/notifications/${notificationId}/read`,
         { method: 'PUT' }
       );
 
       if (response.ok) {
         setNotifications((prev) =>
           prev.map((notif) =>
-            notif.id === notificationId ? { ...notif, isRead: true } : notif
+            notif.id === notificationId ? { ...notif, hasBeenRed: true } : notif
           )
         );
       }
@@ -50,13 +69,64 @@ function NotificationsPage({ currentUser }) {
     }
   };
 
-  const handleViewAnnouncement = (announcementId) => {
-    navigate(`/announcement/${announcementId}`);
+  const handleSelectNotification = (notificationId) => {
+    setSelectedNotifications((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(notificationId)) {
+        newSet.delete(notificationId);
+      } else {
+        newSet.add(notificationId);
+      }
+      return newSet;
+    });
   };
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const handleMarkAllSelectedAsRead = async () => {
+    if (selectedNotifications.size === 0) {
+      alert('Sélectionnez au moins une notification');
+      return;
+    }
+
+    try {
+      const notificationIds = Array.from(selectedNotifications);
+      const response = await fetch(
+        `${config.notificationsServiceUrl}/api/notifications/read`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(notificationIds),
+        }
+      );
+
+      if (response.ok) {
+        setNotifications((prev) =>
+          prev.map((notif) =>
+            selectedNotifications.has(notif.id) ? { ...notif, hasBeenRed: true } : notif
+          )
+        );
+        setSelectedNotifications(new Set());
+      }
+    } catch (error) {
+      console.error('Erreur lors du marquage des notifications:', error);
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allUnreadIds = displayedNotifications
+        .filter((n) => !n.hasBeenRed)
+        .map((n) => n.id);
+      setSelectedNotifications(new Set(allUnreadIds));
+    } else {
+      setSelectedNotifications(new Set());
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.hasBeenRed).length;
   const displayedNotifications = filterUnread
-    ? notifications.filter((n) => !n.isRead)
+    ? notifications.filter((n) => !n.hasBeenRed)
     : notifications;
 
   return (
@@ -75,21 +145,35 @@ function NotificationsPage({ currentUser }) {
         </section>
 
         <div className="notifications-controls">
-          <label className="filter-checkbox">
-            <input
-              type="checkbox"
-              checked={filterUnread}
-              onChange={(e) => setFilterUnread(e.target.checked)}
-            />
-            Afficher les non-lues uniquement
-          </label>
-          <button
-            className="refresh-btn"
-            onClick={fetchNotifications}
-            disabled={isLoading}
-          >
-            🔄 Actualiser
-          </button>
+          <div className="left-controls">
+            <label className="filter-checkbox">
+              <input
+                type="checkbox"
+                checked={filterUnread}
+                onChange={(e) => setFilterUnread(e.target.checked)}
+              />
+              Afficher les non-lues uniquement
+            </label>
+          </div>
+          
+          <div className="right-controls">
+            {selectedNotifications.size > 0 && (
+              <button
+                className="mark-selected-btn"
+                onClick={handleMarkAllSelectedAsRead}
+              >
+                ✓ Marquer {selectedNotifications.size} comme lue(s)
+              </button>
+            )}
+            
+            <button
+              className="refresh-btn"
+              onClick={fetchNotifications}
+              disabled={isLoading}
+            >
+              🔄 Actualiser
+            </button>
+          </div>
         </div>
 
         <section className="notifications-list">
@@ -105,13 +189,54 @@ function NotificationsPage({ currentUser }) {
             </div>
           ) : (
             <div>
+              {displayedNotifications.length > 1 && (
+                <div className="select-all-container">
+                  <label className="select-all-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={
+                        displayedNotifications.length > 0 &&
+                        displayedNotifications
+                          .filter((n) => !n.hasBeenRed)
+                          .every((n) => selectedNotifications.has(n.id))
+                      }
+                      onChange={handleSelectAll}
+                    />
+                    Sélectionner tous les non-lues
+                  </label>
+                </div>
+              )}
+              
               {displayedNotifications.map((notification) => (
-                <NotificationItem
+                <div
                   key={notification.id}
-                  notification={notification}
-                  onMarkAsRead={handleMarkAsRead}
-                  onViewAnnouncement={handleViewAnnouncement}
-                />
+                  className="notification-wrapper"
+                  onClick={() => !notification.hasBeenRed && handleSelectNotification(notification.id)}
+                >
+                  {!notification.hasBeenRed && (
+                    <input
+                      type="checkbox"
+                      className="notification-checkbox"
+                      checked={selectedNotifications.has(notification.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        handleSelectNotification(notification.id);
+                      }}
+                    />
+                  )}
+                  <NotificationItem
+                    notification={{
+                      ...notification,
+                      isRead: notification.hasBeenRed,
+                      timestamp: notification.creationDate,
+                      announcementId: notification.announceId,
+                    }}
+                    onMarkAsRead={handleMarkAsRead}
+                    onViewAnnouncement={(announcementId) =>
+                      navigate(`/announcement/${announcementId}`)
+                    }
+                  />
+                </div>
               ))}
             </div>
           )}

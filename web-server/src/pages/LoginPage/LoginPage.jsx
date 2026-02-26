@@ -82,7 +82,7 @@ function LoginPage({ onLogin }) {
             <p>Connectez-vous pour accéder à toutes les fonctionnalités</p>
           </div>
 
-          <Link className="loggout-btn" to="http://172.31.249.140:21180/oauth2/sign_out?rd=http://172.31.249.140:21280/realms/fimafeng/protocol/openid-connect/logout">
+          <Link className="loggout-btn" to="https://172.31.249.140:21143/oauth2/sign_out?rd=http://172.31.249.140:21280/realms/fimafeng/protocol/openid-connect/logout?client_id=app%26post_logout_redirect_uri=https://172.31.249.140:21143/">
             Se déconnecter complètement
           </Link>
         </div>

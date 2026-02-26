@@ -5,7 +5,7 @@ import config from '../../api/config';
 import AnnouncementCard from '../../components/AnnouncementCard/AnnouncementCard';
 import CreateAnnouncementForm from '../../components/CreateAnnouncementForm/CreateAnnouncementForm';
 
-function HomePage({ currentUser }) {
+function HomePage({ currentUser, onUpdateNotificationCount }) {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,6 +14,13 @@ function HomePage({ currentUser }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize] = useState(20);
+
+  // Appeler la fonction pour mettre à jour le compteur de notifications uniquement au chargement de la page
+  useEffect(() => {
+    if (onUpdateNotificationCount) {
+      onUpdateNotificationCount();
+    }
+  }, []);
 
   useEffect(() => {
     fetchAnnouncements(searchKeyword, currentPage);
