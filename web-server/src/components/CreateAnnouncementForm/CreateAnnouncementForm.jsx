@@ -39,7 +39,7 @@ function CreateAnnouncementForm({ currentUser, onAnnouncementCreated }) {
     publicationDate: getCurrentDateTime(),
     status: '0', // DRAFT
     type: '0', // Service
-    authorId: currentUser?.id || 0
+    authorId: parseInt(localStorage.getItem('userId')) || 0
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -157,7 +157,7 @@ function CreateAnnouncementForm({ currentUser, onAnnouncementCreated }) {
         publicationDate: getCurrentDateTime(),
         status: '0', // DRAFT
         type: '0', // Service
-        authorId: currentUser?.id || 0
+        authorId: parseInt(localStorage.getItem('userId')) || 0
       });
 
       if (onAnnouncementCreated) {

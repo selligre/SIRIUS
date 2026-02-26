@@ -9,8 +9,36 @@ function AnnouncementCard({ announcement }) {
     dateTimeStart,
     dateTimeEnd,
     duration,
-    ownerUsername
+    ownerUsername,
+    typeLabel,
+    statusLabel
   } = announcement;
+
+  const getTypeColor = (type) => {
+    switch(type?.toUpperCase()) {
+      case 'SERVICE':
+        return 'type-service';
+      case 'LOAN':
+        return 'type-loan';
+      case 'EVENT':
+        return 'type-event';
+      default:
+        return 'type-unknown';
+    }
+  };
+
+  const getTypeDisplay = (type) => {
+    switch(type?.toUpperCase()) {
+      case 'SERVICE':
+        return '🔧 Service';
+      case 'LOAN':
+        return '📦 Prêt';
+      case 'EVENT':
+        return '🎉 Événement';
+      default:
+        return type || 'Autre';
+    }
+  };
 
   const formatTime = (dateString) => {
     if (!dateString) return 'Invalid date';
@@ -49,7 +77,14 @@ function AnnouncementCard({ announcement }) {
   return (
     <div className="announcement-card">
       <div className="announcement-header">
-        <h2 className="announcement-title">{title}</h2>
+        <div className="announcement-header-top">
+          <h2 className="announcement-title">{title}</h2>
+          {typeLabel && (
+            <span className={`announcement-type-badge ${getTypeColor(typeLabel)}`}>
+              {getTypeDisplay(typeLabel)}
+            </span>
+          )}
+        </div>
         <span className="announcement-owner">par {ownerUsername}</span>
       </div>
 

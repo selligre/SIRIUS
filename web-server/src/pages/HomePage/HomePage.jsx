@@ -22,17 +22,35 @@ function HomePage({ currentUser }) {
   const fetchAnnouncements = async (keyword = '', page = 0) => {
     setIsLoading(true);
     try {
-      const params = new URLSearchParams({
-        keyword: keyword || '',
-        page: page,
-        amount: pageSize
-      });
-      const response = await fetch(`${config.searchServiceUrl}/api/search/query?${params}`);
+      // Utiliser l'endpoint enrichi pour obtenir les annonces avec le username de l'auteur
+      const response = await fetch(`${config.announceManagerServiceUrl}/api/announcements/enriched/all`);
       if (response.ok) {
         const data = await response.json();
-        // Le backend retourne une Page, extraire le contenu
-        setAnnouncements(data.content || []);
-        setTotalPages(data.totalPages || 0);
+        // Mapper les données enrichies au format attendu par AnnouncementCard
+        let announcements = data.map((announcement) => ({
+          ...announcement,
+          ownerUsername: announcement.username
+        }));
+        
+        // Filtrer par mot-clé si présent
+        if (keyword.trim()) {
+          const lowerKeyword = keyword.toLowerCase();
+          announcements = announcements.filter(a =>
+            a.title.toLowerCase().includes(lowerKeyword) ||
+            a.description.toLowerCase().includes(lowerKeyword) ||
+            (a.ownerUsername && a.ownerUsername.toLowerCase().includes(lowerKeyword))
+          );
+        }
+        
+        // Pagination manuelle
+        const pageSize = 20;
+        const totalPages = Math.ceil(announcements.length / pageSize);
+        const startIndex = page * pageSize;
+        const endIndex = startIndex + pageSize;
+        const paginatedAnnouncements = announcements.slice(startIndex, endIndex);
+        
+        setAnnouncements(paginatedAnnouncements);
+        setTotalPages(totalPages);
       } else {
         console.error('Erreur lors de la récupération des annonces');
         setAnnouncements([]);

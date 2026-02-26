@@ -45,7 +45,20 @@
   gap: 1.5rem;
 }
 
-.navbar-notification {
+.navbar-my-announcements {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-my-announcements:hover {
+  background-color: #667eea;
+}
+
+.navbar-bell {
   position: relative;
   color: white;
   text-decoration: none;
@@ -53,7 +66,7 @@
   transition: transform 0.3s ease;
 }
 
-.navbar-notification:hover {
+.navbar-bell:hover {
   transform: scale(1.1);
 }
 
@@ -78,6 +91,57 @@
   text-decoration: none;
   font-size: 1.5rem;
   transition: transform 0.3s ease;
+  position: relative;
+}
+
+.profile-avatar {
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.navbar-profile:hover .profile-avatar {
+  transform: scale(1.1);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #34495e;
+  color: white;
+  border-radius: 4px;
+  padding: 0.5rem;
+  display: none;
+  min-width: 150px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+}
+
+.navbar-profile:hover .profile-dropdown {
+  display: block;
+}
+
+.profile-dropdown p {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-bottom: 1px solid #2c3e50;
+}
+
+.profile-dropdown button {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.profile-dropdown button:hover {
+  background-color: #c0392b;
 }
 
 .navbar-logout-btn,
@@ -111,5 +175,10 @@
 
   .navbar-right {
     gap: 1rem;
+  }
+
+  .navbar-my-announcements {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
   }
 }

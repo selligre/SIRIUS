@@ -39,6 +39,9 @@ function Navbar({ currentUser, unreadNotificationCount }) {
         <div className="navbar-right">
           {currentUser ? (
             <>
+              <Link to="/my-announcements" className="navbar-my-announcements">
+                📋 Mes annonces
+              </Link>
               <Link to="/notifications" className="navbar-bell">
                 🔔
                 {unreadNotificationCount > 0 && (

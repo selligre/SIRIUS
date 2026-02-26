@@ -6,6 +6,7 @@ import Navbar from './components/Navbar/Navbar';
 import HomePage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import NotificationsPage from './pages/NotificationsPage/NotificationsPage';
+import MyAnnouncementsPage from './pages/MyAnnouncementsPage/MyAnnouncementsPage';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -73,6 +74,16 @@ function App() {
           element={
             currentUser ? (
               <NotificationsPage currentUser={currentUser} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/my-announcements"
+          element={
+            currentUser ? (
+              <MyAnnouncementsPage currentUser={currentUser} />
             ) : (
               <Navigate to="/login" />
             )
