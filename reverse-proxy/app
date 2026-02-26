@@ -1,6 +1,18 @@
+# REDIRECT HTTP TO HTTPS
 server {
-    listen 80;
+        listen 80;
+        server_name 172.31.249.140;
+        return 301 https://$server_name:21143$request_uri;
+}
+
+server {
+    # listen 80;
+    listen 443 ssl;
     server_name _;
+
+    # HTTPS
+    ssl_certificate     /etc/nginx/ssl/certs/app_web_server.crt;
+    ssl_certificate_key /etc/nginx/ssl/private/app_web_server.key;
 
     proxy_buffer_size 128k;
     proxy_buffers 4 256k;
