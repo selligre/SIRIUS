@@ -1,5 +1,0 @@
-param(
-    [Parameter(Mandatory = $true)]
-    [int]$port
-)
-ssh fimafeng@172.31.249.140 -p $port "cat oauth2-proxy.log | grep proxy | tail -n 10"
