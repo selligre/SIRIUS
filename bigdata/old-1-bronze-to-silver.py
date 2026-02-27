@@ -63,9 +63,7 @@ def rename_columns():
     print(f"Renommage termine !")
 
 
-def get_type(string):
-    # on s'assure d'avoir la valeur en utf8
-    encoded = string.encode('utf-8')
+encoded = string.encode('utf-8')
     # on recupere la version hexadecimale hashee
     hashed = hashlib.md5(encoded).hexdigest()
     as_int = int(hashed, 16)
