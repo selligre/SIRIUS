@@ -15,6 +15,21 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- Runtime config loader: fetches public/config.json and assigns to window.__APP_CONFIG__ -->
+    <script>
+      (function () {
+        try {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', '%PUBLIC_URL%/config.json', false); // synchronous to ensure availability
+          xhr.send(null);
+          if (xhr.status === 200) {
+            window.__APP_CONFIG__ = JSON.parse(xhr.responseText);
+          }
+        } catch (e) {
+          // ignore and fall back to build-time env vars
+        }
+      })();
+    </script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
