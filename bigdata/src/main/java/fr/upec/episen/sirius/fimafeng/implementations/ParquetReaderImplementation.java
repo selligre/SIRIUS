@@ -101,7 +101,7 @@ public class ParquetReaderImplementation {
         } else {
             announce.setAuthorId(optionalUser.getId());
         }
-        announce.setStatus(AnnounceStatus.fromValue( ((Double) record.get("status")).intValue()));
+        announce.setStatus(AnnounceStatus.fromValue( ((Long) record.get("status")).intValue()));
         announce.setType(AnnounceType.fromValue( Math.toIntExact( (Long) record.get("type"))));
         announce.setTitle(record.get("title").toString());
         announce.setDescription(record.get("description").toString());

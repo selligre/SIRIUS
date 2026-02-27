@@ -4,8 +4,8 @@ import os
 
 
 BASE_DIRECTORY = "data/"
-DATASET_URL = "https://www.kaggle.com/api/v1/datasets/download/curiel/rmovies-posts-and-comments"
-DATASET_ZIP_NAME = "dataset.zip"
+DATASET_URL = "https://www.kaggle.com/api/v1/datasets/download/thunderz/a-month-of-askreddit"
+DATASET_ZIP_NAME = "a-month-of-askreddit.zip"
 
 
 def create_data_folder():
