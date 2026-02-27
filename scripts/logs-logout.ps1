@@ -1,0 +1,5 @@
+param(
+    [Parameter(Mandatory = $true)]
+    [int]$port
+)
+ssh fimafeng@172.31.249.140 -p $port "cat oauth2-proxy.log | grep logout | tail -n 10"
