@@ -11,7 +11,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Configuration pour Graylog (GELF) et DB via variables d'env
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/annocedb
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5433/fimafengdb
 ENV SPRING_DATASOURCE_USERNAME=postgres
 ENV SPRING_DATASOURCE_PASSWORD=postgres
 

@@ -1,63 +1,102 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import config from './api/config';
+import Navbar from './components/Navbar/Navbar';
+import HomePage from './pages/HomePage/HomePage';
+import LoginPage from './pages/LoginPage/LoginPage';
+import NotificationsPage from './pages/NotificationsPage/NotificationsPage';
+import MyAnnouncementsPage from './pages/MyAnnouncementsPage/MyAnnouncementsPage';
 
 function App() {
-  const [announces, setAnnounces] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
-  // Fonction pour charger les annonces
-  const fetchAnnounces = (query = '') => {
-    // En local docker-compose, on tape sur localhost:8080
-    // En prod, ce sera l'URL de ton reverse proxy
-    const url = query
-        ? `http://localhost:8080/api/search?query=${query}`
-        : 'http://localhost:8080/api/search';
-
-    fetch(url)
-        .then(response => response.json())
-        .then(data => setAnnounces(data))
-        .catch(err => console.error("Erreur connexion API:", err));
-  };
-
-  // Chargement initial
+  // Charger l'utilisateur depuis le localStorage au démarrage
   useEffect(() => {
-    fetchAnnounces();
+    const savedUser = localStorage.getItem('currentUser');
+    const savedUserId = localStorage.getItem('userId');
+    if (savedUser) {
+      setCurrentUser(savedUser);
+    }
+    if (savedUserId) {
+      setCurrentUserId(parseInt(savedUserId, 10));
+    }
   }, []);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchAnnounces(searchTerm);
+  // Récupérer le nombre de notifications non-lues une seule fois au login
+  useEffect(() => {
+    if (currentUserId) {
+      fetchUnreadNotificationCount();
+    }
+  }, [currentUserId]);
+
+  const fetchUnreadNotificationCount = async () => {
+    try {
+      const response = await fetch(
+        `${config.notificationsServiceUrl}/api/notifications/unread-count?userId=${currentUserId}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadNotificationCount(data.unreadCount || 0);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du nombre de notifications:', error);
+    }
+  };
+
+  const handleLogin = (username) => {
+    setCurrentUser(username);
+    localStorage.setItem('currentUser', username);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('currentUser');
   };
 
   return (
-      <div className="App">
-        <header className="App-header">
-          <h1>Ville Partagée - Recherche</h1>
+    <Router>
+      {currentUser && (
+        <Navbar
+          currentUser={currentUser}
+          unreadNotificationCount={unreadNotificationCount}
+        />
+      )}
 
-          <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
-            <input
-                type="text"
-                placeholder="Rechercher une annonce..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ padding: '10px', width: '300px' }}
-            />
-            <button type="submit" style={{ padding: '10px' }}>Chercher</button>
-          </form>
-
-          <div className="announces-list">
-            {announces.length === 0 ? <p>Aucune annonce trouvée.</p> : null}
-
-            {announces.map(announce => (
-                <div key={announce.id} className="card">
-                  <h3>{announce.title}</h3>
-                  <p>{announce.description}</p>
-                  <span>Prix: {announce.price} €</span>
-                </div>
-            ))}
-          </div>
-        </header>
-      </div>
+      <Routes>
+        <Route
+          path="/"
+          element={currentUser ? <HomePage currentUser={currentUser} onUpdateNotificationCount={fetchUnreadNotificationCount} /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/login"
+          element={<LoginPage onLogin={handleLogin} />}
+        />
+        <Route
+          path="/notifications"
+          element={
+            currentUser ? (
+              <NotificationsPage currentUser={currentUser} onUpdateNotificationCount={fetchUnreadNotificationCount} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/my-announcements"
+          element={
+            currentUser ? (
+              <MyAnnouncementsPage currentUser={currentUser} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 

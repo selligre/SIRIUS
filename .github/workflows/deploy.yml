@@ -120,6 +120,7 @@ jobs:
 
       - name: Deploy to Docker Stack DEV
         run: |
+          TARGET_ENV=dev \
           docker stack deploy \
             --compose-file docker-stack.yml \
             --with-registry-auth \

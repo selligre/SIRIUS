@@ -7,14 +7,22 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^13.5.0",
+    "env-cmd": "^11.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-router-dom": "^7.13.1",
     "react-scripts": "5.0.1",
+    "run-script": "^0.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:local": "env-cmd -f .env.local react-scripts start",
     "build": "react-scripts build",
+    "build:local": "env-cmd -f .env.local npm run build",
+    "build:dev": "env-cmd -f .env.dev npm run build",
+    "build:preprod": "env-cmd -f .env.preprod npm run build",
+    "build:prod": "env-cmd -f .env.prod npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
