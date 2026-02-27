@@ -7,3 +7,4 @@ fimafeng-front/build/
 *.csv
 *.zip
 *.parquet
+*sqlite*
