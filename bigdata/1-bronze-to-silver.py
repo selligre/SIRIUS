@@ -5,6 +5,8 @@ import random
 import numpy as np
 import datetime as dt
 import time
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 # Configuration
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -52,75 +54,91 @@ def create_time_start(date_str):
     except:
         return None
 
+
 def process_data():
     start_time = time.time()
+    chunk_size = 100000  # Ajustez cette valeur selon votre RAM (ex: 50k ou 100k)
+    writer = None
+    total_rows_processed = 0
+    
     try:
+        print(f"Début du traitement par morceaux de {chunk_size} lignes...")
         
-        print("Lecture des fichiers...")
-        df = pd.read_csv(INPUT_POSTS_FILE)
-        print(f"Nombre de ligne initial : {len(df.index)}")
-        print(f"Nombre de colonne initial : {len(df.columns)}")
+        # Initialisation de l'itérateur
+        reader = pd.read_csv(INPUT_POSTS_FILE, chunksize=chunk_size)
 
-        # 1. Préparation des colonnes
-        print("Suppression des colonnes inutiles")
-        df = df.drop(columns=['Id','Title','Price','review/helpfulness'])
-        df = df.rename(columns={'profileName': 'author', 'review/summary': 'title', 'review/text':'description'})
-        
-        # 2. Suppression des lignes avec des informations nécessaires vides
-        print("Suppression de lignes incomplètes")
-        df = df.dropna(subset=['User_id']).copy()
-        
-        # 3. Transformations
-        print("Creation des colonnes manquantes")
-        df['publication_date'] = pd.to_datetime(df['review/time'], unit='s', errors='coerce').dt.strftime(DATETIME_FORMAT)
-        df['type'] = df['User_id'].apply(get_type)
-        df['status'] = df['review/score'].apply(get_status)
-        df['date_time_start'] = df['review/time'].apply(create_time_start)
-        df['duration'] = np.random.randint(1, 23 * 4, df.shape[0]) * 0.25
-        
-        temp_end = pd.to_datetime(df['date_time_start']) + pd.to_timedelta(df['duration'].astype(float), unit='h')
-        df['date_time_end'] = temp_end.dt.strftime(DATETIME_FORMAT)
+        for i, chunk in enumerate(reader):
+            print(f"Traitement du chunk n°{i+1}...")
 
-        # 4. Définition des valeurs par défaut
-        print("Suppression des colonnes plus nécessaires")
-        
-        values_to_fill = {
-            'author': 'anonymous',
-            'publication_date': '1970-01-01 00:00:00',
-            'title': 'Sans titre',
-            'description': 'Aucune description disponible', # Correction de votre erreur Java
-            'type': 0,
-            'status': 1,
-            'date_time_start': '1970-01-01 00:00:00',
-            'duration': 0.0,
-            'date_time_end': '1970-01-01 00:00:00'
-        }
+            # --- TOUT VOTRE TRAITEMENT ICI (sur le chunk) ---
+            
+            # 1. Préparation des colonnes
+            chunk = chunk.drop(columns=['Id','Title','Price','review/helpfulness'], errors='ignore')
+            chunk = chunk.rename(columns={'profileName': 'author', 'review/summary': 'title', 'review/text':'description'})
+            
+            # 2. Suppression des lignes vides
+            chunk = chunk.dropna(subset=['User_id']).copy()
+            
+            # 3. Transformations
+            chunk['publication_date'] = pd.to_datetime(chunk['review/time'], unit='s', errors='coerce').dt.strftime(DATETIME_FORMAT)
+            chunk['type'] = chunk['User_id'].apply(get_type)
+            chunk['status'] = chunk['review/score'].apply(get_status)
+            chunk['date_time_start'] = chunk['review/time'].apply(create_time_start)
+            
+            # Correction pour duration : on utilise la taille du chunk actuel
+            chunk['duration'] = np.random.randint(1, 23 * 4, chunk.shape[0]) * 0.25
+            
+            temp_end = pd.to_datetime(chunk['date_time_start']) + pd.to_timedelta(chunk['duration'].astype(float), unit='h')
+            chunk['date_time_end'] = temp_end.dt.strftime(DATETIME_FORMAT)
 
-        df = df.fillna(value=values_to_fill)
+            # 4. Valeurs par défaut
+            values_to_fill = {
+                'author': 'anonymous',
+                'publication_date': '1970-01-01 00:00:00',
+                'title': 'Sans titre',
+                'description': 'Aucune description disponible',
+                'type': 0,
+                'status': 1,
+                'date_time_start': '1970-01-01 00:00:00',
+                'duration': 0.0,
+                'date_time_end': '1970-01-01 00:00:00'
+            }
+            chunk = chunk.fillna(value=values_to_fill)
 
-        # 5. Sélection finale et export
-        final_columns = [
-            'author', 'publication_date', 'title', 
-            'description', 'type', 'status', 'date_time_start', 
-            'duration', 'date_time_end'
-        ]
-    
-        df_final = df[final_columns]
-        
+            # 5. Sélection finale
+            final_columns = [
+                'author', 'publication_date', 'title', 
+                'description', 'type', 'status', 'date_time_start', 
+                'duration', 'date_time_end'
+            ]
+            chunk_final = chunk[final_columns]
 
-        # 6. Sauvegarde finale
-        print(f"Sauvegarde en Parquet vers {OUTPUT_FILE_PARQUET}...")
-        df_final.to_parquet(OUTPUT_FILE_PARQUET, engine='pyarrow', index=False)
-        
-        print(f"Nombre de ligne final : {len(df.index)}")
-        print(f"Nombre de colonne final : {len(df.columns)}")
-        print(f"Le programme s'est terminé après {time.time() - start_time} secondes")
-    
+            # --- 6. SAUVEGARDE PROGRESSIVE (Parquet) ---
+            table = pa.Table.from_pandas(chunk_final)
+            
+            if writer is None:
+                # Au premier passage, on crée le fichier et le writer
+                writer = pq.ParquetWriter(OUTPUT_FILE_PARQUET, table.schema)
+            
+            writer.write_table(table)
+            
+            total_rows_processed += len(chunk_final)
+            # Optionnel : libérer la mémoire explicitement
+            del chunk
+            del chunk_final
+
+        # Fermeture du writer à la fin de la boucle
+        if writer:
+            writer.close()
+
+        print(f"Traitement terminé !")
+        print(f"Total de lignes traitées et sauvegardées : {total_rows_processed}")
+        print(f"Le programme s'est terminé après {round(time.time() - start_time, 2)} secondes")
 
     except Exception as e:
-        print(f"Le programme a rencontré une erreur après {time.time() - start_time} secondes")
+        if writer:
+            writer.close()
         print(f"Erreur : {e}")
-
 
 if __name__ == "__main__":
     process_data()
