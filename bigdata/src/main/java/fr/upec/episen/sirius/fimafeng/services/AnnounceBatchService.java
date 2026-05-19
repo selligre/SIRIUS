@@ -14,7 +14,7 @@ public class AnnounceBatchService {
     @Autowired
     AnnounceRepository announceRepository;
 
-    @Transactional
+    //@Transactional
     public void saveBatch(List<Announce> announces) {
         announceRepository.saveAllAndFlush(announces);
     }

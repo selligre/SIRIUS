@@ -13,7 +13,7 @@
 
     <groupId>fr.upec.episen.sirius.fimafeng</groupId>
     <artifactId>bigdata-connector</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 
     <properties>
         <java.version>21</java.version>
