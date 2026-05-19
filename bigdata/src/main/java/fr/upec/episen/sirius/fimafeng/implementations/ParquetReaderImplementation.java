@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 public class ParquetReaderImplementation {
 
     private static Logger LOGGER = Logger.getLogger(ParquetReaderImplementation.class.getName());
-    private static final int BATCH_SIZE = 1000;
+    private static final int BATCH_SIZE = 10000;
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
