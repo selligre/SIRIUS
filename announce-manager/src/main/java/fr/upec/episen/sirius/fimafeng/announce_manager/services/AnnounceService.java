@@ -7,6 +7,7 @@ import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDTO;
 import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDAO;
 import fr.upec.episen.sirius.fimafeng.announce_manager.repositories.AnnounceRepository;
 import fr.upec.episen.sirius.fimafeng.announce_manager.utils.NotificationClient;
+import fr.upec.episen.sirius.fimafeng.announce_manager.utils.ModerationClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
@@ -25,6 +26,9 @@ public class AnnounceService {
 
     @Autowired
     private NotificationClient notificationClient;
+
+    @Autowired
+    private ModerationClient moderationClient;
 
     /**
      * Crée une nouvelle annonce à partir du DTO provenant du formulaire web
@@ -78,7 +82,26 @@ public class AnnounceService {
             System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
         }
 
+        // Demander la modération en arrière-plan
+        try {
+            requestModerationAsync((int) savedAnnounce.getId());
+        } catch (Exception e) {
+            System.err.println("Erreur lors du déclenchement de la modération: " + e.getMessage());
+        }
+
         return savedAnnounce;
+    }
+
+    // After creation or update, request moderation
+    private void requestModerationAsync(int announceId) {
+        // Call in a separate thread to avoid blocking the request
+        new Thread(() -> {
+            try {
+                moderationClient.requestModeration(announceId);
+            } catch (Exception e) {
+                // already logged in client
+            }
+        }).start();
     }
 
     /**
@@ -154,6 +177,13 @@ public class AnnounceService {
         } catch (Exception e) {
             // On log l'erreur mais on ne lève pas d'exception pour ne pas bloquer
             System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
+        }
+
+        // Demander la modération en arrière-plan
+        try {
+            requestModerationAsync(updatedAnnounce.getId());
+        } catch (Exception e) {
+            System.err.println("Erreur lors du déclenchement de la modération: " + e.getMessage());
         }
 
         return updatedAnnounce;

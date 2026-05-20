@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  react-app:
+    build: .
+    container_name: react_web_service
+    ports:
+      - "8080:80"
+    volumes:
+      # On monte un dossier local pour stocker les fichiers de logs
+      - ./logs:/var/log/web_service
+    # On surcharge la commande pour générer un fichier de log avec un timestamp
+    command: >
+      sh -c "TIMESTAMP=$$(date +%Y%m%d_%H%M%S);
+      nginx -g 'daemon off;' 2>&1 | tee /var/log/web_service/session_$$TIMESTAMP.log"
