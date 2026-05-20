@@ -7,7 +7,6 @@ import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDTO;
 import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDAO;
 import fr.upec.episen.sirius.fimafeng.announce_manager.repositories.AnnounceRepository;
 import fr.upec.episen.sirius.fimafeng.announce_manager.utils.NotificationClient;
-import fr.upec.episen.sirius.fimafeng.announce_manager.utils.ModerationClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
@@ -27,8 +26,6 @@ public class AnnounceService {
     @Autowired
     private NotificationClient notificationClient;
 
-    @Autowired
-    private ModerationClient moderationClient;
 
     /**
      * Crée une nouvelle annonce à partir du DTO provenant du formulaire web
@@ -97,11 +94,57 @@ public class AnnounceService {
         // Call in a separate thread to avoid blocking the request
         new Thread(() -> {
             try {
-                moderationClient.requestModeration(announceId);
+                moderateAnnounceInternal(announceId);
             } catch (Exception e) {
                 // already logged in client
             }
         }).start();
+    }
+
+    /**
+     * Modère une annonce en interne : délai de 5s, tirage aléatoire
+     * PUBLISHED 75% / MODERATED 25%, mise à jour en base et notification
+     * @param announceId id de l'annonce
+     */
+    private void moderateAnnounceInternal(int announceId) {
+        try {
+            Optional<Announce> optional = announceRepository.findById(announceId);
+            if (!optional.isPresent()) {
+                System.err.println("Announcement not found for moderation: " + announceId);
+                return;
+            }
+
+            Announce announce = optional.get();
+
+            // Faux délai de traitement
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // Tirage aléatoire : PUBLISHED 75%, MODERATED 25%
+            double r = java.util.concurrent.ThreadLocalRandom.current().nextDouble();
+            AnnounceStatus chosen = r < 0.75 ? AnnounceStatus.PUBLISHED : AnnounceStatus.MODERATED;
+            announce.setStatus(chosen);
+
+            Announce updated = announceRepository.save(announce);
+
+            // Notification
+            try {
+                String message = chosen == AnnounceStatus.PUBLISHED ? "Votre annonce a été publiée." : "Votre annonce a été modérée.";
+                notificationClient.notifyAnnounceUpdated(
+                    updated.getAuthorId(),
+                    (int) updated.getId(),
+                    "ANNOUNCE_MODERATED",
+                    message
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur lors de l'envoi de la notification de modération: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur interne de modération pour annonce " + announceId + ": " + e.getMessage());
+        }
     }
 
     /**
