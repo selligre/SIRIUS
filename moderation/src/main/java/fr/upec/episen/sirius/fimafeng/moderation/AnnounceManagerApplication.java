@@ -1,4 +1,4 @@
-package fr.upec.episen.sirius.fimafeng.announce_manager;
+package fr.upec.episen.sirius.fimafeng.moderation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
