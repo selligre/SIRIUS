@@ -1,12 +1,12 @@
-package fr.upec.episen.sirius.fimafeng.announce_manager.services;
+package fr.upec.episen.sirius.fimafeng.moderation.services;
 
 import fr.upec.episen.sirius.fimafeng.commons.models.Announce;
 import fr.upec.episen.sirius.fimafeng.commons.models.enums.AnnounceStatus;
 import fr.upec.episen.sirius.fimafeng.commons.models.enums.AnnounceType;
 import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDTO;
 import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDAO;
-import fr.upec.episen.sirius.fimafeng.announce_manager.repositories.AnnounceRepository;
-import fr.upec.episen.sirius.fimafeng.announce_manager.utils.NotificationClient;
+import fr.upec.episen.sirius.fimafeng.moderation.repositories.AnnounceRepository;
+import fr.upec.episen.sirius.fimafeng.moderation.utils.NotificationClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
@@ -15,6 +15,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,6 +80,53 @@ public class AnnounceService {
         }
 
         return savedAnnounce;
+    }
+
+    /**
+     * Modère une annonce reçue depuis l'Announce Manager :
+     * - Simule un délai de traitement de 5s
+     * - Tire au sort PUBLISHED (75%) ou MODERATED (25%)
+     * - Met à jour l'annonce en base et notifie l'utilisateur
+     * @param announceDTO Le DTO contenant au moins l'id de l'annonce
+     * @return L'annonce mise à jour
+     */
+    public Announce moderateAnnounce(AnnounceDAO announceDTO) {
+        Optional<Announce> optional = announceRepository.findById(announceDTO.getId());
+
+        if (!optional.isPresent()) {
+            throw new IllegalArgumentException("Announcement not found");
+        }
+
+        Announce announce = optional.get();
+
+        // Faux délai de traitement
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Tirage aléatoire : PUBLISHED 75%, MODERATED 25%
+        double r = ThreadLocalRandom.current().nextDouble();
+        AnnounceStatus chosen = r < 0.75 ? AnnounceStatus.PUBLISHED : AnnounceStatus.MODERATED;
+        announce.setStatus(chosen);
+
+        Announce updated = announceRepository.save(announce);
+
+        // Notification
+        try {
+            String message = chosen == AnnounceStatus.PUBLISHED ? "Votre annonce a été publiée." : "Votre annonce a été modérée.";
+            notificationClient.notifyAnnounceUpdated(
+                updated.getAuthorId(),
+                (int) updated.getId(),
+                "ANNOUNCE_MODERATED",
+                message
+            );
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'envoi de la notification de modération: " + e.getMessage());
+        }
+
+        return updated;
     }
 
     /**

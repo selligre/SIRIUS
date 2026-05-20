@@ -1,4 +1,4 @@
-package fr.upec.episen.sirius.fimafeng.announce_manager.dtos;
+package fr.upec.episen.sirius.fimafeng.commons.dtos;
 
 import lombok.Data;
 import java.time.LocalDateTime;

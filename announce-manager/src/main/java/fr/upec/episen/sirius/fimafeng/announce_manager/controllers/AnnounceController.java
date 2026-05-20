@@ -1,8 +1,8 @@
 package fr.upec.episen.sirius.fimafeng.announce_manager.controllers;
 
 import fr.upec.episen.sirius.fimafeng.commons.models.Announce;
-import fr.upec.episen.sirius.fimafeng.announce_manager.dtos.AnnounceDTO;
-import fr.upec.episen.sirius.fimafeng.announce_manager.dtos.AnnounceDAO;
+import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDTO;
+import fr.upec.episen.sirius.fimafeng.commons.dtos.AnnounceDAO;
 import fr.upec.episen.sirius.fimafeng.announce_manager.services.AnnounceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

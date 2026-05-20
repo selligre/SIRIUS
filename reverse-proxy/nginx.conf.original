@@ -37,7 +37,6 @@ http {
     ssl_session_timeout 1d;
     ssl_session_tickets off;
     ssl_prefer_server_ciphers on;
-    # Prefer modern TLS versions
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
 }
