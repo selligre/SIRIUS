@@ -1,4 +1,4 @@
-package fr.upec.episen.sirius.fimafeng.announce_manager;
+package fr.upec.episen.sirius.fimafeng.notification_manager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,17 +8,19 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EntityScan(basePackages = {
-    "fr.upec.episen.sirius.fimafeng"
+    "fr.upec.episen.sirius.fimafeng.commons.models",
+    "fr.upec.episen.sirius.fimafeng.notifications"
 })
 @EnableJpaRepositories(basePackages = {
-    "fr.upec.episen.sirius.fimafeng"
+    "fr.upec.episen.sirius.fimafeng.notifications.repositories"
 })
 @ComponentScan(basePackages = {
-    "fr.upec.episen.sirius.fimafeng"
+    "fr.upec.episen.sirius.fimafeng.notifications",
+    "fr.upec.episen.sirius.fimafeng.commons"
 })
-public class ModerationApplication {
+public class NotificationsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ModerationApplication.class, args);
+        SpringApplication.run(NotificationsApplication.class, args);
     }
 }

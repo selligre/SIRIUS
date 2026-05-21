@@ -2,6 +2,9 @@ package fr.upec.episen.sirius.fimafeng.announce_manager.utils;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import fr.upec.episen.sirius.fimafeng.commons.models.NotificationEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +24,7 @@ public class NotificationProducer {
         logger.info("Envoi d'une notification à Kafka: {}", event.getId());
         
         // Envoi asynchrone
-        this.kafkaTemplate.send(TOPIC, event.getUserId(), event)
+        this.kafkaTemplate.send(TOPIC, Integer.toString(event.getUserId()), event)
             .whenComplete((result, ex) -> {
                 if (ex == null) {
                     logger.info("Message envoyé avec succès à l'offset {}", result.getRecordMetadata().offset());

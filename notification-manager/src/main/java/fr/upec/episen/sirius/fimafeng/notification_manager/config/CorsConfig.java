@@ -1,4 +1,4 @@
-package fr.upec.episen.sirius.fimafeng.notifications.config;
+package fr.upec.episen.sirius.fimafeng.notification_manager.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

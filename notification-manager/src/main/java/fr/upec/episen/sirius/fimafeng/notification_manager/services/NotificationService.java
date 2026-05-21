@@ -1,13 +1,13 @@
-package fr.upec.episen.sirius.fimafeng.notifications.services;
+package fr.upec.episen.sirius.fimafeng.notification_manager.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.upec.episen.sirius.fimafeng.commons.models.Notification;
 import fr.upec.episen.sirius.fimafeng.commons.models.enums.NotificationTitle;
-import fr.upec.episen.sirius.fimafeng.notifications.dtos.CreateNotificationDTO;
-import fr.upec.episen.sirius.fimafeng.notifications.dtos.NotificationDTO;
-import fr.upec.episen.sirius.fimafeng.notifications.repositories.NotificationRepository;
+import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.CreateNotificationDTO;
+import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.NotificationDTO;
+import fr.upec.episen.sirius.fimafeng.notification_manager.repositories.NotificationRepository;
 
 import java.util.Date;
 import java.util.List;

@@ -68,10 +68,10 @@ public class AnnounceService {
 
         // Créer une notification pour l'utilisateur
         try {
-            notificationClient.notifyAnnounceCreated(
+            notificationClient.sendNotification(
                 announceDTO.getAuthorId(),
                 (int) savedAnnounce.getId(),
-                "ANNOUNCE_SAVED",
+                savedAnnounce.getStatus() != null ? savedAnnounce.getStatus().name() : "UNKNOWN",
                 "Votre annonce '" + announceDTO.getTitle() + "' a été créée avec succès."
             );
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class AnnounceService {
         // Call in a separate thread to avoid blocking the request
         new Thread(() -> {
             try {
-                moderateAnnounceInternal(announceId);
+                moderateAnnounce(announceId);
             } catch (Exception e) {
                 // already logged in client
             }
@@ -106,7 +106,7 @@ public class AnnounceService {
      * PUBLISHED 75% / MODERATED 25%, mise à jour en base et notification
      * @param announceId id de l'annonce
      */
-    private void moderateAnnounceInternal(int announceId) {
+    private void moderateAnnounce(int announceId) {
         try {
             Optional<Announce> optional = announceRepository.findById(announceId);
             if (!optional.isPresent()) {
@@ -133,10 +133,10 @@ public class AnnounceService {
             // Notification
             try {
                 String message = chosen == AnnounceStatus.PUBLISHED ? "Votre annonce a été publiée." : "Votre annonce a été modérée.";
-                notificationClient.notifyAnnounceUpdated(
+                notificationClient.sendNotification(
                     updated.getAuthorId(),
                     (int) updated.getId(),
-                    "ANNOUNCE_MODERATED",
+                    updated.getStatus() != null ? updated.getStatus().name() : "UNKNOWN",
                     message
                 );
             } catch (Exception e) {
@@ -211,10 +211,10 @@ public class AnnounceService {
 
         // Créer une notification pour l'utilisateur
         try {
-            notificationClient.notifyAnnounceUpdated(
+            notificationClient.sendNotification(
                 authorId,
                 id,
-                "ANNOUNCE_SAVED",
+                updatedAnnounce.getStatus() != null ? updatedAnnounce.getStatus().name() : "UNKNOWN",
                 "Votre annonce '" + announceDTO.getTitle() + "' a été modifiée avec succès."
             );
         } catch (Exception e) {
@@ -258,10 +258,10 @@ public class AnnounceService {
 
         // Créer une notification pour l'utilisateur
         try {
-            notificationClient.notifyAnnounceDeleted(
+            notificationClient.sendNotification(
                 authorId,
                 id,
-                "ANNOUNCE_DELETED",
+                "DELETED",
                 "Votre annonce '" + announceTitle + "' a été supprimée avec succès."
             );
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package fr.upec.episen.sirius.fimafeng.notifications.dtos;
+package fr.upec.episen.sirius.fimafeng.notification_manager.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

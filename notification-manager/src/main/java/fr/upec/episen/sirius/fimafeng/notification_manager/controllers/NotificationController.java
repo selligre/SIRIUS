@@ -1,14 +1,14 @@
-package fr.upec.episen.sirius.fimafeng.notifications.controllers;
+package fr.upec.episen.sirius.fimafeng.notification_manager.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import fr.upec.episen.sirius.fimafeng.notifications.dtos.CreateNotificationDTO;
-import fr.upec.episen.sirius.fimafeng.notifications.dtos.NotificationDTO;
-import fr.upec.episen.sirius.fimafeng.notifications.dtos.UnreadCountDTO;
-import fr.upec.episen.sirius.fimafeng.notifications.services.NotificationService;
+import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.CreateNotificationDTO;
+import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.NotificationDTO;
+import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.UnreadCountDTO;
+import fr.upec.episen.sirius.fimafeng.notification_manager.services.NotificationService;
 
 import java.util.List;
 import java.util.logging.Logger;
