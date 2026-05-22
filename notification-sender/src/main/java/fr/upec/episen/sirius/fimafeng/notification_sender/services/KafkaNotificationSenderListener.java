@@ -28,7 +28,9 @@ public class KafkaNotificationSenderListener {
         try {
             LOGGER.info("Message Kafka reçu sur topic={} key={}: {}", topic, key, message);
 
-            NotificationEvent event = objectMapper.readValue(message, NotificationEvent.class);
+            String rawJson = objectMapper.readValue(message, String.class);
+
+            NotificationEvent event = objectMapper.readValue(rawJson, NotificationEvent.class);
 
             // forward to connected websocket sessions for this user
             sessionService.sendNotificationToUser(event);

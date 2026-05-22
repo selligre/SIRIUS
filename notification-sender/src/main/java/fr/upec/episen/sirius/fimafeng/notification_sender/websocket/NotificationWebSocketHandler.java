@@ -37,11 +37,20 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
         try {
             JsonNode node = objectMapper.readTree(payload);
             if (node.has("type") && "register".equals(node.get("type").asText())) {
+                // Only register the WS session when a valid userId is explicitly provided by the client
+                if (!node.has("userId") || !node.get("userId").canConvertToInt()) {
+                    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(Map.of("type", "error", "message", "userId required for registration"))));
+                    return;
+                }
                 int userId = node.get("userId").asInt();
+                if (userId <= 0) {
+                    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(Map.of("type", "error", "message", "invalid userId"))));
+                    return;
+                }
                 sessionService.registerSession(session, userId);
                 LOGGER.info("Session {} registered for user {}", session.getId(), userId);
                 // ack
-                session.sendMessage(new TextMessage(objectMapper.writeValueAsString(Map.of("type", "registered", "sessionId", session.getId()))));
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsString(Map.of("type", "registered", "sessionId", session.getId(), "userId", userId))));
                 return;
             }
             LOGGER.debug("Received WS message (unhandled): {}", payload);

@@ -57,8 +57,8 @@ public class NotificationClient {
 
         // Créer la payload JSON contenant announceId, message et datetime de création
         String payload = String.format(
-            "{\"uuid\":\"%s\",\"announceId\":%d,\"createdAt\":\"%s\",\"message\":\"%s\"}",
-            uuid.toString(), announceId, createdAt.toString(), escapeJson(message)
+            "{\"uuid\":\"%s\",\"announceId\":%d,\"createdAt\":\"%s\",\"message\":\"%s\",\"userId\":\"%s\"}",
+            uuid.toString(), announceId, createdAt.toString(), escapeJson(message), Integer.toString(userId)
         );
 
         LOGGER.info("Envoi Kafka -> topic=" + topic + " key=" + userId + " payload=" + payload);
