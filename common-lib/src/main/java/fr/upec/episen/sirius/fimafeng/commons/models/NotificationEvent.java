@@ -9,6 +9,8 @@ import java.util.UUID;
  */
 public class NotificationEvent implements Serializable {
 
+    private String uuid;
+
     private String id;
     private int userId;
     private int announceId;
@@ -21,12 +23,21 @@ public class NotificationEvent implements Serializable {
         this.createdAt = Instant.now().toString();
     }
 
-    public NotificationEvent(int userId, int announceId, String status, String message) {
+    public NotificationEvent(String uuid, int userId, int announceId, String status, String message) {
         this();
+        this.uuid = uuid;
         this.userId = userId;
         this.announceId = announceId;
         this.status = status;
         this.message = message;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getId() {
@@ -77,6 +88,7 @@ public class NotificationEvent implements Serializable {
     public String toString() {
         return "NotificationEvent{" +
                 "id='" + id + '\'' +
+                ", uuid=" + uuid +
                 ", userId=" + userId +
                 ", announceId=" + announceId +
                 ", status='" + status + '\'' +

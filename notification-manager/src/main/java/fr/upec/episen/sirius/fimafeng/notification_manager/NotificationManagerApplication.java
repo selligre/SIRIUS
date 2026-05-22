@@ -9,18 +9,18 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EntityScan(basePackages = {
     "fr.upec.episen.sirius.fimafeng.commons.models",
-    "fr.upec.episen.sirius.fimafeng.notifications"
+    "fr.upec.episen.sirius.fimafeng.notification_manager"
 })
 @EnableJpaRepositories(basePackages = {
-    "fr.upec.episen.sirius.fimafeng.notifications.repositories"
+    "fr.upec.episen.sirius.fimafeng.notification_manager.repositories"
 })
 @ComponentScan(basePackages = {
-    "fr.upec.episen.sirius.fimafeng.notifications",
-    "fr.upec.episen.sirius.fimafeng.commons"
+    "fr.upec.episen.sirius.fimafeng.commons",
+    "fr.upec.episen.sirius.fimafeng.notification_manager"
 })
-public class NotificationSenderApplication {
+public class NotificationManagerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(NotificationSenderApplication.class, args);
+        SpringApplication.run(NotificationManagerApplication.class, args);
     }
 }

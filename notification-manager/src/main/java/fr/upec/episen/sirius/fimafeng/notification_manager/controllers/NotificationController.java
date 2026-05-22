@@ -100,15 +100,15 @@ public class NotificationController {
      * @return La notification marquée comme lue
      */
     @PutMapping("/{id}/read")
-    public ResponseEntity<NotificationDTO> markAsRead(@PathVariable long id) {
+    public ResponseEntity<NotificationDTO> markAsRead(@PathVariable String uuid) {
         try {
-            LOGGER.info("Marquage de la notification comme lue: " + id);
-            NotificationDTO notification = notificationService.markAsRead(id);
+            LOGGER.info("Marquage de la notification comme lue: " + uuid);
+            NotificationDTO notification = notificationService.markAsRead(uuid);
             
             if (notification != null) {
                 return ResponseEntity.ok(notification);
             } else {
-                LOGGER.warning("Notification non trouvée: " + id);
+                LOGGER.warning("Notification non trouvée: " + uuid);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public class NotificationController {
      * @return La liste des notifications marquées comme lues
      */
     @PutMapping("/read")
-    public ResponseEntity<List<NotificationDTO>> markMultipleAsRead(@RequestBody List<Long> notificationIds) {
+    public ResponseEntity<List<NotificationDTO>> markMultipleAsRead(@RequestBody List<String> notificationIds) {
         try {
             LOGGER.info("Marquage de " + notificationIds.size() + " notifications comme lues");
             List<NotificationDTO> notifications = notificationService.markMultipleAsRead(notificationIds);

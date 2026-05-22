@@ -12,16 +12,12 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // Allow origin patterns to support variable external origins (useful in production)
         registry.addMapping("/api/**")
-                .allowedOrigins(
-                    "http://localhost:3000",      // Web-server local (React)
-                    "http://localhost:8080",      // Develop local
-                    "http://localhost:8081",      // Develop local
-                    "http://localhost:8082"       // Develop local
-                )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true)
+            .maxAge(3600);
     }
 }

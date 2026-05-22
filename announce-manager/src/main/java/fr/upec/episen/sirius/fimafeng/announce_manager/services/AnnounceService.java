@@ -71,7 +71,6 @@ public class AnnounceService {
             notificationClient.sendNotification(
                 announceDTO.getAuthorId(),
                 (int) savedAnnounce.getId(),
-                savedAnnounce.getStatus() != null ? savedAnnounce.getStatus().name() : "UNKNOWN",
                 "Votre annonce '" + announceDTO.getTitle() + "' a été créée avec succès."
             );
         } catch (Exception e) {
@@ -136,7 +135,6 @@ public class AnnounceService {
                 notificationClient.sendNotification(
                     updated.getAuthorId(),
                     (int) updated.getId(),
-                    updated.getStatus() != null ? updated.getStatus().name() : "UNKNOWN",
                     message
                 );
             } catch (Exception e) {
@@ -214,7 +212,6 @@ public class AnnounceService {
             notificationClient.sendNotification(
                 authorId,
                 id,
-                updatedAnnounce.getStatus() != null ? updatedAnnounce.getStatus().name() : "UNKNOWN",
                 "Votre annonce '" + announceDTO.getTitle() + "' a été modifiée avec succès."
             );
         } catch (Exception e) {
@@ -261,7 +258,6 @@ public class AnnounceService {
             notificationClient.sendNotification(
                 authorId,
                 id,
-                "DELETED",
                 "Votre annonce '" + announceTitle + "' a été supprimée avec succès."
             );
         } catch (Exception e) {

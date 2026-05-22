@@ -1,22 +1,18 @@
 package fr.upec.episen.sirius.fimafeng.commons.models;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
 import java.util.Date;
-
-import fr.upec.episen.sirius.fimafeng.commons.models.enums.NotificationTitle;
+import java.util.UUID;
 
 @Entity
 @Data
 public class Notification {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private UUID uuid;
 
     private int userId;
 
@@ -26,10 +22,6 @@ public class Notification {
 
     private boolean hasBeenRed;
 
-    private NotificationTitle title;
-
-    private String message;
-
-
+    private String title;
 
 }

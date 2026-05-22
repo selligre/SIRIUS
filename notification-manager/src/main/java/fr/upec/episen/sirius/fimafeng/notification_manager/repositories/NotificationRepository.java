@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import fr.upec.episen.sirius.fimafeng.commons.models.Notification;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
@@ -37,4 +38,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      * @return La liste des notifications pour cette annonce
      */
     List<Notification> findByUserIdAndAnnounceId(int userId, int announceId);
+
+    Optional<Notification> findByUuid(String uuid);
+    
+    List<Notification> findAllByUuid(List<String> uuids);
 }

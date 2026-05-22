@@ -22,23 +22,51 @@ public class KafkaNotificationListener {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @KafkaListener(topicPattern = "notifications-user-.*", groupId = "${spring.kafka.consumer.group-id:notifications-service}")
+    @KafkaListener(topicPattern = "(notifications-user-.*)", groupId = "${spring.kafka.consumer.group-id:notifications-service}")
     public void listen(@Payload String message,
                        @Header(name = "kafka_receivedTopic", required = false) String topic,
                        @Header(name = "kafka_receivedMessageKey", required = false) String key) {
         try {
             LOGGER.info("Message Kafka reçu sur topic={} key={}: {}", topic, key, message);
 
-            NotificationEvent event = objectMapper.readValue(message, NotificationEvent.class);
+            // Some producers send a JSON string (i.e. a quoted JSON) as the value.
+            // If so, first deserialize the outer string to get the real JSON payload.
+            String payload = message;
+            if (payload != null && payload.length() >= 2 && payload.charAt(0) == '"' && payload.charAt(payload.length() - 1) == '"') {
+                // unescape the JSON string literal
+                payload = objectMapper.readValue(payload, String.class);
+            }
+
+            NotificationEvent event = objectMapper.readValue(payload, NotificationEvent.class);
+
+            // Determine userId: prefer value in the event, then the message key, then the topic name
+            int userId = event.getUserId();
+            if (userId == 0) {
+                // try key
+                if (key != null) {
+                    try {
+                        userId = Integer.parseInt(key);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            if (userId == 0 && topic != null) {
+                try {
+                    java.util.regex.Matcher m = java.util.regex.Pattern.compile("notifications-user-(\\d+)").matcher(topic);
+                    if (m.find()) {
+                        userId = Integer.parseInt(m.group(1));
+                    }
+                } catch (Exception ignored) {
+                }
+            }
 
             CreateNotificationDTO dto = new CreateNotificationDTO();
-            dto.setUserId(event.getUserId());
+            dto.setUserId(userId);
             dto.setAnnounceId(event.getAnnounceId());
             dto.setTitle(event.getStatus());
-            dto.setMessage(event.getMessage());
 
             notificationService.createNotification(dto);
-            LOGGER.info("Notification persistée pour user={} announceId={}", event.getUserId(), event.getAnnounceId());
+            LOGGER.info("Notification persistée pour user={} announceId={}", userId, event.getAnnounceId());
 
         } catch (Exception e) {
             LOGGER.error("Erreur lors du traitement du message Kafka: ", e);

@@ -32,11 +32,38 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
     }
   }, [userId]);
 
+  // Listen for live websocket notifications and prepend them to the list
+  useEffect(() => {
+    const handler = (ev) => {
+      try {
+        const event = ev.detail;
+        const newNotif = {
+          id: event.id,
+          title: event.status,
+          description: event.message,
+          creationDate: event.createdAt,
+          announceId: event.announceId,
+          hasBeenRed: false,
+        };
+        setNotifications((prev) => {
+          if (!prev || prev.some((n) => n.id === newNotif.id)) return prev || [];
+          return [newNotif, ...(prev || [])];
+        });
+        if (onUpdateNotificationCount) onUpdateNotificationCount();
+      } catch (e) {
+        console.error('Erreur lors du traitement d\'une notification websocket:', e);
+      }
+    };
+
+    window.addEventListener('ws-notification', handler);
+    return () => window.removeEventListener('ws-notification', handler);
+  }, [onUpdateNotificationCount]);
+
   const fetchNotifications = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${config.notificationsServiceUrl}/api/notifications?userId=${userId}`
+        `${config.notificationManagerServiceUrl}/api/notifications?userId=${userId}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -53,7 +80,7 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
   const handleMarkAsRead = async (notificationId) => {
     try {
       const response = await fetch(
-        `${config.notificationsServiceUrl}/api/notifications/${notificationId}/read`,
+        `${config.notificationManagerServiceUrl}/api/notifications/${notificationId}/read`,
         { method: 'PUT' }
       );
 
@@ -90,7 +117,7 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
     try {
       const notificationIds = Array.from(selectedNotifications);
       const response = await fetch(
-        `${config.notificationsServiceUrl}/api/notifications/read`,
+        `${config.notificationManagerServiceUrl}/api/notifications/read`,
         {
           method: 'PUT',
           headers: {

@@ -13,11 +13,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationDTO {
-    private long id;
+    private String uuid;
     private int userId;
     private int announceId;
     private Date creationDate;
     private boolean hasBeenRed;
     private String title;
-    private String message;
 }

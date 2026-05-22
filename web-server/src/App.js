@@ -32,10 +32,49 @@ function App() {
     }
   }, [currentUserId]);
 
+  // WebSocket for live notifications
+  useEffect(() => {
+    if (!currentUserId || !config.notificationSenderUrl) return;
+
+    let ws;
+    try {
+      ws = new WebSocket(config.notificationSenderUrl);
+    } catch (err) {
+      console.error('Erreur lors de la création du websocket:', err);
+      return;
+    }
+
+    ws.onopen = () => {
+      try {
+        ws.send(JSON.stringify({ type: 'register', userId: currentUserId }));
+      } catch (e) {
+        console.error('WS send register failed', e);
+      }
+    };
+
+    ws.onmessage = (ev) => {
+      try {
+        const data = JSON.parse(ev.data);
+        // dispatch a window event so pages can react
+        window.dispatchEvent(new CustomEvent('ws-notification', { detail: data }));
+        setUnreadNotificationCount((prev) => (prev || 0) + 1);
+      } catch (e) {
+        console.error('WS message parse error', e);
+      }
+    };
+
+    ws.onerror = (e) => console.error('WS error', e);
+    ws.onclose = () => console.log('WS closed');
+
+    return () => {
+      try { ws.close(); } catch (e) {}
+    };
+  }, [currentUserId]);
+
   const fetchUnreadNotificationCount = async () => {
     try {
       const response = await fetch(
-        `${config.notificationsServiceUrl}/api/notifications/unread-count?userId=${currentUserId}`
+        `${config.notificationManagerServiceUrl}/api/notifications/unread-count?userId=${currentUserId}`
       );
       if (response.ok) {
         const data = await response.json();

@@ -3,7 +3,7 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
 COPY common-lib ./common-lib
-COPY announce-manager .
+COPY notification-sender .
 
 RUN mvn -f common-lib/pom.xml clean install -DskipTests
 RUN mvn clean package -DskipTests

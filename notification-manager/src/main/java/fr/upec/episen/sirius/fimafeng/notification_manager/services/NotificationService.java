@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.upec.episen.sirius.fimafeng.commons.models.Notification;
-import fr.upec.episen.sirius.fimafeng.commons.models.enums.NotificationTitle;
 import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.CreateNotificationDTO;
 import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.NotificationDTO;
 import fr.upec.episen.sirius.fimafeng.notification_manager.repositories.NotificationRepository;
@@ -12,6 +11,7 @@ import fr.upec.episen.sirius.fimafeng.notification_manager.repositories.Notifica
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.logging.Logger;
 
@@ -30,15 +30,15 @@ public class NotificationService {
      */
     public NotificationDTO createNotification(CreateNotificationDTO createNotificationDTO) {
         Notification notification = new Notification();
+        notification.setUuid(UUID.fromString(createNotificationDTO.getUuid()));
         notification.setUserId(createNotificationDTO.getUserId());
         notification.setAnnounceId(createNotificationDTO.getAnnounceId());
-        notification.setTitle(NotificationTitle.getNotificationTitle(createNotificationDTO.getTitle()));
-        notification.setMessage(createNotificationDTO.getMessage());
+        notification.setTitle(createNotificationDTO.getTitle());
         notification.setCreationDate(new Date());
         notification.setHasBeenRed(false); // Les notifications sont initiées à l'état non-lue
 
         Notification savedNotification = notificationRepository.save(notification);
-        LOGGER.info("Notification créée avec succès: ID=" + savedNotification.getId());
+        LOGGER.info("Notification créée avec succès: UUID=" + savedNotification.getUuid());
 
         return convertToDTO(savedNotification);
     }
@@ -83,17 +83,17 @@ public class NotificationService {
      * @param notificationId L'ID de la notification
      * @return La notification marquée comme lue
      */
-    public NotificationDTO markAsRead(long notificationId) {
-        Optional<Notification> optional = notificationRepository.findById(notificationId);
+    public NotificationDTO markAsRead(String notificationUuid) {
+        Optional<Notification> optional = notificationRepository.findByUuid(notificationUuid);
 
         if (optional.isPresent()) {
             Notification notification = optional.get();
             notification.setHasBeenRed(true);
             Notification updatedNotification = notificationRepository.save(notification);
-            LOGGER.info("Notification marquée comme lue: ID=" + notificationId);
+            LOGGER.info("Notification marquée comme lue: UUID=" + notificationUuid);
             return convertToDTO(updatedNotification);
         } else {
-            LOGGER.warning("Notification non trouvée: ID=" + notificationId);
+            LOGGER.warning("Notification non trouvée: UUID=" + notificationUuid);
             return null;
         }
     }
@@ -103,8 +103,8 @@ public class NotificationService {
      * @param notificationIds La liste des IDs des notifications à marquer
      * @return La liste des notifications marquées comme lues
      */
-    public List<NotificationDTO> markMultipleAsRead(List<Long> notificationIds) {
-        List<Notification> notifications = notificationRepository.findAllById(notificationIds);
+    public List<NotificationDTO> markMultipleAsRead(List<String> notificationUuids) {
+        List<Notification> notifications = notificationRepository.findAllByUuid(notificationUuids);
 
         for (Notification notification : notifications) {
             notification.setHasBeenRed(true);
@@ -125,13 +125,12 @@ public class NotificationService {
      */
     private NotificationDTO convertToDTO(Notification notification) {
         NotificationDTO dto = new NotificationDTO();
-        dto.setId(notification.getId());
+        dto.setUuid(notification.getUuid().toString());
         dto.setUserId(notification.getUserId());
         dto.setAnnounceId(notification.getAnnounceId());
         dto.setCreationDate(notification.getCreationDate());
         dto.setHasBeenRed(notification.isHasBeenRed());
-        dto.setTitle(notification.getTitle().getValue());
-        dto.setMessage(notification.getMessage());
+        dto.setTitle(notification.getTitle());
         return dto;
     }
 }
