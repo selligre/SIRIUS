@@ -1,0 +1,7 @@
+services:
+  notification-sender:
+    build: .
+    ports:
+      - "8088:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
