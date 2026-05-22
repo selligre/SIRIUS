@@ -26,6 +26,7 @@ public class AnnounceService {
     @Autowired
     private NotificationClient notificationClient;
 
+
     /**
      * Crée une nouvelle annonce à partir du DTO provenant du formulaire web
      * @param announceDTO Le DTO contenant les données de l'annonce
@@ -67,10 +68,9 @@ public class AnnounceService {
 
         // Créer une notification pour l'utilisateur
         try {
-            notificationClient.notifyAnnounceCreated(
+            notificationClient.sendNotification(
                 announceDTO.getAuthorId(),
                 (int) savedAnnounce.getId(),
-                "ANNOUNCE_SAVED",
                 "Votre annonce '" + announceDTO.getTitle() + "' a été créée avec succès."
             );
         } catch (Exception e) {
@@ -78,7 +78,71 @@ public class AnnounceService {
             System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
         }
 
+        // Demander la modération en arrière-plan
+        try {
+            requestModerationAsync((int) savedAnnounce.getId());
+        } catch (Exception e) {
+            System.err.println("Erreur lors du déclenchement de la modération: " + e.getMessage());
+        }
+
         return savedAnnounce;
+    }
+
+    // After creation or update, request moderation
+    private void requestModerationAsync(int announceId) {
+        // Call in a separate thread to avoid blocking the request
+        new Thread(() -> {
+            try {
+                moderateAnnounce(announceId);
+            } catch (Exception e) {
+                // already logged in client
+            }
+        }).start();
+    }
+
+    /**
+     * Modère une annonce en interne : délai de 5s, tirage aléatoire
+     * PUBLISHED 75% / MODERATED 25%, mise à jour en base et notification
+     * @param announceId id de l'annonce
+     */
+    private void moderateAnnounce(int announceId) {
+        try {
+            Optional<Announce> optional = announceRepository.findById(announceId);
+            if (!optional.isPresent()) {
+                System.err.println("Announcement not found for moderation: " + announceId);
+                return;
+            }
+
+            Announce announce = optional.get();
+
+            // Faux délai de traitement
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // Tirage aléatoire : PUBLISHED 75%, MODERATED 25%
+            double r = java.util.concurrent.ThreadLocalRandom.current().nextDouble();
+            AnnounceStatus chosen = r < 0.75 ? AnnounceStatus.PUBLISHED : AnnounceStatus.MODERATED;
+            announce.setStatus(chosen);
+
+            Announce updated = announceRepository.save(announce);
+
+            // Notification
+            try {
+                String message = chosen == AnnounceStatus.PUBLISHED ? "Votre annonce a été publiée." : "Votre annonce a été modérée.";
+                notificationClient.sendNotification(
+                    updated.getAuthorId(),
+                    (int) updated.getId(),
+                    message
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur lors de l'envoi de la notification de modération: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur interne de modération pour annonce " + announceId + ": " + e.getMessage());
+        }
     }
 
     /**
@@ -145,15 +209,21 @@ public class AnnounceService {
 
         // Créer une notification pour l'utilisateur
         try {
-            notificationClient.notifyAnnounceUpdated(
+            notificationClient.sendNotification(
                 authorId,
                 id,
-                "ANNOUNCE_SAVED",
                 "Votre annonce '" + announceDTO.getTitle() + "' a été modifiée avec succès."
             );
         } catch (Exception e) {
             // On log l'erreur mais on ne lève pas d'exception pour ne pas bloquer
             System.err.println("Erreur lors de la création de la notification: " + e.getMessage());
+        }
+
+        // Demander la modération en arrière-plan
+        try {
+            requestModerationAsync(updatedAnnounce.getId());
+        } catch (Exception e) {
+            System.err.println("Erreur lors du déclenchement de la modération: " + e.getMessage());
         }
 
         return updatedAnnounce;
@@ -185,10 +255,9 @@ public class AnnounceService {
 
         // Créer une notification pour l'utilisateur
         try {
-            notificationClient.notifyAnnounceDeleted(
+            notificationClient.sendNotification(
                 authorId,
                 id,
-                "ANNOUNCE_DELETED",
                 "Votre annonce '" + announceTitle + "' a été supprimée avec succès."
             );
         } catch (Exception e) {

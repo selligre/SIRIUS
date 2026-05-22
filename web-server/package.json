@@ -21,6 +21,7 @@
     "build": "react-scripts build",
     "build:local": "env-cmd -f .env.local npm run build",
     "build:dev": "env-cmd -f .env.dev npm run build",
+    "build:compose": "env-cmd -f .env.compose npm run build",
     "build:preprod": "env-cmd -f .env.preprod npm run build",
     "build:prod": "env-cmd -f .env.prod npm run build",
     "test": "react-scripts test",

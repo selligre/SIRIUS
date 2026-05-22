@@ -48,9 +48,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
             <groupId>fr.upec.episen.sirius.fimafeng</groupId>
             <artifactId>common-lib</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
         </dependency>
     </dependencies>
 

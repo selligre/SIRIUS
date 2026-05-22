@@ -32,10 +32,51 @@ function App() {
     }
   }, [currentUserId]);
 
+  // WebSocket for live notifications
+  useEffect(() => {
+    if (!currentUserId || !config.notificationSenderUrl) return;
+
+    let ws;
+    try {
+      ws = new WebSocket(config.notificationSenderUrl);
+    } catch (err) {
+      console.error('Erreur lors de la création du websocket:', err);
+      return;
+    }
+
+    ws.onopen = () => {
+      try {
+        ws.send(JSON.stringify({ type: 'register', userId: currentUserId }));
+      } catch (e) {
+        console.error('WS send register failed', e);
+      }
+    };
+
+    ws.onmessage = (ev) => {
+      try {
+        const data = JSON.parse(ev.data);
+        // dispatch a window event so pages can react
+        window.dispatchEvent(new CustomEvent('ws-notification', { detail: data }));
+        setUnreadNotificationCount((prev) => (prev || 0) + 1);
+      } catch (e) {
+        console.error('WS message parse error', e);
+      }
+    };
+
+    ws.onerror = (e) => console.error('WS error', e);
+    ws.onclose = () => console.log('WS closed');
+
+    return () => {
+      try { ws.close(); } catch (e) {}
+    };
+  }, [currentUserId]);
+
   const fetchUnreadNotificationCount = async () => {
     try {
+      const uid = currentUserId || localStorage.getItem('userId');
+      if (!uid) return;
       const response = await fetch(
-        `${config.notificationsServiceUrl}/api/notifications/unread-count?userId=${currentUserId}`
+        `${config.notificationManagerServiceUrl}/api/notifications/unread-count?userId=${encodeURIComponent(uid)}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -46,14 +87,25 @@ function App() {
     }
   };
 
-  const handleLogin = (username) => {
+  const handleLogin = (username, userId) => {
     setCurrentUser(username);
     localStorage.setItem('currentUser', username);
+    // If caller provided userId, set it immediately
+    if (userId) {
+      const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+      setCurrentUserId(id);
+      localStorage.setItem('userId', id);
+    } else {
+      const savedUserId = localStorage.getItem('userId');
+      if (savedUserId) setCurrentUserId(parseInt(savedUserId, 10));
+    }
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setCurrentUserId(null);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('userId');
   };
 
   return (
@@ -78,7 +130,7 @@ function App() {
           path="/notifications"
           element={
             currentUser ? (
-              <NotificationsPage currentUser={currentUser} onUpdateNotificationCount={fetchUnreadNotificationCount} />
+              <NotificationsPage currentUser={currentUser} currentUserId={currentUserId} onUpdateNotificationCount={fetchUnreadNotificationCount} />
             ) : (
               <Navigate to="/login" />
             )

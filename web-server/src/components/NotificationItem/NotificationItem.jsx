@@ -12,7 +12,6 @@ function NotificationItem({
 
       <div className="notification-content">
         <h4 className="notification-title">{notification.title}</h4>
-        <p className="notification-description">{notification.description}</p>
         <span className="notification-date">
           {new Date(notification.timestamp).toLocaleString('fr-FR')}
         </span>
