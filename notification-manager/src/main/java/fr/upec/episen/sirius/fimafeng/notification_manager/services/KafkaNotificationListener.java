@@ -38,6 +38,7 @@ public class KafkaNotificationListener {
             }
 
             NotificationEvent event = objectMapper.readValue(payload, NotificationEvent.class);
+            LOGGER.info("NotificationEvent via mapper : "+ event);
 
             // Determine userId: prefer value in the event, then the message key, then the topic name
             int userId = event.getUserId();
@@ -61,9 +62,10 @@ public class KafkaNotificationListener {
             }
 
             CreateNotificationDTO dto = new CreateNotificationDTO();
+            dto.setUuid(event.getUuid());
             dto.setUserId(userId);
             dto.setAnnounceId(event.getAnnounceId());
-            dto.setTitle(event.getStatus());
+            dto.setTitle(event.getMessage());
 
             notificationService.createNotification(dto);
             LOGGER.info("Notification persistée pour user={} announceId={}", userId, event.getAnnounceId());

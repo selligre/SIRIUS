@@ -11,7 +11,10 @@ import fr.upec.episen.sirius.fimafeng.notification_manager.dtos.UnreadCountDTO;
 import fr.upec.episen.sirius.fimafeng.notification_manager.services.NotificationService;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -100,10 +103,10 @@ public class NotificationController {
      * @return La notification marquée comme lue
      */
     @PutMapping("/{id}/read")
-    public ResponseEntity<NotificationDTO> markAsRead(@PathVariable String uuid) {
+    public ResponseEntity<NotificationDTO> markAsRead(@PathVariable("id") String uuid) {
         try {
             LOGGER.info("Marquage de la notification comme lue: " + uuid);
-            NotificationDTO notification = notificationService.markAsRead(uuid);
+            NotificationDTO notification = notificationService.markAsRead(UUID.fromString(uuid));
             
             if (notification != null) {
                 return ResponseEntity.ok(notification);
@@ -126,7 +129,8 @@ public class NotificationController {
     public ResponseEntity<List<NotificationDTO>> markMultipleAsRead(@RequestBody List<String> notificationIds) {
         try {
             LOGGER.info("Marquage de " + notificationIds.size() + " notifications comme lues");
-            List<NotificationDTO> notifications = notificationService.markMultipleAsRead(notificationIds);
+            List<UUID> notificationsUUIDs = notificationIds.stream().map(UUID::fromString).collect(Collectors.toList());
+            List<NotificationDTO> notifications = notificationService.markMultipleAsRead(notificationsUUIDs);
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             LOGGER.severe("Erreur lors du marquage des notifications: " + e.getMessage());

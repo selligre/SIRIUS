@@ -2,8 +2,6 @@ package fr.upec.episen.sirius.fimafeng.announce_manager.utils;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,21 +57,19 @@ public class NotificationClient {
 
         // Créer la payload JSON contenant announceId, message et datetime de création
         String payload = String.format(
-            "{\"uuid\":%s,\"announceId\":%d,\"createdAt\":\"%s\",\"message\":\"%s\"}",
+            "{\"uuid\":\"%s\",\"announceId\":%d,\"createdAt\":\"%s\",\"message\":\"%s\"}",
             uuid.toString(), announceId, createdAt.toString(), escapeJson(message)
         );
+
+        LOGGER.info("Envoi Kafka -> topic=" + topic + " key=" + userId + " payload=" + payload);
 
         try {
             CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, Integer.toString(userId), payload);
 
             future.whenComplete((result, ex) -> {
                 if (ex == null) {
-                    // Cas de SUCCÈS (onSuccess)
-                    LOGGER.info("Notification Kafka produite sur " + topic + 
-                                " pour l'annonce " + announceId + 
-                                " à l'offset " + result.getRecordMetadata().offset());
+                    LOGGER.info("Notification Kafka produite sur " + topic + " pour l'annonce " + announceId + " à l'offset " + result.getRecordMetadata().offset());
                 } else {
-                    // Cas d'ERREUR (onFailure)
                     LOGGER.warning("Erreur lors de l'envoi de la notification Kafka: " + ex.getMessage());
                     fallbackCreateNotification(uuid, userId, announceId, createdAt, message);
                 }
@@ -97,6 +93,7 @@ public class NotificationClient {
             notif.setAnnounceId(announceId);
             notif.setCreationDate(createdAt);
             notif.setHasBeenRed(false);
+            notif.setTitle(title);
 
             notificationRepository.save(notif);
 

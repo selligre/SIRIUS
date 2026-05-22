@@ -7,6 +7,7 @@ import fr.upec.episen.sirius.fimafeng.commons.models.Notification;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
@@ -39,7 +40,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      */
     List<Notification> findByUserIdAndAnnounceId(int userId, int announceId);
 
-    Optional<Notification> findByUuid(String uuid);
+    Optional<Notification> findByUuid(UUID uuid);
     
-    List<Notification> findAllByUuid(List<String> uuids);
+    List<Notification> findAllByUuidIn(List<UUID> uuids);
 }

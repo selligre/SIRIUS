@@ -14,7 +14,6 @@ public class NotificationEvent implements Serializable {
     private String id;
     private int userId;
     private int announceId;
-    private String status;
     private String createdAt;
     private String message;
 
@@ -23,12 +22,11 @@ public class NotificationEvent implements Serializable {
         this.createdAt = Instant.now().toString();
     }
 
-    public NotificationEvent(String uuid, int userId, int announceId, String status, String message) {
+    public NotificationEvent(String uuid, int userId, int announceId, String message) {
         this();
         this.uuid = uuid;
         this.userId = userId;
         this.announceId = announceId;
-        this.status = status;
         this.message = message;
     }
 
@@ -60,14 +58,6 @@ public class NotificationEvent implements Serializable {
         this.announceId = announceId;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getCreatedAt() {
         return createdAt;
     }
@@ -91,7 +81,6 @@ public class NotificationEvent implements Serializable {
                 ", uuid=" + uuid +
                 ", userId=" + userId +
                 ", announceId=" + announceId +
-                ", status='" + status + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", message='" + message + '\'' +
                 '}';

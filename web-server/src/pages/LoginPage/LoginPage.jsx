@@ -41,7 +41,7 @@ function LoginPage({ onLogin }) {
       // Authentification réussie
       localStorage.setItem('currentUser', username);
       localStorage.setItem('userId', userId);
-      onLogin(username);
+      onLogin(username, userId);
       navigate("/");
     } catch (err) {
       setError(err.message || 'Erreur lors de la connexion. Veuillez réessayer.');

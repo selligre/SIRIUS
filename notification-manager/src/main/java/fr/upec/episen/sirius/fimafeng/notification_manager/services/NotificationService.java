@@ -83,7 +83,7 @@ public class NotificationService {
      * @param notificationId L'ID de la notification
      * @return La notification marquée comme lue
      */
-    public NotificationDTO markAsRead(String notificationUuid) {
+    public NotificationDTO markAsRead(UUID notificationUuid) {
         Optional<Notification> optional = notificationRepository.findByUuid(notificationUuid);
 
         if (optional.isPresent()) {
@@ -103,8 +103,8 @@ public class NotificationService {
      * @param notificationIds La liste des IDs des notifications à marquer
      * @return La liste des notifications marquées comme lues
      */
-    public List<NotificationDTO> markMultipleAsRead(List<String> notificationUuids) {
-        List<Notification> notifications = notificationRepository.findAllByUuid(notificationUuids);
+    public List<NotificationDTO> markMultipleAsRead(List<UUID> notificationUuids) {
+        List<Notification> notifications = notificationRepository.findAllByUuidIn(notificationUuids);
 
         for (Notification notification : notifications) {
             notification.setHasBeenRed(true);

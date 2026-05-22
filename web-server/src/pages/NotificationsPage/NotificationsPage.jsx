@@ -4,9 +4,9 @@ import './NotificationsPage.css';
 import config from '../../api/config';
 import NotificationItem from '../../components/NotificationItem/NotificationItem';
 
-function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
+function NotificationsPage({ currentUser, currentUserId: propUserId, onUpdateNotificationCount }) {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState(propUserId || null);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterUnread, setFilterUnread] = useState(false);
@@ -19,6 +19,14 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
     }
   }, []);
 
+  // If parent provides currentUserId prop (set after login), use it and store locally
+  useEffect(() => {
+    if (propUserId) {
+      setUserId(propUserId);
+      localStorage.setItem('userId', propUserId);
+    }
+  }, [propUserId]);
+
   // Appeler la fonction pour mettre à jour le compteur de notifications uniquement au chargement de la page
   useEffect(() => {
     if (onUpdateNotificationCount) {
@@ -27,8 +35,10 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
   }, []);
 
   useEffect(() => {
-    if (userId) {
-      fetchNotifications();
+    // Use propUserId as priority; avoid calling API when no valid userId
+    const effectiveUserId = userId || propUserId;
+    if (effectiveUserId) {
+      fetchNotifications(effectiveUserId);
     }
   }, [userId]);
 
@@ -39,8 +49,7 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
         const event = ev.detail;
         const newNotif = {
           id: event.id,
-          title: event.status,
-          description: event.message,
+          title: event.message,
           creationDate: event.createdAt,
           announceId: event.announceId,
           hasBeenRed: false,
@@ -59,15 +68,23 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
     return () => window.removeEventListener('ws-notification', handler);
   }, [onUpdateNotificationCount]);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (overrideUserId) => {
     setIsLoading(true);
     try {
+      const uid = overrideUserId || userId || propUserId;
+      if (!uid) return;
       const response = await fetch(
-        `${config.notificationManagerServiceUrl}/api/notifications?userId=${userId}`
+        `${config.notificationManagerServiceUrl}/api/notifications?userId=${encodeURIComponent(uid)}`
       );
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data || []);
+        // normalize server payload to include `isRead` consistently
+        const normalized = (data || []).map((n) => ({
+          ...n,
+          isRead: n.isRead === true || n.hasBeenRed === true,
+          hasBeenRed: n.hasBeenRed === true || n.isRead === true,
+        }));
+        setNotifications(normalized);
         setSelectedNotifications(new Set());
       }
     } catch (error) {
@@ -87,9 +104,10 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
       if (response.ok) {
         setNotifications((prev) =>
           prev.map((notif) =>
-            notif.id === notificationId ? { ...notif, hasBeenRed: true } : notif
+            notif.id === notificationId ? { ...notif, hasBeenRed: true, isRead: true } : notif
           )
         );
+        if (onUpdateNotificationCount) onUpdateNotificationCount();
       }
     } catch (error) {
       console.error('Erreur lors du marquage de la notification:', error);
@@ -130,10 +148,11 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
       if (response.ok) {
         setNotifications((prev) =>
           prev.map((notif) =>
-            selectedNotifications.has(notif.id) ? { ...notif, hasBeenRed: true } : notif
+            selectedNotifications.has(notif.id) ? { ...notif, hasBeenRed: true, isRead: true } : notif
           )
         );
         setSelectedNotifications(new Set());
+        if (onUpdateNotificationCount) onUpdateNotificationCount();
       }
     } catch (error) {
       console.error('Erreur lors du marquage des notifications:', error);
@@ -151,10 +170,16 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.hasBeenRed).length;
+  // Normalize read flag: prefer `isRead` from backend, fallback to `hasBeenRed`
+  const normalizedNotifications = notifications.map((n) => ({
+    ...n,
+    _isRead: n.isRead === true || n.hasBeenRed === true,
+  }));
+
+  const unreadCount = normalizedNotifications.filter((n) => !n._isRead).length;
   const displayedNotifications = filterUnread
-    ? notifications.filter((n) => !n.hasBeenRed)
-    : notifications;
+    ? normalizedNotifications.filter((n) => !n._isRead)
+    : normalizedNotifications;
 
   return (
     <div className="notifications-page">
@@ -238,31 +263,30 @@ function NotificationsPage({ currentUser, onUpdateNotificationCount }) {
                 <div
                   key={notification.id}
                   className="notification-wrapper"
-                  onClick={() => !notification.hasBeenRed && handleSelectNotification(notification.id)}
+                  onClick={() => handleSelectNotification(notification.id)}
                 >
-                  {!notification.hasBeenRed && (
-                    <input
-                      type="checkbox"
-                      className="notification-checkbox"
-                      checked={selectedNotifications.has(notification.id)}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        handleSelectNotification(notification.id);
-                      }}
-                    />
-                  )}
-                  <NotificationItem
-                    notification={{
-                      ...notification,
-                      isRead: notification.hasBeenRed,
-                      timestamp: notification.creationDate,
-                      announcementId: notification.announceId,
+                  <input
+                    type="checkbox"
+                    className="notification-checkbox"
+                    checked={selectedNotifications.has(notification.id)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleSelectNotification(notification.id);
                     }}
-                    onMarkAsRead={handleMarkAsRead}
-                    onViewAnnouncement={(announcementId) =>
-                      navigate(`/announcement/${announcementId}`)
-                    }
                   />
+                        <NotificationItem
+                          notification={{
+                            ...notification,
+                            // pass standardized props expected by NotificationItem
+                            isRead: notification._isRead || notification.isRead,
+                            timestamp: notification.creationDate || notification.timestamp,
+                            announcementId: notification.announceId || notification.announcementId,
+                          }}
+                          onMarkAsRead={handleMarkAsRead}
+                          onViewAnnouncement={(announcementId) =>
+                            navigate(`/announcement/${announcementId}`)
+                          }
+                        />
                 </div>
               ))}
             </div>
